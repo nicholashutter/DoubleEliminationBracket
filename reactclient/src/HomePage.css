@@ -1,0 +1,90 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background: url('smash.png') no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow for container */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.form-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.form-group label,
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="submit"],
+.form-group a,
+.form-group .switch-text button {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+}
+
+.form-group input[type="submit"],
+.form-group button {
+  padding: 10px;
+  margin: 1%;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.form-group input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.form-group .switch-text {
+  margin-top: 1%;
+  font-size: 1.1em;
+}
+
+.form-group .switch-text button:hover {
+  background-color: #45a049;
+}
+
+.form-group button a {
+  color: white;
+}
