@@ -19,6 +19,7 @@ import HttpStatusCodes from "./common/HttpStatusCodes";
 import RouteError from "./common/RouteError";
 import cors from "cors";
 import { NodeEnvs } from "./common/misc";
+import userWrapper from "./user"; 
 
 // **** Variables **** //
 
@@ -84,8 +85,15 @@ app.get("/", (_: Request, res: Response) => {
   res.sendFile("index.html", { root: staticDir });
 });
 
-app.get("/api/test", (_: Request, res: Response) => {
-  res.json("Express server completed a get request at /api/test"); 
+app.get("/api/test",  (_: Request, res: Response) => {
+// may come back and implement multithreading with workers 
+  let user1 = new userWrapper("nicholas", "superuser", "nicholas.hutter@live.com");
+  let user2 = new userWrapper("easton","superuser", "easton@website.com");
+  let user3 = new userWrapper("coby","superuser", "coby@website.com"); 
+// current logic allows for a user to be created with the input parameters, a userID to be generated,
+// wrap the user in a wrapper class that validates input and handles async and returns a text 
+// representation of the safe to view object fields 
+  res.send(`User: ${user1.getUserName()}, UserID: ${user1.getUserId()}, Email: ${user1.getEmail()}, Created: ${user1.getCreatedAt()}`); 
 });
 
 

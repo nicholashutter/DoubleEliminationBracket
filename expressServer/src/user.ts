@@ -110,5 +110,4 @@ export default class userWrapper {
 
     getUpdatedAt = ():string => {return this.currentUser.getLastUpdate();}
 
-
 }

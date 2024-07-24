@@ -10,7 +10,8 @@
     "plugin:node/recommended"
   ],
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": ["./tsconfig.json", 
+    "e2e/tsconfig.json"],
   },
   "rules": {
     "@typescript-eslint/explicit-member-accessibility": "warn",
