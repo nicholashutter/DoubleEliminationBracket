@@ -36,7 +36,6 @@ class User {
 
     setUserName = (username:string):void => {this.username = username;}
 
-
     setEmail = (email:string):void => {this.email = email;}
 
     setPasswordHash = (passwordHash:string):void => {this.passwordHash = passwordHash}; 
