@@ -17,6 +17,7 @@ import HttpStatusCodes from "./common/HttpStatusCodes";
 import cors from "cors";
 import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
+import User from "./user";
 // **** Variables **** //
 
 const app = express();
@@ -83,7 +84,8 @@ app.route("/api/user")
   
 })
 .post((req, res)=> {
-
+  let user = new User("nicholas", "doesn't matter", "nicholas.hutter@email.com");
+  let 
 })
 .put((req, res) => {
 

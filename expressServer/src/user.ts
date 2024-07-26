@@ -1,29 +1,28 @@
-export default class User {
-  protected id: number = 0;
-  protected username: string = "";
-  protected email: string = "";
-  //plain text for initial development will be converted when encryption library is created
-  protected passwordHash: string = "";
+export abstract class IUser{
+    protected id: number; 
+    protected username: string; 
+    protected email: string; 
+    protected passwordHash: number;
+    protected createdAt: Date; 
+    protected updatedAt: Date; 
+  
+    constructor(id: number, username: string, email: string, passwordHash:number, createdAt:Date, updatedAt:Date) {
+      this.id = id;
+      this.username = username;
+      this.email = email;
+      this.passwordHash = 0;
+      this.createdAt = new Date();
+      this.updatedAt = new Date();
+    }
+  } 
 
-  protected createdAt: Date = new Date();
-  protected updatedAt: Date = new Date();
-
-  constructor(username: string, passwordHash: string, email: string) {
+export class User extends IUser{
+  constructor(username: string, passwordHash: number, email: string) {
     const getRandomInt = (max: number) => {
       return Math.floor(Math.random() * max);
     };
-    this.id = getRandomInt(10000);
-    this.username = username;
-    this.email = email;
-    this.passwordHash = passwordHash;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
-  }
-
-  ifExists <T>(value:T):void
-  {
-    //code that will hit the database and check if the parameters entered exist 
-    //new DbHandler().dbConnect()
+    
+    super(getRandomInt(10000), username, email, passwordHash,new Date(), new Date());
   }
 
   getUserID ():number
@@ -41,14 +40,14 @@ export default class User {
     return this.email;
   };
 
-  getLastUpdate (): string 
+  getLastUpdate (): Date 
   {
-    return this.updatedAt.toLocaleString();
+    return this.updatedAt;
   };
 
-  getCreatedAt (): string 
+  getCreatedAt (): Date
   {
-    return this.updatedAt.toLocaleString();
+    return this.updatedAt;
   };
 
   setLastUpdate (Date: Date): void 
@@ -66,11 +65,18 @@ export default class User {
     this.email = email;
   };
 
-  setPasswordHash (passwordHash: string): void 
+  setPasswordHash (passwordHash: number): void 
   {
     this.passwordHash = passwordHash;
   };
+
+  getPasswordHash ():number
+  {
+    return this.passwordHash;
+  }
 }
+
+
 
 /*
  class userWrapper {
