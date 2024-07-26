@@ -7,6 +7,5 @@ require("./pre-start");
 const jet_logger_1 = __importDefault(require("jet-logger"));
 const EnvVars_1 = __importDefault(require("./common/EnvVars"));
 const server_1 = __importDefault(require("./server"));
-const SERVER_START_MSG = ('Express server started on port: ' +
-    EnvVars_1.default.Port.toString());
+const SERVER_START_MSG = "Express server started on port: " + EnvVars_1.default.Port.toString();
 server_1.default.listen(EnvVars_1.default.Port, () => jet_logger_1.default.info(SERVER_START_MSG));

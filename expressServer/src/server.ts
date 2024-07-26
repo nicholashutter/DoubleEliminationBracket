@@ -16,8 +16,7 @@ import EnvVars from "./common/EnvVars";
 import HttpStatusCodes from "./common/HttpStatusCodes";
 import cors from "cors";
 import { NodeEnvs } from "./common/misc";
-import userWrapper from "./user"; 
-
+import DbHandler from "./DbHandler";
 // **** Variables **** //
 
 const app = express();
@@ -42,9 +41,6 @@ if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf()) {
 if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
   app.use(helmet());
 }
-
-// Add APIs, must be after middleware
-//app.use(Paths.Base);
 
 // Add error handler
 const errorMiddleware = (
@@ -78,15 +74,23 @@ app.get("/", (_: Request, res: Response) => {
 });
 
 app.get("/api/test",  (_: Request, res: Response) => {
-// may come back and implement multithreading with workers 
-  let user1 = new userWrapper("nicholas", "superuser", "nicholas.hutter@live.com");
-// current logic allows for a user to be created with the input parameters, a userID to be generated,
-// wrap the user in a wrapper class that validates input and handles async and returns a text 
-// representation of the safe to view object fields 
-  res.send(`User: ${user1.getUserName()}, UserID: ${user1.getUserId()}, Email: ${user1.getEmail()}, Created: ${user1.getCreatedAt()}`); 
+  const dbhandler = new DbHandler("SELECT * FROM FIGHTERS;");
 });
 
 
+app.route("/api/user")
+.get((req, res) => {
+  
+})
+.post((req, res)=> {
+
+})
+.put((req, res) => {
+
+})
+.delete((req, res) => {
+
+})
 
 // **** Export default **** //
 

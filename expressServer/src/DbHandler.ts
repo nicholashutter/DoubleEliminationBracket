@@ -4,22 +4,26 @@ import mariadb from "mariadb";
 // a fighters database and a usercreds database
 const pool: mariadb.Pool = mariadb.createPool({
   host: "localhost",
-  user: "superuser",
+  user: "root",
   connectionLimit: 50,
 });
 
 export default class DbHandler {
   constructor(sqlQuery: string) {
-   this.dbConnect(sqlQuery);
+   this.tourneyDbConnect(sqlQuery);
   }
 // this is mostly converted to typescript but we have a few explicit any to get rid of 
-  async dbConnect(sqlQuery: string) {
+  async tourneyDbConnect(sqlQuery: string) {
     let conn: any;
 
     try {
       conn = await pool.getConnection();
 
-      const res: any = await conn.query(sqlQuery);
+      let res:any = conn.query("use tourneydb");
+
+      console.log(res); 
+
+      res = await conn.query(sqlQuery);
 
       console.log(res);
     } finally {
@@ -27,5 +31,6 @@ export default class DbHandler {
     }
   }
 
-
+//probably need to come back and add shorthand functions for common queries once you have the query working 
+// particularly for ifExists since we will be checking that a lot
 }
