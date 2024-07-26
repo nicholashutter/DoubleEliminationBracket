@@ -41,7 +41,7 @@ export default class DbHandler {
                 this.user.getEmail() as string, 
                 this.user.getPasswordHash() as number, 
                 this.user.getCreatedAt() as Date, 
-                
+                this.user.getLastUpdate() as Date,
               ]
               
             }
