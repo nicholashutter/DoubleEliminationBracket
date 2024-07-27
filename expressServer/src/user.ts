@@ -2,22 +2,22 @@ export abstract class IUser{
     protected id: number; 
     protected username: string; 
     protected email: string; 
-    protected passwordHash: number;
+    protected passwordHash: string;
     protected createdAt: Date; 
     protected updatedAt: Date; 
   
-    constructor(id: number, username: string, email: string, passwordHash:number, createdAt:Date, updatedAt:Date) {
+    constructor(id: number, username: string, email: string, passwordHash:string, createdAt:Date, updatedAt:Date) {
       this.id = id;
       this.username = username;
       this.email = email;
-      this.passwordHash = 0;
+      this.passwordHash = "";
       this.createdAt = new Date();
       this.updatedAt = new Date();
     }
   } 
 
 export class User extends IUser{
-  constructor(username: string, passwordHash: number, email: string) {
+  constructor(username: string, passwordHash: string, email: string) {
     const getRandomInt = (max: number) => {
       return Math.floor(Math.random() * max);
     };
@@ -65,12 +65,12 @@ export class User extends IUser{
     this.email = email;
   };
 
-  setPasswordHash (passwordHash: number): void 
+  setPasswordHash (passwordHash: string): void 
   {
     this.passwordHash = passwordHash;
   };
 
-  getPasswordHash ():number
+  getPasswordHash ():string
   {
     return this.passwordHash;
   }

@@ -14,7 +14,8 @@ const EnvVars_1 = __importDefault(require("./common/EnvVars"));
 const HttpStatusCodes_1 = __importDefault(require("./common/HttpStatusCodes"));
 const cors_1 = __importDefault(require("cors"));
 const misc_1 = require("./common/misc");
-const user_1 = __importDefault(require("./user"));
+const DbHandler_1 = __importDefault(require("./DbHandler"));
+const user_1 = require("./user");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -43,13 +44,14 @@ app.get("/", (_, res) => {
     res.sendFile("index.html", { root: staticDir });
 });
 app.get("/api/test", (_, res) => {
-    let user1 = new user_1.default("nicholas", "superuser", "nicholas.hutter@live.com");
-    res.send(`User: ${user1.getUserName()}, UserID: ${user1.getUserId()}, Email: ${user1.getEmail()}, Created: ${user1.getCreatedAt()}`);
 });
 app.route("/api/user")
     .get((req, res) => {
 })
     .post((req, res) => {
+    let user = new user_1.User("superuser", "superuser", "superuser@website.com");
+    let db = new DbHandler_1.default();
+    db.createUser(user);
 })
     .put((req, res) => {
 })

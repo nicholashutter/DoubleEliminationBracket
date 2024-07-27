@@ -17,7 +17,7 @@ import HttpStatusCodes from "./common/HttpStatusCodes";
 import cors from "cors";
 import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
-import User from "./user";
+import {User} from "./user";
 // **** Variables **** //
 
 const app = express();
@@ -75,7 +75,7 @@ app.get("/", (_: Request, res: Response) => {
 });
 
 app.get("/api/test",  (_: Request, res: Response) => {
-  const dbhandler = new DbHandler("SELECT * FROM FIGHTERS;");
+ // const dbhandler = new DbHandler("SELECT * FROM FIGHTERS;");
 });
 
 
@@ -84,8 +84,21 @@ app.route("/api/user")
   
 })
 .post((req, res)=> {
-  let user = new User("nicholas", "doesn't matter", "nicholas.hutter@email.com");
-  let 
+  const body = req.body;
+
+  try{
+    let user = new User(body.username, body.passwordHash, body.email);
+    let db = new DbHandler();
+    db.createUser(user);
+    console.log("Success"); 
+    res.send("Success");
+  }
+  catch(e){
+    console.log("server.ts line 95: Cannot create user possibly due to a bad post request");
+  }
+  
+  
+
 })
 .put((req, res) => {
 

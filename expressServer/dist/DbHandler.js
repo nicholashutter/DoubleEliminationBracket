@@ -13,26 +13,86 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mariadb_1 = __importDefault(require("mariadb"));
+const user_1 = require("./user");
 const pool = mariadb_1.default.createPool({
     host: "localhost",
-    user: "superuser",
+    user: "root",
     connectionLimit: 50,
 });
 class DbHandler {
-    constructor(sqlQuery) {
-        this.dbConnect(sqlQuery);
+    constructor() {
+        this.db = "";
+        this.query = "";
+        this.params = [];
+        this.user = new user_1.User("", "", "");
     }
-    dbConnect(sqlQuery) {
+    createUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            let conn;
+            this.db = "use userdb";
+            this.query =
+                "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?);";
+            this.user = user;
+            this.params = [
+                this.user.getUserID(),
+                this.user.getUserName(),
+                this.user.getEmail(),
+                this.user.getPasswordHash(),
+                this.user.getCreatedAt(),
+                this.user.getLastUpdate(),
+            ];
+            yield this.doQuery(this.query, this.params);
+        });
+    }
+    readUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.db = "use userdb";
+            this.query =
+                "SELECT * FROM users WHERE id = ? OR username = ? OR email = ?";
+            this.params = [
+                this.user.getUserID(),
+                this.user.getUserName(),
+                this.user.getEmail()
+            ];
+            yield this.doQuery(this.query, this.params);
+        });
+    }
+    updateUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.db = "use userdb";
+            this.query =
+                "UPDATE users SET username = ?, email = ?, updated_at = ?, WHERE id = ? OR username = ? OR email = ?;";
+            this.params = [
+                this.user.getUserName(),
+                this.user.getEmail(),
+                this.user.getLastUpdate(),
+                this.user.getUserID(),
+                this.user.getUserName(),
+                this.user.getEmail()
+            ];
+        });
+    }
+    deleteUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.db = "use userdb";
+            this.query = "DELETE FROM users WHERE id = ? OR username = ? OR email = ?";
+            this.params[this.user.getUserID(),
+                this.user.getUserName(),
+                this.user.getEmail()];
+            this.doQuery(this.query, this.params);
+        });
+    }
+    doQuery(query, params) {
+        return __awaiter(this, void 0, void 0, function* () {
             try {
-                conn = yield pool.getConnection();
-                const res = yield conn.query(sqlQuery);
+                this.conn = yield pool.getConnection();
+                let res = this.conn.query(this.db);
+                console.log(res);
+                res = yield this.conn.query(this.query, this.params);
                 console.log(res);
             }
             finally {
-                if (conn)
-                    conn.release();
+                if (this.conn)
+                    this.conn.release();
             }
         });
     }
