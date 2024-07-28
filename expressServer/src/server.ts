@@ -81,12 +81,41 @@ app.get("/api/test",  (_: Request, res: Response) => {
 
 app.route("/api/user")
 .get((req, res) => {
+  //read user
+
+
+  /* something close to 
+    body.whatever we are searching for 
   
+  */
+
+
+
+
+
+  let user = new User();
+  let db = new DbHandler();
+
+  db.readUser(user);
+
+
 })
 .post((req, res)=> {
+  //create user
   const body = req.body;
 
   try{
+
+    /*post config: POST /api/user default headers body raw JSON
+
+    {
+    "username": "micheal myers",
+    "passwordHash":"willfixlater",
+    "email":"bigscary@movie.site"
+    }
+
+    */
+
     let user = new User(body.username, body.passwordHash, body.email);
     let db = new DbHandler();
     db.createUser(user);
@@ -101,9 +130,11 @@ app.route("/api/user")
 
 })
 .put((req, res) => {
+//update user 
 
 })
 .delete((req, res) => {
+  //delete user 
 
 })
 
