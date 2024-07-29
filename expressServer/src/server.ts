@@ -59,10 +59,25 @@ const errorMiddleware = (
 
 app.use(errorMiddleware);
 
+/* Define Custom Types for HTTP */
+type body = {
+  username: string,
+  email:string, 
+  passwordHash: string, 
+  created_at:Date, 
+  updated_at:Date
+}
 
+interface TableData{
+  id:number, 
+  username:string,
+  email:string,
+  password_hash:string, 
+  created_at:Date,
+  updated_at:Date
+}
 
-// **** Front-End Content **** //
-
+type Rows = TableData[]; 
 
 // Set static directory (js and css). //I have set this to build directory for react allowing the index.html and index.js to be the entrypoints from here
 //reactrouter should take over once this page is served
@@ -78,27 +93,29 @@ app.get("/api/test",  (_: Request, res: Response) => {
  // const dbhandler = new DbHandler("SELECT * FROM FIGHTERS;");
 });
 
-
 app.route("/api/user")
-.get((req, res) => {
+.get(async (req, res) => {
   //read user
 
 
-  /* something close to 
-    body.whatever we are searching for 
+  /* logic is broken some sort of type argument mismatch 
+  between request.body, dbhandler, user, and server
   
+  Either refactor to search without requiring the entire user object 
+  be pass into DbHandler.readUser or track down through debugger exactly
+  where properties fall out and become null
+  Your SQL query works you just aren't sending anything valid
+  to the database and therefor you can't return undefined which is why 
+  typescript currently crashes 
   */
+  const body:body = req.body;
+  let user:User = new User(body.username, body.passwordHash, body.email);
+  let db:DbHandler = new DbHandler();
 
-
-
-
-
-  let user = new User();
-  let db = new DbHandler();
-
-  db.readUser(user);
-
-
+  //explicit any will be used here because 
+  const rows: any = await db.readUser(user);
+  console.log(rows);
+  res.send(rows);
 })
 .post((req, res)=> {
   //create user

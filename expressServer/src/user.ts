@@ -29,22 +29,29 @@ export class User extends IUser {
       return Math.floor(Math.random() * max);
     };
 
+    super(
+      getRandomInt(10000),
+      username,
+      email,
+      passwordHash,
+      new Date(),
+      new Date()
+    );
+/*
     if (username == null || passwordHash == null || email == null) {
       throw new Error(
         "User constructor failed. Some paramters are null or undefined."
       );
-    } else if (!email.includes("@") || !email.includes(".")) {
-      throw new Error("User constructor failed. Email parameter invalid.");
-    } else {
-      super(
-        getRandomInt(10000),
-        username,
-        email,
-        passwordHash,
-        new Date(),
-        new Date()
-      );
+    } 
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (pattern.test(email))
+    {
+      
+    
     }
+    else {
+      console.error("User contstructor failed. ");
+    } */
   }
 
   getUserID(): number {

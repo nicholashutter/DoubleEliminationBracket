@@ -29,13 +29,13 @@
     "semi": 1,
     "indent": ["warn", 2],
     "quotes": ["warn", "single"],
-    "node/no-process-env": 1,
-    "node/no-unsupported-features/es-syntax": [
-      "error",
-      { "ignores" : ["modules"] }
-    ],
-    "node/no-missing-import": 0,
-    "node/no-unpublished-import": 0
+    "@typescript-eslint/no-implicit-any": "error",
+    "@typescript-eslint/strict-null-types": "error",
+    "@typescript-eslint/strict-function-types": "error",
+    "@typescript-eslint/strict-bind-call": "error",
+    "@typescript-eslint/strict-boolean-expressions": 0,
+    "@typescript-eslint/strict-property-initialization": "error",
+    "@typescript-eslint/no-implicit-any-catch": "error"
   },
   "settings": {
     "node": {

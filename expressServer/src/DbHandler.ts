@@ -83,17 +83,23 @@ export default class DbHandler {
     this.doQuery(this.query,this.params);
   }
 
+
+/*one of the rare cases in my code where I will leave the return type implied because we won't always be returning 
+  the same type 
+*/
   async doQuery(query: string, params: any[]) {
     try {
       this.conn = await pool.getConnection();
 
-      let res: any = this.conn.query(this.db);
+      let res: Promise<any> = this.conn.query(this.db);
 
       console.log(res);
 
       res = await this.conn.query(this.query, this.params);
 
       console.log(res);
+      return res; 
+
     } finally {
       if (this.conn) this.conn.release();
     }
