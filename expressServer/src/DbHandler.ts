@@ -24,15 +24,16 @@ export default class DbHandler {
   }
 
   async createUser(user: User) {
+    this.user = user;
     this.db = "use userdb";
     this.query =
       "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?);";
-    this.user = user;
+    
     this.params = [
       this.user.getUserID() as number,
       this.user.getUserName() as string,
       this.user.getEmail() as string,
-      this.user.getPasswordHash() as string,
+      this.user.getPassword_Hash() as string,
       this.user.getCreatedAt() as Date,
       this.user.getLastUpdate() as Date,
     ];
@@ -40,19 +41,19 @@ export default class DbHandler {
     await this.doQuery(this.query, this.params);
   }
 
-  async readUser(user: User) {
+  async readUser(user: User):Promise<User> {
     this.user = user;
     this.db = "use userdb";
     this.query =
       "SELECT * FROM users WHERE id = ? OR username = ? OR email = ?";
-
+      // id falls out of this function somewhere need to correct that 
       this.params = [
         this.user.getUserID() as number, 
         this.user.getUserName() as string,
         this.user.getEmail() as string
       ]
 
-      const res = await this.doQuery(this.query,this.params);
+      const res: User = await this.doQuery(this.query,this.params);
       return res; 
   }
 
@@ -63,9 +64,9 @@ export default class DbHandler {
       "UPDATE users SET username = ?, email = ?, updated_at = ?, WHERE id = ? OR username = ? OR email = ?;";
 
       this.params = [
-        this.user.getUserName() as string, 
+        this.user.getUserName() as string,  
         this.user.getEmail() as string,  
-        this.user.getLastUpdate() as Date,
+        new Date() as Date, 
         this.user.getUserID() as number, 
         this.user.getUserName() as string, 
         this.user.getEmail() as string
@@ -77,7 +78,7 @@ export default class DbHandler {
     this.db = "use userdb";
     this.query = "DELETE FROM users WHERE id = ? OR username = ? OR email = ?";
 
-    this.params[
+    this.params = [
       this.user.getUserID() as number, 
       this.user.getUserName() as string, 
       this.user.getEmail() as string
@@ -86,10 +87,6 @@ export default class DbHandler {
     this.doQuery(this.query,this.params);
   }
 
-
-/*one of the rare cases in my code where I will leave the return type implied because we won't always be returning 
-  the same type 
-*/
   async doQuery(query: string, params: any[]){
     try {
       this.conn = await pool.getConnection();
@@ -98,7 +95,7 @@ export default class DbHandler {
 
       res = await this.conn.query(this.query, this.params);
 
-      console.log(res);
+      //console.log(res);
 
       return res[0]; 
 
@@ -108,5 +105,4 @@ export default class DbHandler {
   }
 }
 
-//probably need to come back and add shorthand functions for common queries once you have the query working
-// particularly for ifExists since we will be checking that a lot
+

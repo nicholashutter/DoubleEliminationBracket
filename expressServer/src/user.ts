@@ -2,7 +2,7 @@ export abstract class IUser {
   protected id: number;
   protected username: string;
   protected email: string;
-  protected passwordHash: string;
+  protected password_hash: string;
   protected createdAt: Date;
   protected updatedAt: Date;
 
@@ -10,48 +10,48 @@ export abstract class IUser {
     id: number,
     username: string,
     email: string,
-    passwordHash: string,
+    password_hash: string,
     createdAt: Date,
     updatedAt: Date
   ) {
     this.id = id;
     this.username = username;
     this.email = email;
-    this.passwordHash = "";
+    this.password_hash = password_hash;
     this.createdAt = new Date();
     this.updatedAt = new Date();
   }
 }
 
 export class User extends IUser {
-  constructor(username: string, passwordHash: string, email: string) {
+  constructor(
+    username: string,
+    password_hash: string,
+    email: string,
+    id?: number
+  ) {
     const getRandomInt = (max: number) => {
       return Math.floor(Math.random() * max);
     };
 
-    super(
-      getRandomInt(10000),
-      username,
-      email,
-      passwordHash,
-      new Date(),
-      new Date()
-    );
-/*
-    if (username == null || passwordHash == null || email == null) {
-      throw new Error(
-        "User constructor failed. Some paramters are null or undefined."
+    if (id === undefined) {
+      super(
+        getRandomInt(10000),
+        username,
+        email,
+        password_hash,
+        new Date(),
+        new Date()
       );
-    } 
-    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (pattern.test(email))
-    {
-      
-    
+    } else {
+      super(
+        id, 
+        username, 
+        email, 
+        password_hash, 
+        new Date(), 
+        new Date());
     }
-    else {
-      console.error("User contstructor failed. ");
-    } */
   }
 
   getUserID(): number {
@@ -77,8 +77,7 @@ export class User extends IUser {
   setLastUpdate(Date: Date): void {
     try {
       this.updatedAt = Date;
-    }
-    catch{
+    } catch {
       throw new Error("user.setLastUpdate() failed");
     }
   }
@@ -88,23 +87,20 @@ export class User extends IUser {
   }
 
   setEmail(email: string): void {
-    try{
-      if (!email.includes("@") || !email.includes(".")){
+    try {
+      if (!email.includes("@") || !email.includes(".")) {
         this.email = email;
       }
-    }
-    catch{
+    } catch {
       throw new Error("user.setEmail() failed");
     }
-    
   }
 
-  setPasswordHash(passwordHash: string): void {
-    this.passwordHash = passwordHash;
+  setPassword_Hash(password_hash: string): void {
+    this.password_hash = password_hash;
   }
 
-  getPasswordHash(): string {
-    return this.passwordHash;
+  getPassword_Hash(): string {
+    return this.password_hash;
   }
 }
-

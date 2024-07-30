@@ -7,13 +7,8 @@ import morgan from "morgan";
 import path from "path";
 import helmet from "helmet";
 import express, { Request, Response} from "express";
-import logger from "jet-logger";
-
-import "express-async-errors";
-
-
+import "express-async-errors"
 import EnvVars from "./common/EnvVars";
-import HttpStatusCodes from "./common/HttpStatusCodes";
 import cors from "cors";
 import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
@@ -49,12 +44,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
 
 /* Define Custom Types for HTTP */
-type body = {
+type body = { 
   username: string,
   email:string, 
-  passwordHash: string, 
+  password_hash: string, 
   created_at:Date, 
-  updated_at:Date
+  updated_at:Date,
+  id?:number
 }
 
 // Set static directory (js and css). //I have set this to build directory for react allowing the index.html and index.js to be the entrypoints from here
@@ -73,51 +69,72 @@ app.get("/api/test",  (_: Request, res: Response) => {
 
 app.route("/api/user")
 .get(async (req, res) => {
-  //read user
 
-
-  /* logic is broken some sort of type argument mismatch 
-  between request.body, dbhandler, user, and server
+  try {
+    const body:body = req.body;
+    const user:User = new User(body.username,body.password_hash,body.email, body.id);
+    const db:DbHandler = new DbHandler();
+    const rows: any = await db.readUser(user);
   
-  Either refactor to search without requiring the entire user object 
-  be pass into DbHandler.readUser or track down through debugger exactly
-  where properties fall out and become null
-  Your SQL query works you just aren't sending anything valid
-  to the database and therefor you can't return undefined which is why 
-  typescript currently crashes 
-  */
-  const body:body = req.body;
-  const user:User = new User(body.username, body.passwordHash, body.email);
-  const db:DbHandler = new DbHandler();
+    console.log(rows);
 
-  //explicit any will be used here because 
-  const rows: any = await db.readUser(user);
-
-  console.log(rows);
+    res.json(rows);
+  }
+  catch (e) {
+    throw new Error ("server.ts line 87: Cannot read user possibly due to bad get request");
+  }
   
-  res.json(rows);
+  
 })
-.post((req, res)=> {
+.post(async (req, res)=> {
   //create user
-  const body = req.body;
+  const body:body= req.body; 
 
   try{
-    const user = new User(body.username, body.passwordHash, body.email);
-    const db = new DbHandler();
-    db.createUser(user);
-    console.log("Success"); 
-    res.send("Success");
+    const user:User = new User(body.username, body.password_hash, body.email);
+    const db:DbHandler = new DbHandler();
+
+
+   const ifExists:undefined|User = await db.readUser(user);
+    
+    if (ifExists === undefined){
+      db.createUser(user);
+      console.log("Success"); 
+      res.send("Success");
+    }
+    else res.send("User with similar properties already exists.");  
   }
   catch(e){
-    console.log("server.ts line 95: Cannot create user possibly due to a bad post request");
+    console.log("server.ts line 105: Cannot create user possibly due to a bad post request");
   }
-  
-  
-
 })
-.put((req, res) => {
+.put(async (req, res) => {
 //update user 
+  const body:body= req.body;
+  const user = new User(body.username, body.password_hash, body.email, body.id) ;
+  const db:DbHandler = new DbHandler();
+  
+  
+  const updateWho:User = await db.readUser(user);
 
+  /* updateWho is the full user object of who we want to update
+  
+      Something like:   
+                    const id = updateWho.getUserID();
+                    double check this logic but we always preserve the fields unless they are overridden 
+                    if (updateWho.getField !== body.field)
+                    {
+                      updateWho.getField = username || password_hash || email 
+                    }
+                    await db.deleteUser(updateWho);
+                    db.createUser(username, password_hash, email, id); 
+      
+  
+  */
+  
+  db.updateUser(updateWho); 
+
+  res.send("Success"); 
 })
 .delete((req, res) => {
   //delete user 
