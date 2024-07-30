@@ -74,11 +74,15 @@ export class User extends IUser {
     return this.updatedAt;
   }
 
+  setCreatedAt(newCreatedAt: Date) {
+    this.updatedAt = newCreatedAt;
+  }
+
   setLastUpdate(Date: Date): void {
     try {
       this.updatedAt = Date;
     } catch {
-      throw new Error("user.setLastUpdate() failed");
+      console.log("user.setLastUpdate() failed");
     }
   }
 
@@ -92,7 +96,7 @@ export class User extends IUser {
         this.email = email;
       }
     } catch {
-      throw new Error("user.setEmail() failed");
+      console.log("user.setEmail() failed");
     }
   }
 

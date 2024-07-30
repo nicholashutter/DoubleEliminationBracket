@@ -2,22 +2,27 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.IUser = void 0;
 class IUser {
-    constructor(id, username, email, passwordHash, createdAt, updatedAt) {
+    constructor(id, username, email, password_hash, createdAt, updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.passwordHash = "";
+        this.password_hash = password_hash;
         this.createdAt = new Date();
         this.updatedAt = new Date();
     }
 }
 exports.IUser = IUser;
 class User extends IUser {
-    constructor(username, passwordHash, email) {
+    constructor(username, password_hash, email, id) {
         const getRandomInt = (max) => {
             return Math.floor(Math.random() * max);
         };
-        super(getRandomInt(10000), username, email, passwordHash, new Date(), new Date());
+        if (id === undefined) {
+            super(getRandomInt(10000), username, email, password_hash, new Date(), new Date());
+        }
+        else {
+            super(id, username, email, password_hash, new Date(), new Date());
+        }
     }
     getUserID() {
         return this.id;
@@ -25,37 +30,44 @@ class User extends IUser {
     getUserName() {
         return this.username;
     }
-    ;
     getEmail() {
         return this.email;
     }
-    ;
     getLastUpdate() {
         return this.updatedAt;
     }
-    ;
     getCreatedAt() {
         return this.updatedAt;
     }
-    ;
-    setLastUpdate(Date) {
-        this.updatedAt = Date;
+    setCreatedAt(newCreatedAt) {
+        this.updatedAt = newCreatedAt;
     }
-    ;
+    setLastUpdate(Date) {
+        try {
+            this.updatedAt = Date;
+        }
+        catch (_a) {
+            console.log("user.setLastUpdate() failed");
+        }
+    }
     setUserName(username) {
         this.username = username;
     }
-    ;
     setEmail(email) {
-        this.email = email;
+        try {
+            if (!email.includes("@") || !email.includes(".")) {
+                this.email = email;
+            }
+        }
+        catch (_a) {
+            console.log("user.setEmail() failed");
+        }
     }
-    ;
-    setPasswordHash(passwordHash) {
-        this.passwordHash = passwordHash;
+    setPassword_Hash(password_hash) {
+        this.password_hash = password_hash;
     }
-    ;
-    getPasswordHash() {
-        return this.passwordHash;
+    getPassword_Hash() {
+        return this.password_hash;
     }
 }
 exports.User = User;

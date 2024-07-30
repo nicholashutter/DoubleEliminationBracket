@@ -12,7 +12,8 @@ import EnvVars from "./common/EnvVars";
 import cors from "cors";
 import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
-import {User} from "./user";
+import {User, IUser} from "./user";
+
 // **** Variables **** //
 
 const app = express();
@@ -64,7 +65,7 @@ app.get("/", (_: Request, res: Response) => {
 });
 
 app.get("/api/test",  (_: Request, res: Response) => {
- // const dbhandler = new DbHandler("SELECT * FROM FIGHTERS;");
+ res.send("Welcome! You are in the wrong place. Try going home or try again later");
 });
 
 app.route("/api/user")
@@ -74,20 +75,30 @@ app.route("/api/user")
     const body:body = req.body;
     const user:User = new User(body.username,body.password_hash,body.email, body.id);
     const db:DbHandler = new DbHandler();
-    const rows: any = await db.readUser(user);
-  
-    console.log(rows);
+    const rows:User = await db.readUser(user);
+
+    if (rows === undefined){
+      res.send("Not Found"); 
+    }
 
     res.json(rows);
   }
   catch (e) {
-    throw new Error ("server.ts line 87: Cannot read user possibly due to bad get request");
+    res.send("server.ts line 87: Cannot read user possibly due to bad get request");
+    console.log(e);
   }
   
   
 })
 .post(async (req, res)=> {
   //create user
+
+  /*
+    known bug password_hash must be unique when sent in or else application will hard crash
+    this is due to how passwords are currently handeled, but won't be a problem once encryption
+    is integrated because all true password_hash values will be unique once they run through the 
+    encryption algorithm
+  */
   const body:body= req.body; 
 
   try{
@@ -102,10 +113,10 @@ app.route("/api/user")
       console.log("Success"); 
       res.send("Success");
     }
-    else res.send("User with similar properties already exists.");  
+    else res.send("Failure");  
   }
   catch(e){
-    console.log("server.ts line 105: Cannot create user possibly due to a bad post request");
+    res.send("server.ts line 105: Cannot create user possibly due to a bad post request")
   }
 })
 .put(async (req, res) => {
@@ -113,31 +124,51 @@ app.route("/api/user")
   const body:body= req.body;
   const user = new User(body.username, body.password_hash, body.email, body.id) ;
   const db:DbHandler = new DbHandler();
-  
-  
   const updateWho:User = await db.readUser(user);
 
-  /* updateWho is the full user object of who we want to update
+  const values:string [] = [];
+  // for some reason updateWho.method is undefined at runtime, but clearly defined at compile time
+  // massive bug need to figure out
+  values[0] = updateWho.getUserName();  
+  values[1] = updateWho.getPassword_Hash();
+  values[2] = updateWho.getEmail();
+  db.deleteUser(updateWho);
+
+  updateWho.setUserName(body.username);
+  updateWho.setPassword_Hash(body.password_hash);
+  updateWho.setEmail(body.email);
+
+  if (body.username === undefined)
+  {
+    updateWho.setUserName(values[0]);
+  }
+  else if (body.password_hash === undefined)
+  {
+    updateWho.setPassword_Hash(values[1]);
+  }
+  else if (body.email)
+  {
+    updateWho.setEmail(values[2]); 
+  }
+  updateWho.setLastUpdate(new Date());
   
-      Something like:   
-                    const id = updateWho.getUserID();
-                    double check this logic but we always preserve the fields unless they are overridden 
-                    if (updateWho.getField !== body.field)
-                    {
-                      updateWho.getField = username || password_hash || email 
-                    }
-                    await db.deleteUser(updateWho);
-                    db.createUser(username, password_hash, email, id); 
-      
-  
-  */
-  
-  db.updateUser(updateWho); 
+  db.createUser(updateWho); 
 
   res.send("Success"); 
 })
-.delete((req, res) => {
+.delete(async (req, res) => {
   //delete user 
+const body:body= req.body;
+const user:User = new User(body.username, body.password_hash, body.email, body.id)
+const db:DbHandler = new DbHandler();
+try {
+  db.deleteUser(user);
+  res.send("Success"); 
+}
+catch (e){
+  console.log("User deletion failed.")
+  res.send("Failure")
+}
 
 })
 

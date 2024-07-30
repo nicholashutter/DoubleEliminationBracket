@@ -57,22 +57,6 @@ export default class DbHandler {
       return res; 
   }
 
-  async updateUser(user: User) {
-    this.user = user; 
-    this.db = "use userdb";
-    this.query =
-      "UPDATE users SET username = ?, email = ?, updated_at = ?, WHERE id = ? OR username = ? OR email = ?;";
-
-      this.params = [
-        this.user.getUserName() as string,  
-        this.user.getEmail() as string,  
-        new Date() as Date, 
-        this.user.getUserID() as number, 
-        this.user.getUserName() as string, 
-        this.user.getEmail() as string
-      ]
-  }
-
   async deleteUser(user: User) {
     this.user = user; 
     this.db = "use userdb";
@@ -86,6 +70,7 @@ export default class DbHandler {
 
     this.doQuery(this.query,this.params);
   }
+
 
   async doQuery(query: string, params: any[]){
     try {
