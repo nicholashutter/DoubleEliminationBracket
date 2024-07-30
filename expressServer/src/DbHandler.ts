@@ -1,7 +1,6 @@
-import { create } from "domain";
-import { read } from "fs";
+
 import mariadb from "mariadb";
-import { User, IUser } from "./user";
+import { User} from "./user";
 // this class is still under construction need to add function
 // to connect to specific databases as there will be
 // a fighters database and a usercreds database
@@ -42,6 +41,7 @@ export default class DbHandler {
   }
 
   async readUser(user: User) {
+    this.user = user;
     this.db = "use userdb";
     this.query =
       "SELECT * FROM users WHERE id = ? OR username = ? OR email = ?";
@@ -52,10 +52,12 @@ export default class DbHandler {
         this.user.getEmail() as string
       ]
 
-      await this.doQuery(this.query,this.params);
+      const res = await this.doQuery(this.query,this.params);
+      return res; 
   }
 
   async updateUser(user: User) {
+    this.user = user; 
     this.db = "use userdb";
     this.query =
       "UPDATE users SET username = ?, email = ?, updated_at = ?, WHERE id = ? OR username = ? OR email = ?;";
@@ -71,6 +73,7 @@ export default class DbHandler {
   }
 
   async deleteUser(user: User) {
+    this.user = user; 
     this.db = "use userdb";
     this.query = "DELETE FROM users WHERE id = ? OR username = ? OR email = ?";
 
@@ -87,18 +90,17 @@ export default class DbHandler {
 /*one of the rare cases in my code where I will leave the return type implied because we won't always be returning 
   the same type 
 */
-  async doQuery(query: string, params: any[]) {
+  async doQuery(query: string, params: any[]){
     try {
       this.conn = await pool.getConnection();
 
-      let res: Promise<any> = this.conn.query(this.db);
-
-      console.log(res);
+      let res: any = this.conn.query(this.db);
 
       res = await this.conn.query(this.query, this.params);
 
       console.log(res);
-      return res; 
+
+      return res[0]; 
 
     } finally {
       if (this.conn) this.conn.release();

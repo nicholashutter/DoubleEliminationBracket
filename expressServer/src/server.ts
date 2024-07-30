@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import path from "path";
 import helmet from "helmet";
-import express, { Request, Response, NextFunction} from "express";
+import express, { Request, Response} from "express";
 import logger from "jet-logger";
 
 import "express-async-errors";
@@ -44,20 +44,9 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
 }
 
 // Add error handler
-const errorMiddleware = (
-  err: Error,
-  req: express.Request,
-  res: express.Response,
-  next: NextFunction
-) => {
-  if (EnvVars.NodeEnv !== NodeEnvs.Test.valueOf()) {
-    logger.err(err, true);
-  }
-  let status = HttpStatusCodes.BAD_REQUEST;
-  return res.status(status).json({ error: 'Error occured in middleware'});
-};
-
-app.use(errorMiddleware);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(EnvVars.CookieProps.Secret));
 
 /* Define Custom Types for HTTP */
 type body = {
@@ -67,17 +56,6 @@ type body = {
   created_at:Date, 
   updated_at:Date
 }
-
-interface TableData{
-  id:number, 
-  username:string,
-  email:string,
-  password_hash:string, 
-  created_at:Date,
-  updated_at:Date
-}
-
-type Rows = TableData[]; 
 
 // Set static directory (js and css). //I have set this to build directory for react allowing the index.html and index.js to be the entrypoints from here
 //reactrouter should take over once this page is served
@@ -109,32 +87,23 @@ app.route("/api/user")
   typescript currently crashes 
   */
   const body:body = req.body;
-  let user:User = new User(body.username, body.passwordHash, body.email);
-  let db:DbHandler = new DbHandler();
+  const user:User = new User(body.username, body.passwordHash, body.email);
+  const db:DbHandler = new DbHandler();
 
   //explicit any will be used here because 
   const rows: any = await db.readUser(user);
+
   console.log(rows);
-  res.send(rows);
+  
+  res.json(rows);
 })
 .post((req, res)=> {
   //create user
   const body = req.body;
 
   try{
-
-    /*post config: POST /api/user default headers body raw JSON
-
-    {
-    "username": "micheal myers",
-    "passwordHash":"willfixlater",
-    "email":"bigscary@movie.site"
-    }
-
-    */
-
-    let user = new User(body.username, body.passwordHash, body.email);
-    let db = new DbHandler();
+    const user = new User(body.username, body.passwordHash, body.email);
+    const db = new DbHandler();
     db.createUser(user);
     console.log("Success"); 
     res.send("Success");
