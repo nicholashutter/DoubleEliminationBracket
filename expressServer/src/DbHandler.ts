@@ -1,6 +1,6 @@
 
 import mariadb from "mariadb";
-import { User} from "./user";
+import { IUser, User} from "./user";
 // this class is still under construction need to add function
 // to connect to specific databases as there will be
 // a fighters database and a usercreds database
@@ -13,23 +13,19 @@ const pool: mariadb.Pool = mariadb.createPool({
 export default class DbHandler {
   protected conn: any;
   protected db: string;
-  protected query: string;
-  protected params: any;
   protected user: User;
   constructor() {
     this.db = "";
-    this.query = "";
-    this.params = [];
     this.user = new User("", "", "");
   }
 
   async createUser(user: User) {
     this.user = user;
     this.db = "use userdb";
-    this.query =
+    const query =
       "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?);";
     
-    this.params = [
+    const params = [
       this.user.getUserID() as number,
       this.user.getUserName() as string,
       this.user.getEmail() as string,
@@ -38,37 +34,43 @@ export default class DbHandler {
       this.user.getLastUpdate() as Date,
     ];
 
-    await this.doQuery(this.query, this.params);
+    await this.doQuery(query, params);
   }
 
   async readUser(user: User):Promise<User> {
     this.user = user;
     this.db = "use userdb";
-    this.query =
+    const query =
       "SELECT * FROM users WHERE id = ? OR username = ? OR email = ?";
-      // id falls out of this function somewhere need to correct that 
-      this.params = [
+      
+      const params = [
         this.user.getUserID() as number, 
         this.user.getUserName() as string,
         this.user.getEmail() as string
       ]
+      const userObject = await this.doQuery(query,params);
 
-      const res: User = await this.doQuery(this.query,this.params);
-      return res; 
+      let returnUser: User = new User("","","",-1); 
+      if (userObject !== undefined)
+        {
+          returnUser = new User(userObject.username, userObject.password_hash, userObject.email, userObject.id);
+        }
+      
+      return returnUser;   
   }
 
   async deleteUser(user: User) {
     this.user = user; 
     this.db = "use userdb";
-    this.query = "DELETE FROM users WHERE id = ? OR username = ? OR email = ?";
+    const query = "DELETE FROM users WHERE id = ? OR username = ? OR email = ?";
 
-    this.params = [
+    const params = [
       this.user.getUserID() as number, 
       this.user.getUserName() as string, 
       this.user.getEmail() as string
     ]
 
-    this.doQuery(this.query,this.params);
+    this.doQuery(query,params);
   }
 
 
@@ -78,13 +80,16 @@ export default class DbHandler {
 
       let res: any = this.conn.query(this.db);
 
-      res = await this.conn.query(this.query, this.params);
+      res = await this.conn.query(query, params);
 
-      //console.log(res);
+      if (res.length > 0) {return res[0];}
 
-      return res[0]; 
 
-    } finally {
+    } catch(e)
+    {
+      console.log(e);
+    }
+    finally {
       if (this.conn) this.conn.release();
     }
   }

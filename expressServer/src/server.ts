@@ -77,7 +77,7 @@ app.route("/api/user")
     const db:DbHandler = new DbHandler();
     const rows:User = await db.readUser(user);
 
-    if (rows === undefined){
+    if (rows.getUserID() == -1){
       res.send("Not Found"); 
     }
 
@@ -102,59 +102,59 @@ app.route("/api/user")
   const body:body= req.body; 
 
   try{
-    const user:User = new User(body.username, body.password_hash, body.email);
-    const db:DbHandler = new DbHandler();
 
+      const user:User = new User(body.username, body.password_hash, body.email);
+      const db:DbHandler = new DbHandler();
+      const rows:User = await db.readUser(user);
 
-   const ifExists:undefined|User = await db.readUser(user);
+      if (rows.getUserID() == -1)
+      {
+        await db.createUser(user);
+        console.log("Success"); 
+        res.send("Success");
+        
+      }
+      else
+      {
+        res.send("Failure. User with same properties already exists.");
+      }
     
-    if (ifExists === undefined){
-      db.createUser(user);
-      console.log("Success"); 
-      res.send("Success");
-    }
-    else res.send("Failure");  
   }
   catch(e){
     res.send("server.ts line 105: Cannot create user possibly due to a bad post request")
+    console.log(e);
   }
 })
 .put(async (req, res) => {
 //update user 
-  const body:body= req.body;
-  const user = new User(body.username, body.password_hash, body.email, body.id) ;
+try {
+  const body:body = req.body;
+  const user:User = new User(body.username,body.password_hash,body.email, body.id);
   const db:DbHandler = new DbHandler();
-  const updateWho:User = await db.readUser(user);
-
-  const values:string [] = [];
-  // for some reason updateWho.method is undefined at runtime, but clearly defined at compile time
-  // massive bug need to figure out
-  values[0] = updateWho.getUserName();  
-  values[1] = updateWho.getPassword_Hash();
-  values[2] = updateWho.getEmail();
-  db.deleteUser(updateWho);
-
-  updateWho.setUserName(body.username);
-  updateWho.setPassword_Hash(body.password_hash);
-  updateWho.setEmail(body.email);
-
-  if (body.username === undefined)
+  const rows:User = await db.readUser(user);
+  await db.deleteUser(rows); 
+  if (body.username !== undefined)
   {
-    updateWho.setUserName(values[0]);
+    rows.setUserName(body.username); 
   }
-  else if (body.password_hash === undefined)
+  if (body.password_hash !== undefined)
   {
-    updateWho.setPassword_Hash(values[1]);
+    rows.setPassword_Hash(body.password_hash);
   }
-  else if (body.email)
+  if (body.email !== undefined)
   {
-    updateWho.setEmail(values[2]); 
+    rows.setEmail(body.email);
   }
-  updateWho.setLastUpdate(new Date());
   
-  db.createUser(updateWho); 
+  await db.createUser(rows);
+  
+  res.json (rows);
+}
+catch (e){
+  console.log("Update Failed");
+  res.send("Update Failed");
+}
 
-  res.send("Success"); 
 })
 .delete(async (req, res) => {
   //delete user 
