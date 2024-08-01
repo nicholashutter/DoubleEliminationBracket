@@ -1,3 +1,10 @@
+/*
+Class IUser
+
+Purpose: 
+
+All child classes that they must have those class members and define as protected 
+*/
 export abstract class IUser {
   protected id: number;
   protected username: string;
@@ -5,7 +12,14 @@ export abstract class IUser {
   protected password_hash: string;
   protected createdAt: Date;
   protected updatedAt: Date;
+/*
+Function IUser.Constructor()
 
+Purpose: 
+
+Set initial state of child classes when instanciated calling Super() in their constructors
+All parameters have their values assigned to their respective class members
+*/
   constructor(
     id: number,
     username: string,
@@ -22,8 +36,23 @@ export abstract class IUser {
     this.updatedAt = new Date();
   }
 }
+/*
+Class User
 
+Purpose: 
+
+Set initial state of child classes when instanciated calling Super() in their constructors
+All parameters have their values assigned to their respective class members
+*/
 export class User extends IUser {
+/*
+Function Constructor
+
+Purpose: 
+
+Call Super() and intialize all class members
+If id passed in, use passed in value otherwise call getRandomInt and create new id 
+*/
   constructor(
     username: string,
     password_hash: string,
@@ -44,16 +73,18 @@ export class User extends IUser {
         new Date()
       );
     } else {
-      super(
-        id, 
-        username, 
-        email, 
-        password_hash, 
-        new Date(), 
-        new Date());
+      super(id, username, email, password_hash, new Date(), new Date());
     }
   }
+/*
+Functions Getters and Setters
 
+Purpose: 
+
+Standard implementation of encapsulating class members. getClassMemeber will return the value of ClassMember. 
+setClassMember will take a corresponding parameter and set the class member to that value
+Some setters have basic input validation with try catch
+*/
   getUserID(): number {
     return this.id;
   }
