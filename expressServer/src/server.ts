@@ -73,14 +73,7 @@ app.get("/api/test", (_: Request, res: Response) => {
 at /api/user */
 app
   .route("/api/user")
-  /*express route executes callback that creates a user object 
-  and a dbhandler object with properties retrieved from JSON body 
-  when get request recieved at /api/user and calls dbhandler.readUser with 
-  that object 
-  If matching object database record found, return it as json
-  If matching object not found, rows object will be empty except id with a value of -1
-  If rows.id is -1 send a response of not found
-  wrap all logic in try catch and send generic error as response if error thrown
+  /*express route responds to get requests with the specified user object
   */
   .get(async (req, res) => {
     try {
@@ -106,20 +99,11 @@ app
       console.log(e);
     }
   })
-   /*express route executes callback that creates a user object 
-  and a dbhandler object with properties retrieved from JSON body 
-  when post request recieved at /api/user and calls dbhandler.createUser with 
-  that object 
-  If object exists return object already exists operation failed
-  If object does not exist Create that object as a database record
-  wrap all logic in try catch and send generic error as response if error thrown
+   /*express route creates a new user object 
   */
   .post(async (req, res) => {
     /*
-    known bug password_hash must be unique when sent in or else application will hard crash
-    this is due to how passwords are currently handeled, but won't be a problem once encryption
-    is integrated because all true password_hash values will be unique once they run through the 
-    encryption algorithm
+    known bug password_hash must be unique else application crashes
   */
     const body: body = req.body;
 
@@ -146,13 +130,7 @@ app
       console.log(e);
     }
   })
-  /*express route executes callback that creates a user object 
-  and a dbhandler object with properties retrieved from JSON body 
-  when post request recieved at /api/user and calls dbhandler.readUser with 
-  that object 
-  Delete original user object, create new user obect with any new/changed properties
-  while retaining original object id value in database
-  wrap all logic in try catch and send generic error as response if error thrown
+  /*express route finds and updates properties of a user object and returns once updated 
   */
   .put(async (req, res) => {
     try {
@@ -184,10 +162,7 @@ app
       res.send("Update Failed");
     }
   })
-  /*express route executes callback that creates a user object 
-  and a dbhandler object with properties retrieved from JSON body 
-  Delete any object with matching properties in database
-  wrap all logic in try catch and send generic error as response if error thrown
+  /*express route deletes user object perminately 
   */
   .delete(async (req, res) => {
     const body: body = req.body;

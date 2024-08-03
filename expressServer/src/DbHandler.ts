@@ -9,24 +9,13 @@ const pool: mariadb.Pool = mariadb.createPool({
 });
 
 /*
-Class DbHandler
-
-Purpose: 
-
-Class to handle operations between back end logic and database
-All functions contain SQL that defines handling CRUD operations from application
-Except doQuery which all other functions use to actually grab a connection 
-from the database pool and execute
+Class Dbhandler handles all operations to and from database 
 */
 export default class DbHandler {
   protected conn: any;
   protected db: string;
   protected user: User;
 /*
-Function DbHandler.Constructor()
-
-Purpose: 
-
 Set initial state of class members for later access
 */
   constructor() {
@@ -34,15 +23,7 @@ Set initial state of class members for later access
     this.user = new User("", "", "");
   }
 /*
-Function DbHandler.createUser()
-
-Purpose: 
-
-Assign class member user to local user parameter
-Select which database to use
-SQL query that creates database record that mirrors our object
-and sends values to be entered by mariadb at runtime as params
-Call doQuery and wait for a value to be returned 
+Function DbHandler.createUser() creates User object
 */
   async createUser(user: User) {
     this.user = user;
@@ -62,16 +43,7 @@ Call doQuery and wait for a value to be returned
     await this.doQuery(query, params);
   }
 /*
-Function DbHandler.readUser()
-
-Purpose: 
-
-Assign class member user to local user parameter
-Select which database to use
-SQL query that selects database records based on values retrieved from user parameter
-Call doQuery and wait for a value to be returned 
-If database finds matching record, return that record as a user object
-Else return an empty user object with id -1 indicating no user found
+Function DbHandler.readUser() reads the database and either returns it or returns an empty user object with an id of -1 which denotes not found
 */
   async readUser(user: User): Promise<User> {
     this.user = user;
@@ -99,14 +71,9 @@ Else return an empty user object with id -1 indicating no user found
     return returnUser;
   }
 /*
-Function DbHandler.deleteUser()
+Function DbHandler.deleteUser() deletes the selected user from the database 
 
-Purpose: 
-
-Assign class member user to local user parameter
-Select which database to use
-SQL query that deletes database record based on values retrieved from user parameter 
-Call doQuery and wait for a value to be returned 
+Known Bug this function always returns success even if the object selected does not exist
 */
   async deleteUser(user: User) {
     this.user = user;
@@ -122,19 +89,7 @@ Call doQuery and wait for a value to be returned
     this.doQuery(query, params);
   }
 /*
-Function DbHandler.doQuery()
-
-Purpose: 
-
-conn class member set to represent database connection
-res set to result of choosing which database to use
-res set to result of executing query against the database 
-res becomes an array if database returns a response
-return the first value in the array if length greater than 0
-if database returns an object it will be the first value of the array
-wrap all logic in try catch finally 
-print error to console if caught
-Always end by releasing database connection
+Function DbHandler.doQuery() performs the text query against the database using the parameters entered in the params array 
 
 */
   async doQuery(query: string, params: any[]) {
