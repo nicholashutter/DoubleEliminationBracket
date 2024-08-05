@@ -64,8 +64,7 @@ app.use(express.static(staticDir));
 //Include express-session 
 app.use(session({
   name: "Tournament Session",
-  secret: uuidv4(),
-  //need to come back and programatically generate 
+  secret: uuidv4(), 
   resave:false, 
   saveUninitialized:true,
   cookie: {secure: false}
@@ -85,27 +84,38 @@ app.get("/api/test", (_: Request, res: Response) => {
   );
 });
 
-app.route("/api/session")
-.get(async (req, res: Response) => {
+/*
+Currently this express route does not fire. Will fix later. 
+
+app.get("/api/sessions", async (_:Request, res: Response) => {
   //should accept cookie from express
   //handle join request  
 })
-.post(async (req, res: Response) => {
-  const body = req.body;
+app.post("/api/sessions", async (_:Request, res: Response) => {
+  const body:body = _.body;
 
-  // const user = new User(body.username, body.password_hash, body.email)
-  // const foundUser = await Dbhandler.readUser(user);
-  // const ifExists = false; 
-  // if (foundUser.getUserID() === -1)
-  // {ifExists = true};
-  // if (ifExists) {do everything else}
-  // else {console.log("Unable to create session;")}
-  //new DbHandler()
-  //room = new Session() 
-  //room.addUser(User)
-  //res.send(success) || res.send(failure) 
-  // wrap everything in try catch
+  try {
+  const user:User = new User(body.username, body.password_hash, body.email);
+  const db = new DbHandler();
+  const foundUser:User = await db.readUser(user);
+  let ifExists = true; 
+  if (foundUser.getUserID() === -1){ifExists = false};
+  if (ifExists) {
+    const room = Session.instance; 
+    room.addUser(foundUser);
+
+    res.send("success"); 
+  }
+  }
+  catch {
+  console.log("Unable to create session;"); 
+  res.send("failure to create session");
+  }
+  
+
 })
+
+*/
 
 /*express route executes different functions based on get, post, put, delete request being recieved 
 at /api/user */

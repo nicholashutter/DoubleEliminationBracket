@@ -9,10 +9,20 @@ export class Session
     protected db: DbHandler;
     protected sessionID: string;
     protected userArr: Array<User>;
-    constructor(){
+    static #instance: Session; 
+
+    private constructor(){
         this.db = new DbHandler();
         this.sessionID = uuidv4();
         this.userArr = [];
+    }
+
+    public static get instance(): Session{
+        if (!Session.#instance){
+            Session.#instance = new Session();
+        }
+
+        return Session.#instance; 
     }
 
     public async addUser (user: User): Promise<void> {
