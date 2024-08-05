@@ -10,22 +10,28 @@ export class Session
     protected sessionID: string;
     protected userArr: Array<User>;
     constructor(){
-        db = new DbHandler();
+        this.db = new DbHandler();
         this.sessionID = uuidv4();
         this.userArr = [];
     }
 
-    public addUser (user: User): void {
+    public async addUser (user: User): Promise<void> {
         this.userArr.push(user); 
-
-        //this function will also call dbHandler.joinSession(User)
+       await this.db.joinSession(user);
     }
 
-    public async removeUser (user: User): boolean {
-        user = await this.db.readUser(user);
+    public async removeUser (user: User, searchForID:number): Promise<boolean> {
+        
+        try {
+            await this.db.leaveSession(user);
 
-        //some function call or arrow function  to search this.userArr and return user object with matching id 
-        // if user id matches remove user from both this.userArr and call dbHandler.leaveSession(User)
+            this.userArr = this.userArr.filter((user) => user.getUserID() === searchForID); 
+            return true;
+        }
+        catch (e) {
+            console.log(e);
+            return false;
+        }
     }
 
 }

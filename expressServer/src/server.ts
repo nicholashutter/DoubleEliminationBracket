@@ -91,13 +91,20 @@ app.route("/api/session")
   //handle join request  
 })
 .post(async (req, res: Response) => {
-  //should accept cookies from express
-  //new User() with values recieved from react
+  const body = req.body;
+
+  // const user = new User(body.username, body.password_hash, body.email)
+  // const foundUser = await Dbhandler.readUser(user);
+  // const ifExists = false; 
+  // if (foundUser.getUserID() === -1)
+  // {ifExists = true};
+  // if (ifExists) {do everything else}
+  // else {console.log("Unable to create session;")}
   //new DbHandler()
   //room = new Session() 
-  //probably an array of sessions and room should be added?
   //room.addUser(User)
   //res.send(success) || res.send(failure) 
+  // wrap everything in try catch
 })
 
 /*express route executes different functions based on get, post, put, delete request being recieved 

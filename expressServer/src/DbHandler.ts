@@ -23,7 +23,7 @@ Set initial state of class members for later access
     this.user = new User("", "", "");
   }
 /*
-Function DbHandler.createUser() creates User record in database
+Function DbHandler.createUser() creates User record in users table in database
 */
   async createUser(user: User) {
     this.user = user;
@@ -41,6 +41,38 @@ Function DbHandler.createUser() creates User record in database
     ];
 
     await this.doQuery(query, params);
+
+  }
+  /*
+Function DbHandler.joinSession() creates User record in session table in database
+*/
+  async joinSession(user: User) {
+    this.user = user;
+    this.db = "use userdb";
+    const query =
+      "INSERT INTO sessions (user_id) VALUES (?);";
+
+    const params = [
+      this.user.getUserID() as number
+    ];
+
+    await this.doQuery(query, params);
+  }
+/*
+Function DbHandler.leaveSession() deletes the selected user record from the sessions database 
+
+Known Bug this function always returns success even if the object selected does not exist
+*/
+  async leaveSession(user: User) {
+    this.user = user;
+    this.db = "use userdb";
+    const query = "DELETE FROM sessions WHERE id = ?";
+
+    const params = [
+      this.user.getUserID() as number
+    ];
+
+    this.doQuery(query, params);
   }
 /*
 Function DbHandler.readUser() reads the database and either returns it or returns an empty user object with an id of -1 which denotes not found
@@ -71,7 +103,7 @@ Function DbHandler.readUser() reads the database and either returns it or return
     return returnUser;
   }
 /*
-Function DbHandler.deleteUser() deletes the selected user from the database 
+Function DbHandler.deleteUser() deletes the selected user record from the users database 
 
 Known Bug this function always returns success even if the object selected does not exist
 */
