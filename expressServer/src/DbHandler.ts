@@ -23,7 +23,7 @@ Set initial state of class members for later access
     this.user = new User("", "", "");
   }
 /*
-Function DbHandler.createUser() creates User object
+Function DbHandler.createUser() creates User record in database
 */
   async createUser(user: User) {
     this.user = user;

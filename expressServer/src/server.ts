@@ -10,6 +10,9 @@ import cors from "cors";
 import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
 import { User } from "./user";
+import session from "express-session";
+import {Session} from "./Session"
+import { v4 as uuidv4 } from 'uuid';
 
 // **** Variables **** //
 
@@ -57,6 +60,19 @@ const staticDir = path.join(__dirname, "../../reactclient/build");
 
 app.use(express.static(staticDir));
 
+
+//Include express-session 
+app.use(session({
+  name: "Tournament Session",
+  secret: uuidv4(),
+  //need to come back and programatically generate 
+  resave:false, 
+  saveUninitialized:true,
+  cookie: {secure: false}
+  //need to make sure cookie expires using maxAge property and cookie deletes on close of application
+}))
+
+
 //express route serves entrypoint when get request recieved at base url 
 app.get("/", (_: Request, res: Response) => {
   res.sendFile("index.html", { root: staticDir });
@@ -68,6 +84,21 @@ app.get("/api/test", (_: Request, res: Response) => {
     "Welcome! You are in the wrong place. Try going home or try again later"
   );
 });
+
+app.route("/api/session")
+.get(async (req, res: Response) => {
+  //should accept cookie from express
+  //handle join request  
+})
+.post(async (req, res: Response) => {
+  //should accept cookies from express
+  //new User() with values recieved from react
+  //new DbHandler()
+  //room = new Session() 
+  //probably an array of sessions and room should be added?
+  //room.addUser(User)
+  //res.send(success) || res.send(failure) 
+})
 
 /*express route executes different functions based on get, post, put, delete request being recieved 
 at /api/user */
