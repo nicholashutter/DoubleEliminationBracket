@@ -43,7 +43,20 @@ Function DbHandler.createUser() creates User record in users table in database
     await this.doQuery(query, params);
 
   }
-  /*
+/*
+Function DbHandler.createSession() creates session in database
+*/ 
+async createSession(sessionID: string, user:User){
+  this.user = user;
+  this.db = "use userdb";
+  const query = "INSERT INTO sessions (sessionID, user_id) VALUES (?, ?)"; 
+  const params = [
+    sessionID as string, 
+    this.user.getUserID() as number
+  ]
+  await this.doQuery(query, params);
+}
+/*
 Function DbHandler.joinSession() creates User record in session table in database
 */
   async joinSession(user: User) {

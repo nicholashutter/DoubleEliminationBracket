@@ -4,12 +4,50 @@ import {v4 as uuidv4} from "uuid";
 import DbHandler from './DbHandler';
 import {User} from "./user"; 
 
+export class SessionManager{
+
+    protected sessArr:Array<Session>;
+    static #instance: SessionManager;
+
+    private constructor (){
+        this.sessArr = [];
+
+    }
+
+    public static get instance(): SessionManager{
+        if (!SessionManager.#instance){
+            SessionManager.#instance = new SessionManager();
+        }
+
+        return SessionManager.#instance; 
+    }
+
+    async createSession (user:User):  Promise<string> {
+        const currentSession:Session = await Session.init(user); 
+
+        this.sessArr.push(currentSession);
+        
+        return currentSession.SessionID; 
+    }
+
+    async joinSession(searchForID: string, user:User):Promise<void>{
+
+
+        const currentSession = this.sessArr.find(Session => Session.SessionID === searchForID);
+        
+        if (currentSession){
+            await currentSession.addUser(user);
+        }
+        else {console.log("No session found")}; 
+
+    }
+}
+
 export class Session 
 {
     protected db: DbHandler;
     protected sessionID: string;
     protected userArr: Array<User>;
-    static #instance: Session; 
 
     private constructor(){
         this.db = new DbHandler();
@@ -17,12 +55,15 @@ export class Session
         this.userArr = [];
     }
 
-    public static get instance(): Session{
-        if (!Session.#instance){
-            Session.#instance = new Session();
-        }
+    public static async init(user:User):Promise<Session>{
+        const currentSession:Session = new Session();
+        const db = new DbHandler();
+        await db.createSession(currentSession.SessionID, user);
+        return currentSession; 
+    }
 
-        return Session.#instance; 
+    public get SessionID(): string {
+        return this.sessionID;
     }
 
     public async addUser (user: User): Promise<void> {

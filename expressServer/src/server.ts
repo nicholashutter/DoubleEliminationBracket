@@ -11,7 +11,7 @@ import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
 import { User } from "./user";
 import session from "express-session";
-import {Session} from "./Session"
+import {Session, SessionManager} from "./Session"
 import { v4 as uuidv4 } from 'uuid';
 
 // **** Variables **** //
@@ -78,44 +78,44 @@ app.get("/", (_: Request, res: Response) => {
 });
 
 //express route serves api demo for testing only
-app.get("/api/test", (_: Request, res: Response) => {
+app.get("/api/test", async (_: Request, res: Response) => {
   res.send(
     "Welcome! You are in the wrong place. Try going home or try again later"
   );
 });
 
-/*
-Currently this express route does not fire. Will fix later. 
 
 app.get("/api/sessions", async (_:Request, res: Response) => {
-  //should accept cookie from express
-  //handle join request  
-})
-app.post("/api/sessions", async (_:Request, res: Response) => {
+  
+});
+
+
+app.post ("/api/sessions", async (_: Request, res: Response) => {
   const body:body = _.body;
 
   try {
-  const user:User = new User(body.username, body.password_hash, body.email);
+  const user:User = new User(body.username, body.password_hash, body.email, body.id);
   const db = new DbHandler();
   const foundUser:User = await db.readUser(user);
   let ifExists = true; 
-  if (foundUser.getUserID() === -1){ifExists = false};
-  if (ifExists) {
-    const room = Session.instance; 
-    room.addUser(foundUser);
+  if (foundUser.getUserID() === -1)
+  {
+    ifExists = false
+    throw new Error(); 
+  };
+  if (ifExists) 
+  {
+    const room = SessionManager.instance; 
+    const sessionID = await room.createSession(foundUser); 
 
-    res.send("success"); 
+    res.send(sessionID); 
   }
   }
   catch {
   console.log("Unable to create session;"); 
   res.send("failure to create session");
   }
-  
-
-})
-
-*/
+});
 
 /*express route executes different functions based on get, post, put, delete request being recieved 
 at /api/user */
