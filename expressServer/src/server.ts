@@ -11,7 +11,7 @@ import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
 import { User } from "./user";
 import session from "express-session";
-import {Session, SessionManager} from "./Session"
+import { Session, SessionManager } from './Session';
 import { v4 as uuidv4 } from 'uuid';
 
 // **** Variables **** //
@@ -44,7 +44,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
 
-/* Define Custom Type for HTTP/JSON */
+/* Define custom type for user routes */
 type body = {
   username: string;
   email: string;
@@ -52,6 +52,11 @@ type body = {
   created_at: Date;
   updated_at: Date;
   id?: number;
+};
+/* Define custom type for session routes */ 
+type sessionBody = {
+  sessionID: string;
+  user_id: number; 
 };
 
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
@@ -86,29 +91,51 @@ app.get("/api/test", async (_: Request, res: Response) => {
 
 
 app.get("/api/sessions", async (_:Request, res: Response) => {
-  
-});
-
-
-app.post ("/api/sessions", async (_: Request, res: Response) => {
-  const body:body = _.body;
+  const body:sessionBody = _.body; 
 
   try {
-  const user:User = new User(body.username, body.password_hash, body.email, body.id);
-  const db = new DbHandler();
-  const foundUser:User = await db.readUser(user);
-  let ifExists = true; 
-  if (foundUser.getUserID() === -1)
-  {
-    ifExists = false
-    throw new Error(); 
-  };
-  if (ifExists) 
-  {
-    const room = SessionManager.instance; 
-    const sessionID = await room.createSession(foundUser); 
+    const user:User = new User("", "", "", body.user_id);
+    const db:DbHandler = new DbHandler();
+    const foundUser:User = await db.readUser(user);
 
-    res.send(sessionID); 
+    switch (foundUser.getUserID()) {
+      case -1:{
+        throw new Error();
+      }
+      default:{
+        const room = SessionManager.instance;
+        await room.joinSession(body.sessionID,foundUser);
+
+        res.send("Success"); 
+      }
+    }
+
+  }
+  catch (e) {
+    console.log(e);
+    res.send("Unable to join session"); 
+  }
+});
+
+/*express route creates new session in database and in code */
+app.post ("/api/sessions", async (_: Request, res: Response) => {
+  const body:sessionBody = _.body;
+
+  try {
+  const user:User = new User("","","",body.user_id);
+  const db:DbHandler = new DbHandler();
+  const foundUser:User = await db.readUser(user);
+
+  switch (foundUser.getUserID()){
+    case -1:{
+      throw new Error(); 
+    }
+    default: {
+      const room = SessionManager.instance; 
+      const sessionID = await room.createSession(foundUser); 
+  
+      res.send(sessionID); 
+    }
   }
   }
   catch {

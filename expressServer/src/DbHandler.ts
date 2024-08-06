@@ -44,9 +44,9 @@ Function DbHandler.createUser() creates User record in users table in database
 
   }
 /*
-Function DbHandler.createSession() creates session in database
+Function DbHandler.joinSession() joins user to session in database
 */ 
-async createSession(sessionID: string, user:User){
+async joinSession(sessionID: string, user:User){
   this.user = user;
   this.db = "use userdb";
   const query = "INSERT INTO sessions (sessionID, user_id) VALUES (?, ?)"; 
@@ -56,21 +56,6 @@ async createSession(sessionID: string, user:User){
   ]
   await this.doQuery(query, params);
 }
-/*
-Function DbHandler.joinSession() creates User record in session table in database
-*/
-  async joinSession(user: User) {
-    this.user = user;
-    this.db = "use userdb";
-    const query =
-      "INSERT INTO sessions (user_id) VALUES (?);";
-
-    const params = [
-      this.user.getUserID() as number
-    ];
-
-    await this.doQuery(query, params);
-  }
 /*
 Function DbHandler.leaveSession() deletes the selected user record from the sessions database 
 
@@ -135,7 +120,6 @@ Known Bug this function always returns success even if the object selected does 
   }
 /*
 Function DbHandler.doQuery() performs the text query against the database using the parameters entered in the params array 
-
 */
   async doQuery(query: string, params: any[]) {
     try {
