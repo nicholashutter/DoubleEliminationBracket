@@ -73,7 +73,9 @@ export class Session
 
     //add user to user array and session in database
     public async addUser (sessionID:string ,user: User): Promise<void> {
+
         this.userArr.push(user); 
+
        await this.db.joinSession(sessionID,user);
     }
 

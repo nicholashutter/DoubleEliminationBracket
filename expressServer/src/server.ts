@@ -1,4 +1,3 @@
-
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import path from "path";
@@ -11,8 +10,8 @@ import { NodeEnvs } from "./common/misc";
 import DbHandler from "./DbHandler";
 import { User } from "./user";
 import session from "express-session";
-import { Session, SessionManager } from './Session';
-import { v4 as uuidv4 } from 'uuid';
+import { SessionManager } from "./Session";
+import { v4 as uuidv4 } from "uuid";
 
 // **** Variables **** //
 
@@ -53,31 +52,31 @@ type body = {
   updated_at: Date;
   id?: number;
 };
-/* Define custom type for session routes */ 
+/* Define custom type for session routes */
 type sessionBody = {
   sessionID: string;
-  user_id: number; 
+  user_id: number;
 };
 
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
-//reactrouter takes over once entrypoint is served 
+//reactrouter takes over once entrypoint is served
 const staticDir = path.join(__dirname, "../../reactclient/build");
 
 app.use(express.static(staticDir));
 
+//Include express-session
+app.use(
+  session({
+    name: "Tournament Session",
+    secret: uuidv4(),
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+    //need to make sure cookie expires using maxAge property and cookie deletes on close of application
+  })
+);
 
-//Include express-session 
-app.use(session({
-  name: "Tournament Session",
-  secret: uuidv4(), 
-  resave:false, 
-  saveUninitialized:true,
-  cookie: {secure: false}
-  //need to make sure cookie expires using maxAge property and cookie deletes on close of application
-}))
-
-
-//express route serves entrypoint when get request recieved at base url 
+//express route serves entrypoint when get request recieved at base url
 app.get("/", (_: Request, res: Response) => {
   res.sendFile("index.html", { root: staticDir });
 });
@@ -88,68 +87,86 @@ app.get("/api/test", async (_: Request, res: Response) => {
     "Welcome! You are in the wrong place. Try going home or try again later"
   );
 });
+/*express route executes different functions based on get, post, put, delete request being recieved 
+at /api/sessions */
+//requests to /api/sessions should be formatted like custom type sessionBody 
+app
+  .route("/api/sessions")
+  .get(async (_: Request, res: Response) => {
+    const body: sessionBody = _.body;
 
+    try {
+      const user: User = new User("", "", "", body.user_id);
+      const db: DbHandler = new DbHandler();
+      const foundUser: User = await db.readUser(user);
 
-app.get("/api/sessions", async (_:Request, res: Response) => {
-  const body:sessionBody = _.body; 
+      switch (foundUser.getUserID()) {
+        case -1: {
+          throw new Error();
+        }
+        default: {
+          const room = SessionManager.instance;
+          await room.joinSession(body.sessionID, foundUser);
 
-  try {
-    const user:User = new User("", "", "", body.user_id);
-    const db:DbHandler = new DbHandler();
-    const foundUser:User = await db.readUser(user);
-
-    switch (foundUser.getUserID()) {
-      case -1:{
-        throw new Error();
+          res.send("Success");
+        }
       }
-      default:{
-        const room = SessionManager.instance;
-        await room.joinSession(body.sessionID,foundUser);
+    } catch (e) {
+      console.log(e);
+      res.send("Unable to join session");
+    }
+  })
 
-        res.send("Success"); 
+  /*express route creates new session in database and in code */
+  .post(async (_: Request, res: Response) => {
+    const body: sessionBody = _.body;
+
+    try {
+      const user: User = new User("", "", "", body.user_id);
+      const db: DbHandler = new DbHandler();
+      const foundUser: User = await db.readUser(user);
+
+      switch (foundUser.getUserID()) {
+        case -1: {
+          throw new Error();
+        }
+        default: {
+          const room = SessionManager.instance;
+          const sessionID = await room.createSession(foundUser);
+
+          res.send(sessionID);
+        }
       }
+    } catch {
+      console.log("Unable to create session;");
+      res.send("failure to create session");
+    }
+  })
+  .delete(async (_:Request, res: Response) => {
+    const body: sessionBody = _.body;
+
+    try{
+      const user: User = new User("", "", "", body.user_id);
+      const db: DbHandler = new DbHandler();
+      const foundUser:User = await db.readUser(user);
+
+      await db.leaveSession(foundUser);
+      res.send("success"); 
+    }
+    catch (e) {
+
+      res.send("failure"); 
     }
 
-  }
-  catch (e) {
-    console.log(e);
-    res.send("Unable to join session"); 
-  }
-});
-
-/*express route creates new session in database and in code */
-app.post ("/api/sessions", async (_: Request, res: Response) => {
-  const body:sessionBody = _.body;
-
-  try {
-  const user:User = new User("","","",body.user_id);
-  const db:DbHandler = new DbHandler();
-  const foundUser:User = await db.readUser(user);
-
-  switch (foundUser.getUserID()){
-    case -1:{
-      throw new Error(); 
-    }
-    default: {
-      const room = SessionManager.instance; 
-      const sessionID = await room.createSession(foundUser); 
-  
-      res.send(sessionID); 
-    }
-  }
-  }
-  catch {
-  console.log("Unable to create session;"); 
-  res.send("failure to create session");
-  }
-});
+  });
 
 /*express route executes different functions based on get, post, put, delete request being recieved 
 at /api/user */
+//requests to /api/sessions should be formatted like custom type body
 app
   .route("/api/user")
   /*express route responds to get requests with the specified user object
-  */
+   */
   .get(async (req, res) => {
     try {
       const body: body = req.body;
@@ -174,8 +191,8 @@ app
       console.log(e);
     }
   })
-   /*express route creates a new user object 
-  */
+  /*express route creates a new user object
+   */
   .post(async (req, res) => {
     /*
     known bug password_hash must be unique else application crashes
@@ -205,8 +222,8 @@ app
       console.log(e);
     }
   })
-  /*express route finds and updates properties of a user object and returns once updated 
-  */
+  /*express route finds and updates properties of a user object and returns once updated
+   */
   .put(async (req, res) => {
     try {
       const body: body = req.body;
@@ -237,8 +254,8 @@ app
       res.send("Update Failed");
     }
   })
-  /*express route deletes user object perminately 
-  */
+  /*express route deletes user object perminately
+   */
   .delete(async (req, res) => {
     const body: body = req.body;
     const user: User = new User(

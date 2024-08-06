@@ -1,5 +1,5 @@
 import mariadb from "mariadb";
-import { IUser, User } from "./user";
+import {User } from "./user";
 
 /*Access mariadb connector library create pool method and creating pool with specified values*/
 const pool: mariadb.Pool = mariadb.createPool({
@@ -64,7 +64,7 @@ Known Bug this function always returns success even if the object selected does 
   async leaveSession(user: User) {
     this.user = user;
     this.db = "use userdb";
-    const query = "DELETE FROM sessions WHERE id = ?";
+    const query = "DELETE FROM sessions WHERE user_id = ?";
 
     const params = [
       this.user.getUserID() as number
