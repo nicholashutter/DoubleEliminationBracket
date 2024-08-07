@@ -9,6 +9,7 @@ class IUser {
         this.password_hash = password_hash;
         this.createdAt = new Date();
         this.updatedAt = new Date();
+        this.authenticated = false;
     }
 }
 exports.IUser = IUser;
@@ -68,6 +69,9 @@ class User extends IUser {
     }
     getPassword_Hash() {
         return this.password_hash;
+    }
+    updateAuthenticated() {
+        this.authenticated = this.authenticated ? true : false;
     }
 }
 exports.User = User;

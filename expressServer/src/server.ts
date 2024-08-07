@@ -68,7 +68,10 @@ app.use(express.static(staticDir));
 app.use(
   session({
     name: "Tournament Session",
-    secret: uuidv4(),
+    secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2I",
+    genid: function(req) {
+      return uuidv4();
+    },
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false },
@@ -76,24 +79,50 @@ app.use(
   })
 );
 
+
 //express route serves entrypoint when get request recieved at base url
-app.get("/", (_: Request, res: Response) => {
+app.get("/", (req, res) => {
   res.sendFile("index.html", { root: staticDir });
 });
 
+app.post("/", (req, res) => {
+  //will need to come back and integrate session regeneration
+  //same logic as other routes to read database for user 
+
+
+  const credentials = {username:"nicholas",
+    password:"nicholas"
+  }; 
+
+  const {username, password} = req.body; 
+
+  try {
+    if (username == credentials.username && password == credentials.password) {
+      req.session.user?.updateAuthenticated(); 
+      res.send("Login Success");
+      console.log("Login Success");
+    }
+    else{
+      throw new Error("");
+    }
+  }
+  catch (err) {
+    res.send("Login Failed"); 
+    console.log("Login Failed");
+  }
+
+});
+
 //express route serves api demo for testing only
-app.get("/api/test", async (_: Request, res: Response) => {
+app.get("/api/test", async (req, res) => {
   res.send(
     "Welcome! You are in the wrong place. Try going home or try again later"
   );
 });
-/*express route executes different functions based on get, post, put, delete request being recieved 
-at /api/sessions */
-//requests to /api/sessions should be formatted like custom type sessionBody 
-app
-  .route("/api/sessions")
-  .get(async (_: Request, res: Response) => {
-    const body: sessionBody = _.body;
+
+
+app.post("/api/session/join", async (req, res) => {
+    const body: sessionBody = req.body;
 
     try {
       const user: User = new User("", "", "", body.user_id);
@@ -118,8 +147,8 @@ app
   })
 
   /*express route creates new session in database and in code */
-  .post(async (_: Request, res: Response) => {
-    const body: sessionBody = _.body;
+  app.post("/api/session/create",async (req, res) => {
+    const body: sessionBody = req.body;
 
     try {
       const user: User = new User("", "", "", body.user_id);
@@ -141,12 +170,11 @@ app
       console.log("Unable to create session;");
       res.send("failure to create session");
     }
-  })
-  .delete(async (_:Request, res: Response) => {
-    const body: sessionBody = _.body;
+  }); 
 
+  app.delete("api/session/delete/:id", async (req, res) => {
     try{
-      const user: User = new User("", "", "", body.user_id);
+      const user: User = new User("", "", "", Number(req.params.id));
       const db: DbHandler = new DbHandler();
       const foundUser:User = await db.readUser(user);
 
@@ -163,19 +191,14 @@ app
 /*express route executes different functions based on get, post, put, delete request being recieved 
 at /api/user */
 //requests to /api/sessions should be formatted like custom type body
-app
-  .route("/api/user")
-  /*express route responds to get requests with the specified user object
-   */
-  .get(async (req, res) => {
+
+app.get("/api/user/:id",async (req, res) => {
     try {
-      const body: body = req.body;
       const user: User = new User(
-        body.username,
-        body.password_hash,
-        body.email,
-        body.id
-      );
+        "",
+        "",
+        "",
+        Number(req.params.id));
       const db: DbHandler = new DbHandler();
       const rows: User = await db.readUser(user);
 
@@ -193,7 +216,7 @@ app
   })
   /*express route creates a new user object
    */
-  .post(async (req, res) => {
+app.post("api/users", async (req, res) => {
     /*
     known bug password_hash must be unique else application crashes
   */
@@ -224,7 +247,7 @@ app
   })
   /*express route finds and updates properties of a user object and returns once updated
    */
-  .put(async (req, res) => {
+  app.put("/api/users", async (req, res) => {
     try {
       const body: body = req.body;
       const user: User = new User(
@@ -256,13 +279,12 @@ app
   })
   /*express route deletes user object perminately
    */
-  .delete(async (req, res) => {
-    const body: body = req.body;
+  app.delete("/api/users/:id", async (req, res) => {
     const user: User = new User(
-      body.username,
-      body.password_hash,
-      body.email,
-      body.id
+      "",
+      "",
+      "",
+      Number(req.params.id),
     );
     const db: DbHandler = new DbHandler();
     try {

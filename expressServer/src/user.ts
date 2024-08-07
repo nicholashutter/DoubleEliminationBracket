@@ -8,6 +8,7 @@ export abstract class IUser {
   protected password_hash: string;
   protected createdAt: Date;
   protected updatedAt: Date;
+  protected authenticated: boolean; 
 /*
 Function IUser.Constructor()
 Set initial state of child classes when instanciated calling Super() in their constructors
@@ -18,7 +19,8 @@ Set initial state of child classes when instanciated calling Super() in their co
     email: string,
     password_hash: string,
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    
   ) {
     this.id = id;
     this.username = username;
@@ -26,6 +28,7 @@ Set initial state of child classes when instanciated calling Super() in their co
     this.password_hash = password_hash;
     this.createdAt = new Date();
     this.updatedAt = new Date();
+    this.authenticated = false; 
   }
 }
 /*
@@ -113,5 +116,9 @@ Functions Getters and Setters with some basic input validation
 
   getPassword_Hash(): string {
     return this.password_hash;
+  }
+
+  updateAuthenticated():void {
+    this.authenticated = this.authenticated? true: false;
   }
 }
