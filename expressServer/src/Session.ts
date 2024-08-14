@@ -1,97 +1,65 @@
+import { v4 as uuidv4 } from "uuid";
 
-import {v4 as uuidv4} from "uuid";
-import DbHandler from './DbHandler';
-import {User} from "./user"; 
-/* Wrapper class that encapsules Session class */ 
-export class SessionManager{
+class Session {
+  sessionID: string;
+  userID: string;
 
-    protected sessArr:Array<Session>;
-    static #instance: SessionManager;
+  constructor(sessionID: string, userID: string) {
+    this.sessionID = sessionID;
+    this.userID = userID;
+  }
 
-    //Create an empty array of sessions
-    private constructor (){
-        this.sessArr = [];
+  public get getSessionID(): string {
+    return this.sessionID;
+  }
 
-    }
-    //establish singleton pattern 
-    public static get instance(): SessionManager{
-        if (!SessionManager.#instance){
-            SessionManager.#instance = new SessionManager();
-        }
-
-        return SessionManager.#instance; 
-    }
-    //create session object add to session array for tracking
-    async createSession (user:User):  Promise<string> {
-        const currentSession:Session = await Session.init(user); 
-
-        this.sessArr.push(currentSession);
-        
-        return currentSession.SessionID; 
-    }
-
-    //user join sessoin 
-    async joinSession(searchForID: string, user:User):Promise<void>{
-
-
-        const currentSession = this.sessArr.find(Session => Session.SessionID === searchForID);
-        
-        if (currentSession){
-            await currentSession.addUser(searchForID, user);
-        }
-        else {console.log("No session found")}; 
-
-    }
+  public get getUserID(): string {
+    return this.userID;
+  }
 }
 
-//Session class manages code representation of session
-export class Session 
-{
-    protected db: DbHandler;
-    protected sessionID: string;
-    protected userArr: Array<User>;
+export default class SessionManager {
+  Sessions: Array<Session>;
+  static #instance: SessionManager;
+  numOfSessions: number;
 
-    //init database handler and unique sessionID and empty user array 
-    private constructor(){
-        this.db = new DbHandler();
-        this.sessionID = uuidv4();
-        this.userArr = [];
+  private constructor() {
+    this.Sessions = [];
+    this.numOfSessions = 0;
+  }
+
+  //establish singleton pattern
+  public static get instance(): SessionManager {
+    if (!SessionManager.#instance) {
+      SessionManager.#instance = new SessionManager();
     }
 
-    //async static function calls private constructor and creates session in database
-    public static async init(user:User):Promise<Session>{
-        const currentSession:Session = new Session();
-        const db = new DbHandler();
-        await db.joinSession(currentSession.SessionID, user);
-        return currentSession; 
-    }
+    return SessionManager.#instance;
+  }
+  //create session object add to session array for tracking
+  public createSession(sessionID: string, userID: string): string {
 
-    //getter for sessionID property
-    public get SessionID(): string {
-        return this.sessionID;
-    }
+    const session = new Session(uuidv4(), userID);
+    this.Sessions.push(session);
+    return session.getSessionID;
+  }
 
-    //add user to user array and session in database
-    public async addUser (sessionID:string ,user: User): Promise<void> {
+  public deleteSession(sessionID: string) {
+    this.Sessions.splice(
+      this.Sessions.findIndex((Session) => Session.getSessionID === sessionID),
+      1
+    );
+  }
 
-        this.userArr.push(user); 
-
-       await this.db.joinSession(sessionID,user);
-    }
-
-    //remove user from database and user array 
-    public async removeUser (user: User, searchForID:number): Promise<boolean> {
-        
-        try {
-            await this.db.leaveSession(user);
-
-            this.userArr = this.userArr.filter((user) => user.getUserID() === searchForID); 
-            return true;
-        }
-        catch (e) {
-            console.log(e);
-            return false;
-        }
-    }
-
+  //don't know if this will have a use or not yet
+  public getUser(sessionID: string): string {
+    let foundUserID = "";
+    this.Sessions.forEach((Session: Session) => {
+      if (Session.getSessionID === sessionID) {
+        foundUserID = Session.getUserID;
+        return foundUserID;
+      }
+    });
+    return foundUserID;
+  }
 }
