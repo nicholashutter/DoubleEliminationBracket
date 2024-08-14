@@ -5,20 +5,26 @@ import { useEffect, useState, ReactNode } from "react";
 export const HomePage = (props: {
   children?: ReactNode;
 }): React.JSX.Element => {
-  const [serverUrl, setServerUrl] = useState("http://localhost:9000/api/test");
+  const [serverUrl, setServerUrl] = useState("");
   const [serverResponse, setServerResponse] = useState("");
 
   useEffect(() => {
-    fetch(serverUrl)
-      .then((res) => res.text())
-      .then((res) => setServerResponse(res))
-      .catch((error) => console.log(error.message));
+  
   }, [serverUrl]);
 
+  const credentials = {username: "nicholas",
+    password: "nicholas"
+  }
+  
   function handleSignInForm(): void {
-    //handle sign in
-    //register handler for sign in
-    console.log("React handleSignInForm fired.");
+    fetch("http://localhost:9000/",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(credentials)
+    });
+
   }
 
   return (
@@ -38,8 +44,8 @@ export const HomePage = (props: {
           <input type="password" id="password" name="password" />
 
           <span className="switch-text">
-            <Link style={{ color: "white" }} to={"/menu"}>
-              <button>
+            <Link style={{ color: "white" }}  to={"/menu"}>
+              <button onClick={handleSignInForm}>
                 Sign In
               </button>
             </Link>

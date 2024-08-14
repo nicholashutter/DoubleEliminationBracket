@@ -22,63 +22,76 @@ const pool = mariadb_1.default.createPool({
 class DbHandler {
     constructor() {
         this.db = "";
-        this.query = "";
-        this.params = [];
         this.user = new user_1.User("", "", "");
     }
     createUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.db = "use userdb";
-            this.query =
-                "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?);";
             this.user = user;
-            this.params = [
+            this.db = "use userdb";
+            const query = "INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?);";
+            const params = [
                 this.user.getUserID(),
                 this.user.getUserName(),
                 this.user.getEmail(),
-                this.user.getPasswordHash(),
+                this.user.getPassword_Hash(),
                 this.user.getCreatedAt(),
                 this.user.getLastUpdate(),
             ];
-            yield this.doQuery(this.query, this.params);
+            yield this.doQuery(query, params);
+        });
+    }
+    joinSession(sessionID, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.user = user;
+            this.db = "use userdb";
+            const query = "INSERT INTO sessions (sessionID, user_id) VALUES (?, ?)";
+            const params = [
+                sessionID,
+                this.user.getUserID()
+            ];
+            yield this.doQuery(query, params);
+        });
+    }
+    leaveSession(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.user = user;
+            this.db = "use userdb";
+            const query = "DELETE FROM sessions WHERE user_id = ?";
+            const params = [
+                this.user.getUserID()
+            ];
+            this.doQuery(query, params);
         });
     }
     readUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.user = user;
             this.db = "use userdb";
-            this.query =
-                "SELECT * FROM users WHERE id = ? OR username = ? OR email = ?";
-            this.params = [
+            const query = "SELECT * FROM users WHERE id = ? OR username = ? OR email = ?";
+            const params = [
                 this.user.getUserID(),
-                this.user.getUserName(),
-                this.user.getEmail()
-            ];
-            yield this.doQuery(this.query, this.params);
-        });
-    }
-    updateUser(user) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.db = "use userdb";
-            this.query =
-                "UPDATE users SET username = ?, email = ?, updated_at = ?, WHERE id = ? OR username = ? OR email = ?;";
-            this.params = [
                 this.user.getUserName(),
                 this.user.getEmail(),
-                this.user.getLastUpdate(),
-                this.user.getUserID(),
-                this.user.getUserName(),
-                this.user.getEmail()
             ];
+            const userObject = yield this.doQuery(query, params);
+            let returnUser = new user_1.User("", "", "", -1);
+            if (userObject !== undefined) {
+                returnUser = new user_1.User(userObject.username, userObject.password_hash, userObject.email, userObject.id);
+            }
+            return returnUser;
         });
     }
     deleteUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.user = user;
             this.db = "use userdb";
-            this.query = "DELETE FROM users WHERE id = ? OR username = ? OR email = ?";
-            this.params[this.user.getUserID(),
+            const query = "DELETE FROM users WHERE id = ? OR username = ? OR email = ?";
+            const params = [
+                this.user.getUserID(),
                 this.user.getUserName(),
-                this.user.getEmail()];
-            this.doQuery(this.query, this.params);
+                this.user.getEmail(),
+            ];
+            this.doQuery(query, params);
         });
     }
     doQuery(query, params) {
@@ -86,9 +99,13 @@ class DbHandler {
             try {
                 this.conn = yield pool.getConnection();
                 let res = this.conn.query(this.db);
-                console.log(res);
-                res = yield this.conn.query(this.query, this.params);
-                console.log(res);
+                res = yield this.conn.query(query, params);
+                if (res.length > 0) {
+                    return res[0];
+                }
+            }
+            catch (e) {
+                console.log(e);
             }
             finally {
                 if (this.conn)
