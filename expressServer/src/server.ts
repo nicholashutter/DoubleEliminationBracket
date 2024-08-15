@@ -12,7 +12,7 @@ import session from "express-session";
 import DbHandler from "./DbOperator";
 import UserManager from "./user";
 import SessionManager from "./Session";
-import {readUser, updateUser, deleteUser} from "./DbOperator"
+import { readUser, updateUser, deleteUser } from "./DbOperator"
 
 // **** Variables **** //
 
@@ -24,18 +24,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
-const corsOptions: cors.CorsOptions = {
+const corsOptions: cors.CorsOptions = 
+{
   origin: "http://localhost:3000",
 };
 app.use(cors(corsOptions));
 
 // Show routes called in console during development
-if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf()) {
+if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf())
+{
   app.use(morgan("dev"));
 }
 
 // Security
-if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
+if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
+{
   app.use(helmet());
 }
 
@@ -49,7 +52,8 @@ app.use(express.urlencoded({ extended: true }));
 /* Define custom type for user routes */
 
 // TODO rename this more specifically
-type body = {
+type body = 
+{
   username: string;
   email: string;
   password_hash: string;
@@ -60,7 +64,8 @@ type body = {
 /* Define custom type for session routes */
 
 // TODO rename this more specifically
-type sessionBody = {
+type sessionBody = 
+{
   sessionID: string;
   user_id: number;
 };
@@ -76,7 +81,8 @@ app.use(
   session({
     name: "Tournament Session",
     secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2I",
-    genid: () => {
+    genid: () =>
+    {
       return "" // TODO use this to get Session manager and call SessionManager.createSession;
     },
     resave: false,
@@ -88,31 +94,38 @@ app.use(
 
 
 //express route serves entrypoint when get request recieved at base url
-app.get("/", (req, res) => {
+app.get("/", (req, res) =>
+{
   res.sendFile("index.html", { root: staticDir });
 });
 
 //TODO rewrite w encryption
-app.post("/login", (req, res) => {
+app.post("/login", (req, res) =>
+{
 
-  const credentials = {username:"nicholas",
-    password:"nicholas"
-  }; 
+  const credentials = {
+    username: "nicholas",
+    password: "nicholas"
+  };
 
-  const {username, password} = req.body; 
+  const { username, password } = req.body;
 
-  try {
-    if (username == credentials.username && password == credentials.password) {
-      req.session.user?.updateAuthenticated(); 
+  try
+  {
+    if (username == credentials.username && password == credentials.password)
+    {
+      req.session.user?.updateAuthenticated();
       res.send("Login Success");
       console.log("Login Success");
     }
-    else{
+    else
+    {
       throw new Error("");
     }
   }
-  catch (err) {
-    res.send("Login Failed"); 
+  catch (err)
+  {
+    res.send("Login Failed");
     console.log("Login Failed");
   }
 
@@ -120,11 +133,11 @@ app.post("/login", (req, res) => {
 
 /* 
     TODO app.route(api/bracket)
-*/ 
+*/
 
 /* 
     TODO app.route(api/user)
-*/ 
+*/
 
 
 

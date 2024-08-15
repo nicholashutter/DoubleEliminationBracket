@@ -1,15 +1,19 @@
-export default class UserManager {
+export default class UserManager
+{
   static #instance: UserManager;
-  private Users: Array<User>; 
+  private Users: Array<User>;
 
   private constructor(
-    
-  ) {
-    this.Users = []; 
+
+  )
+  {
+    this.Users = [];
   }
 
-  public static getInstance(): UserManager {
-    if (!UserManager.#instance) {
+  public static getInstance(): UserManager
+  {
+    if (!UserManager.#instance)
+    {
       UserManager.#instance = new UserManager();
     }
     return UserManager.#instance;
@@ -20,8 +24,9 @@ export default class UserManager {
     passwordHash: string,
     email: string,
     id?: number
-  ) {
-    const user = new User(username,passwordHash,email,id);
+  )
+  {
+    const user = new User(username, passwordHash, email, id);
     this.Users.push(user);
   }
 
@@ -29,73 +34,96 @@ export default class UserManager {
     passwordHash: string,
     email: string,
     id?: number,
-    authenticated?: boolean, 
+    authenticated?: boolean,
     inGame?: boolean,
-    currentRank?: number, 
+    currentRank?: number,
     allTimeWins?: number,
     allTimeLosses?: number,
-    totalGamesPlayed?:number
-  ){
-    const user = new User(username,passwordHash, email);
+    totalGamesPlayed?: number,
+    datesPlayed?: Map<Date, number>
+
+  )
+  {
+    const user = new User(username, passwordHash, email);
     user.setCreated();
-    if (id){
+    if (id)
+    {
       user.setUserID(id);
     }
-    if (authenticated){
+    if (authenticated)
+    {
       user.setAuthenticated(authenticated);
     }
-    if (inGame){
+    if (inGame)
+    {
       user.setInGame(inGame);
     }
-    if (currentRank){
+    if (currentRank)
+    {
       user.setCurrentRank(currentRank);
     }
-    if (allTimeWins){
+    if (allTimeWins)
+    {
       user.setAllTimeWins(allTimeWins);
     }
-    if (allTimeLosses){
+    if (allTimeLosses)
+    {
       user.setAllTimeLosses(allTimeLosses);
     }
-    if (totalGamesPlayed){
-      user.updateDatesPlayed(totalGamesPlayed); 
+    if (totalGamesPlayed)
+    {
+      user.updateGamesPlayed(totalGamesPlayed);
+    }
+    if (datesPlayed)
+    {
+      user.setDatesPlayed(datesPlayed);
     }
 
   }
 
-  public getUser(userID: number): User{
-    let user = new User("-1", "-1", "-1"); 
-    try {
-        const foundUser = this.Users.find (user => user.getUserID === userID);
-        if (foundUser === undefined) {
-          throw new Error("user.ts line 33: User not found in Users collection");
-        }
-        else {
-          user = foundUser; 
-        }
-    }
-    catch (error) {console.log(error);}
-    return user; 
-  }
-
-  public deleteUser(userID: number) {
-    try {
-      const foundUser = this.Users.find (user => user.getUserID === userID);
-      if (foundUser === undefined) {
+  public getUser(userID: number): User
+  {
+    let user = new User("-1", "-1", "-1");
+    try
+    {
+      const foundUser = this.Users.find(user => user.getUserID === userID);
+      if (foundUser === undefined)
+      {
         throw new Error("user.ts line 33: User not found in Users collection");
       }
-      else {
-        this.Users.splice(this.Users.findIndex(User => User.getUserID === userID), 1);
-      }  
-  }
-  catch (error) {console.log(error);}
+      else
+      {
+        user = foundUser;
+      }
+    }
+    catch (error) { console.log(error); }
+    return user;
   }
 
-  
+  public deleteUser(userID: number)
+  {
+    try
+    {
+      const foundUser = this.Users.find(user => user.getUserID === userID);
+      if (foundUser === undefined)
+      {
+        throw new Error("user.ts line 33: User not found in Users collection");
+      }
+      else
+      {
+        this.Users.splice(this.Users.findIndex(User => User.getUserID === userID), 1);
+      }
+    }
+    catch (error) { console.log(error); }
+  }
+
+
 }
 /*
 Class user holds common user properties 
 */
-class User {
+class User
+{
   /*
 Function Constructor initialize class members and generate id if none provided
 */
@@ -119,10 +147,13 @@ Function Constructor initialize class members and generate id if none provided
     passwordHash: string,
     email: string,
     id?: number
-  ) {
-    if (!id) {
+  )
+  {
+    if (!id)
+    {
       this.id = Math.floor(Math.random() * 1000);
-    } else {
+    } else
+    {
       this.id = id;
     }
     this.userName = username;
@@ -136,127 +167,165 @@ Function Constructor initialize class members and generate id if none provided
     this.allTimeWins = -1;
     this.allTimeLosses = -1;
     this.datesPlayed = new Map<Date, number>();
-    this.totalGamesPlayed = 0 
+    this.totalGamesPlayed = 0
   }
   /*
 Functions Getters and Setters with some basic input validation
 */
-  get getUserID(): number {
+  get getUserID(): number
+  {
     return this.id!;
   }
 
-  setUserID(value: number) {
-    if (this.id === undefined) {
+  setUserID(value: number)
+  {
+    if (this.id === undefined)
+    {
       this.id = value;
-    } else {
+    } else
+    {
       console.log("Cannot update userID. UserID already exists");
     }
   }
 
-  get getUserName(): string {
+  get getUserName(): string
+  {
     return this.userName;
   }
 
-  setUserName(value: string) {
+  setUserName(value: string)
+  {
     this.userName = value;
   }
 
-  get getEmail(): string {
+  get getEmail(): string
+  {
     return this.email;
   }
 
-  setEmail(email: string) {
-    try {
-      if (!email.includes("@") || !email.includes(".")) {
+  setEmail(email: string)
+  {
+    try
+    {
+      if (!email.includes("@") || !email.includes("."))
+      {
         this.email = email;
-      } else {
+      } else
+      {
         throw new Error("user.ts line 82: Incorrectly formatted email");
       }
-    } catch (e) {
+    } catch (e)
+    {
       console.log(e);
     }
   }
 
-  get getLastUpdate(): Date {
+  get getLastUpdate(): Date
+  {
     return this.lastUpdate;
   }
 
-  setLastUpdate() {
+  setLastUpdate()
+  {
     this.lastUpdate = new Date();
   }
 
-  get getCreated(): Date {
+  get getCreated(): Date
+  {
     return this.created;
   }
 
-  setCreated() {
+  setCreated()
+  {
     this.created = new Date();
   }
 
-  get getAuthenticated(): boolean {
+  get getAuthenticated(): boolean
+  {
     return this.authenticated;
   }
 
-  setAuthenticated(authenticated?: boolean) {
-    if (authenticated) {
+  setAuthenticated(authenticated?: boolean)
+  {
+    if (authenticated)
+    {
       this.authenticated = authenticated;
     }
-    else{
+    else
+    {
       this.authenticated = this.authenticated ? true : false;
     }
   }
 
-  get getCurrentRank(): number {
+  get getCurrentRank(): number
+  {
     return this.currentRank;
   }
 
-  setCurrentRank(value: number) {
+  setCurrentRank(value: number)
+  {
     this.currentRank = value;
   }
 
-  get getAllTimeWins(): number {
+  get getAllTimeWins(): number
+  {
     return this.allTimeWins;
   }
 
-  setAllTimeWins(value: number) {
+  setAllTimeWins(value: number)
+  {
     this.allTimeWins = value;
   }
 
-  get getAllTimeLosses(): number {
+  get getAllTimeLosses(): number
+  {
     return this.allTimeLosses;
   }
 
-  setAllTimeLosses(value: number) {
+  setAllTimeLosses(value: number)
+  {
     this.allTimeLosses = value;
   }
 
-  get getPasswordHash(): string {
+  get getPasswordHash(): string
+  {
     return this.passwordHash;
   }
 
-  get getInGame():boolean {
+  get getInGame(): boolean
+  {
     return this.inGame;
   }
 
-  setInGame(inGame?:boolean) {
-    if (inGame) {
+  setInGame(inGame?: boolean)
+  {
+    if (inGame)
+    {
       this.inGame = inGame;
     }
-    else{
+    else
+    {
       this.inGame = this.inGame ? true : false;
     }
-    
+
   }
 
-  updateDatesPlayed(totalGamesPlayed?:number){
-    if (totalGamesPlayed){
+  updateGamesPlayed(totalGamesPlayed?: number)
+  {
+    if (totalGamesPlayed)
+    {
       this.totalGamesPlayed = totalGamesPlayed;
     }
-    else {
-      this.totalGamesPlayed ++; 
+    else
+    {
+      this.totalGamesPlayed++;
     }
     this.datesPlayed.set(new Date(), this.totalGamesPlayed);
   }
 
+  setDatesPlayed(datesPlayed: Map<Date, number>)
+  {
+    this.datesPlayed = datesPlayed;
+  }
 
 }
