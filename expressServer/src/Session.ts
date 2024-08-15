@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 
+/* 
+Session class associates sessions with userIDs for authentication
+*/ 
 export class Session
 {
   sessionID: string;
@@ -12,17 +15,18 @@ export class Session
     this.userID = userID!;
   }
 
-  public get getSessionID(): string
+  get getSessionID(): string
   {
     return this.sessionID;
   }
 
-  public get getUserID(): string
+  get getUserID(): string
   {
     return this.userID;
   }
 }
 
+//SessionManager class wraps sessions and provides a global entry point for all sessions plus encapsulation
 export class SessionManager extends Session
 {
   Sessions: Array<Session>;
@@ -30,9 +34,9 @@ export class SessionManager extends Session
   numOfSessions: number;
 
 
-  private constructor()
+  constructor()
   {
-    super();
+    super(); //empty parent object garbage collector should delete
     this.Sessions = [];
     this.numOfSessions = 0;
   }

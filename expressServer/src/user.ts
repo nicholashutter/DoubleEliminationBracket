@@ -1,16 +1,259 @@
-export default class UserManager
+/*
+Class user holds common user properties 
+*/
+export class User
+{
+  /*
+Function Constructor initialize class members and generate id if none provided
+*/
+  private id?: number;
+  private userName: string;
+  private email: string;
+  private passwordHash: string;
+  private created: Date;
+  private lastUpdate: Date;
+  private authenticated: boolean;
+  private seed: number; 
+  private inGame: boolean;
+  private currentRank: number;
+  private allTimeWins: number;
+  private allTimeLosses: number;
+  private totalGamesPlayed: number;
+  // TODO datesPlayed should take new Date everytime and final score should be kept here before loaded into database
+  private datesPlayed: Map<Date, number>;
+
+  protected constructor(
+    username?: string,
+    passwordHash?: string,
+    email?: string,
+    id?: number
+  )
+  {
+    if (!id)
+    {
+      this.id = Math.floor(Math.random() * 1000);
+    } else
+    {
+      this.id = id;
+    }
+    this.userName = username!;
+    this.passwordHash = passwordHash!;
+    this.email = email!;
+    this.created = new Date();
+    this.lastUpdate = new Date();
+    this.authenticated = false;
+    this.seed = -1; 
+    this.inGame = false;
+    this.currentRank = -1; //value -1 indicates default
+    this.allTimeWins = -1;
+    this.allTimeLosses = -1;
+    this.datesPlayed = new Map<Date, number>();
+    this.totalGamesPlayed = -1 
+  }
+  /*
+Functions Getters and Setters with some basic input validation
+*/
+  get getUserID(): number
+  {
+    return this.id!;
+  }
+
+  set setUserID(value: number)
+  {
+    if (this.id === undefined)
+    {
+      this.id = value;
+    } else
+    {
+      console.log("Cannot update userID. UserID already exists");
+    }
+  }
+
+  get getUserName(): string
+  {
+    return this.userName;
+  }
+
+  set setUserName(value: string)
+  {
+    this.userName = value;
+  }
+
+  get getEmail(): string
+  {
+    return this.email;
+  }
+
+  set setEmail(email: string)
+  {
+    try
+    {
+      if (!email.includes("@") || !email.includes("."))
+      {
+        this.email = email;
+      } else
+      {
+        throw new Error("user.ts line 82: Incorrectly formatted email");
+      }
+    } catch (e)
+    {
+      console.log(e);
+    }
+  }
+
+  get getLastUpdate(): Date
+  {
+    return this.lastUpdate;
+  }
+
+  updateLastUpdate()
+  {
+    this.lastUpdate = new Date();
+  }
+
+  get getCreated(): Date
+  {
+    return this.created;
+  }
+
+  set setCreated(value:Date)
+  {
+    this.created = value;
+  }
+
+  updateCreated()
+  {
+    this.created = new Date();
+  }
+
+  get getAuthenticated(): boolean
+  {
+    return this.authenticated;
+  }
+
+  set setAuthenticated(authenticated: boolean)
+  {
+    this.authenticated = authenticated;
+  }
+
+  updateAuthenticated()
+  {
+    this.authenticated = this.authenticated ? true : false;
+  }
+
+  get getSeed(): number
+  {
+    return this.seed;
+  }
+
+  set setSeed(seed: number)
+  {
+    this.seed = seed; 
+  }
+
+  get getCurrentRank(): number
+  {
+    return this.currentRank;
+  }
+
+  set setCurrentRank(value: number)
+  {
+    this.currentRank = value;
+  }
+
+  incrementCurrentRank()
+  {
+    this.currentRank++; 
+  }
+
+  decrementCurrentRank()
+  {
+    this.currentRank--;
+  }
+
+  get getAllTimeWins(): number
+  {
+    return this.allTimeWins;
+  }
+
+  set setAllTimeWins(value: number)
+  {
+    this.allTimeWins = value;
+  }
+
+  updateAllTimeWins()
+  {
+    this.allTimeWins++; 
+  }
+
+  get getAllTimeLosses(): number
+  {
+    return this.allTimeLosses;
+  }
+
+  set setAllTimeLosses(value: number)
+  {
+    this.allTimeLosses = value;
+  }
+
+  updateAllTimeLosses()
+  {
+    this.allTimeLosses++;
+  }
+
+  get getPasswordHash(): string
+  {
+    return this.passwordHash;
+  }
+
+  get getInGame(): boolean
+  {
+    return this.inGame;
+  }
+
+  set setInGame(inGame: boolean)
+  {
+    this.inGame = inGame;
+  }
+
+  updateInGame()
+  {
+    this.inGame = this.inGame ? true : false;
+  }
+//this function can either update the class member directly for loading from database or increment the value 
+  updateGamesPlayed()
+  {
+    this.totalGamesPlayed++;
+    this.datesPlayed.set(new Date(), this.totalGamesPlayed);
+  }
+
+  set setGamesPlayed(totalGamesPlayed: number)
+  {
+    this.totalGamesPlayed = totalGamesPlayed;
+  }
+
+  set setDatesPlayed(datesPlayed: Map<Date, number>)
+  {
+    this.datesPlayed = datesPlayed;
+  }
+
+}
+
+
+export class UserManager extends User
 {
   static #instance: UserManager;
   private Users: Array<User>;
 
   private constructor(
-
+    
   )
   {
+    super(); //empty parent object garbage collector should delete
     this.Users = [];
   }
 
-  public static getInstance(): UserManager
+  public static get getInstance(): UserManager
   {
     if (!UserManager.#instance)
     {
@@ -40,43 +283,46 @@ export default class UserManager
     allTimeWins?: number,
     allTimeLosses?: number,
     totalGamesPlayed?: number,
-    datesPlayed?: Map<Date, number>
+    datesPlayed?: Map<Date, number>,
+    seed?: number, 
+    lastUpdate?: Date, 
+    created?: Date, 
 
   )
   {
     const user = new User(username, passwordHash, email);
-    user.setCreated();
+  
     if (id)
     {
-      user.setUserID(id);
+      user.setUserID = id;
     }
     if (authenticated)
     {
-      user.setAuthenticated(authenticated);
+      user.setAuthenticated = authenticated;
     }
     if (inGame)
     {
-      user.setInGame(inGame);
+      user.setInGame = inGame;
     }
     if (currentRank)
     {
-      user.setCurrentRank(currentRank);
+      user.setCurrentRank = currentRank;
     }
     if (allTimeWins)
     {
-      user.setAllTimeWins(allTimeWins);
+      user.setAllTimeWins = allTimeWins;
     }
     if (allTimeLosses)
     {
-      user.setAllTimeLosses(allTimeLosses);
+      user.setAllTimeLosses = allTimeLosses;
     }
     if (totalGamesPlayed)
     {
-      user.updateGamesPlayed(totalGamesPlayed);
+      user.setGamesPlayed = totalGamesPlayed;
     }
     if (datesPlayed)
     {
-      user.setDatesPlayed(datesPlayed);
+      user.setDatesPlayed = datesPlayed;
     }
 
   }
@@ -119,213 +365,4 @@ export default class UserManager
 
 
 }
-/*
-Class user holds common user properties 
-*/
-class User
-{
-  /*
-Function Constructor initialize class members and generate id if none provided
-*/
-  private id?: number;
-  private userName: string;
-  private email: string;
-  private passwordHash: string;
-  private created: Date;
-  private lastUpdate: Date;
-  private authenticated: boolean;
-  private inGame: boolean;
-  private currentRank: number;
-  private allTimeWins: number;
-  private allTimeLosses: number;
-  private totalGamesPlayed: number;
-  // TODO datesPlayed should take new Date everytime and final score should be kept here before loaded into database
-  private datesPlayed: Map<Date, number>;
 
-  constructor(
-    username: string,
-    passwordHash: string,
-    email: string,
-    id?: number
-  )
-  {
-    if (!id)
-    {
-      this.id = Math.floor(Math.random() * 1000);
-    } else
-    {
-      this.id = id;
-    }
-    this.userName = username;
-    this.passwordHash = passwordHash;
-    this.email = email;
-    this.created = new Date();
-    this.lastUpdate = new Date();
-    this.authenticated = false;
-    this.inGame = false;
-    this.currentRank = -1; //value -1 indicates default
-    this.allTimeWins = -1;
-    this.allTimeLosses = -1;
-    this.datesPlayed = new Map<Date, number>();
-    this.totalGamesPlayed = 0
-  }
-  /*
-Functions Getters and Setters with some basic input validation
-*/
-  get getUserID(): number
-  {
-    return this.id!;
-  }
-
-  setUserID(value: number)
-  {
-    if (this.id === undefined)
-    {
-      this.id = value;
-    } else
-    {
-      console.log("Cannot update userID. UserID already exists");
-    }
-  }
-
-  get getUserName(): string
-  {
-    return this.userName;
-  }
-
-  setUserName(value: string)
-  {
-    this.userName = value;
-  }
-
-  get getEmail(): string
-  {
-    return this.email;
-  }
-
-  setEmail(email: string)
-  {
-    try
-    {
-      if (!email.includes("@") || !email.includes("."))
-      {
-        this.email = email;
-      } else
-      {
-        throw new Error("user.ts line 82: Incorrectly formatted email");
-      }
-    } catch (e)
-    {
-      console.log(e);
-    }
-  }
-
-  get getLastUpdate(): Date
-  {
-    return this.lastUpdate;
-  }
-
-  setLastUpdate()
-  {
-    this.lastUpdate = new Date();
-  }
-
-  get getCreated(): Date
-  {
-    return this.created;
-  }
-
-  setCreated()
-  {
-    this.created = new Date();
-  }
-
-  get getAuthenticated(): boolean
-  {
-    return this.authenticated;
-  }
-
-  setAuthenticated(authenticated?: boolean)
-  {
-    if (authenticated)
-    {
-      this.authenticated = authenticated;
-    }
-    else
-    {
-      this.authenticated = this.authenticated ? true : false;
-    }
-  }
-
-  get getCurrentRank(): number
-  {
-    return this.currentRank;
-  }
-
-  setCurrentRank(value: number)
-  {
-    this.currentRank = value;
-  }
-
-  get getAllTimeWins(): number
-  {
-    return this.allTimeWins;
-  }
-
-  setAllTimeWins(value: number)
-  {
-    this.allTimeWins = value;
-  }
-
-  get getAllTimeLosses(): number
-  {
-    return this.allTimeLosses;
-  }
-
-  setAllTimeLosses(value: number)
-  {
-    this.allTimeLosses = value;
-  }
-
-  get getPasswordHash(): string
-  {
-    return this.passwordHash;
-  }
-
-  get getInGame(): boolean
-  {
-    return this.inGame;
-  }
-
-  setInGame(inGame?: boolean)
-  {
-    if (inGame)
-    {
-      this.inGame = inGame;
-    }
-    else
-    {
-      this.inGame = this.inGame ? true : false;
-    }
-
-  }
-
-  updateGamesPlayed(totalGamesPlayed?: number)
-  {
-    if (totalGamesPlayed)
-    {
-      this.totalGamesPlayed = totalGamesPlayed;
-    }
-    else
-    {
-      this.totalGamesPlayed++;
-    }
-    this.datesPlayed.set(new Date(), this.totalGamesPlayed);
-  }
-
-  setDatesPlayed(datesPlayed: Map<Date, number>)
-  {
-    this.datesPlayed = datesPlayed;
-  }
-
-}

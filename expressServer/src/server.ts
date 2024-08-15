@@ -14,6 +14,11 @@ import UserManager from "./user";
 import SessionManager from "./Session";
 import { readUser, updateUser, deleteUser } from "./DbOperator"
 
+/*
+Create web server, respond to HTTP requests 
+Only server creates users, brackets, and sessions
+*/
+
 // **** Variables **** //
 
 const app = express();
