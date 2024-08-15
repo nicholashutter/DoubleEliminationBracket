@@ -18,7 +18,6 @@ async function updateUser(userID: number)
     VALUES (?, ?, ?, ?, ?, ?,?,?,?,?,?,?);`;
 
   const foundInGame = foundUser.getInGame;
-  // TODO Update params and the above query with all possible fields of user 
   /*   
    const params = [
      foundUser.getUserID as number,
@@ -32,7 +31,7 @@ async function updateUser(userID: number)
      foundUser.getAllTimeWins as number, 
      foundUser.getAllTimeLosses as number, 
      foundUser.totalGamesPlayed as number, 
-     foundUser.datesPlayed as Date
+     foundUser.datesPlayed as Date  // (will have to run find function against datesPlayed as it's a map)
    ]; 
    */
 

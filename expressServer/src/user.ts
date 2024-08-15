@@ -1,7 +1,7 @@
 /*
 Class user holds common user properties 
 */
-export class User
+class User
 {
   /*
 Function Constructor initialize class members and generate id if none provided
@@ -19,7 +19,6 @@ Function Constructor initialize class members and generate id if none provided
   private allTimeWins: number;
   private allTimeLosses: number;
   private totalGamesPlayed: number;
-  // TODO datesPlayed should take new Date everytime and final score should be kept here before loaded into database
   private datesPlayed: Map<Date, number>;
 
   protected constructor(
@@ -104,6 +103,11 @@ Functions Getters and Setters with some basic input validation
   get getLastUpdate(): Date
   {
     return this.lastUpdate;
+  }
+
+  set setLastUpdate(value:Date)
+  {
+    this.lastUpdate = value;
   }
 
   updateLastUpdate()
@@ -221,7 +225,7 @@ Functions Getters and Setters with some basic input validation
     this.inGame = this.inGame ? true : false;
   }
 //this function can either update the class member directly for loading from database or increment the value 
-  updateGamesPlayed()
+  updateDatesPlayed()
   {
     this.totalGamesPlayed++;
     this.datesPlayed.set(new Date(), this.totalGamesPlayed);
@@ -240,7 +244,7 @@ Functions Getters and Setters with some basic input validation
 }
 
 
-export class UserManager extends User
+export default class UserManager extends User
 {
   static #instance: UserManager;
   private Users: Array<User>;
@@ -323,6 +327,18 @@ export class UserManager extends User
     if (datesPlayed)
     {
       user.setDatesPlayed = datesPlayed;
+    }
+    if (seed)
+    {
+      user.setSeed = seed;
+    }
+    if (lastUpdate)
+    {
+      user.setLastUpdate
+    }
+    if (created)
+    {
+      user.setCreated = created;
     }
 
   }

@@ -9,10 +9,11 @@ import cors from "cors";
 import { NodeEnvs } from "./common/misc";
 import session from "express-session";
 
-import DbHandler from "./DbOperator";
+import BracketManager from "./Bracket";
 import UserManager from "./user";
 import SessionManager from "./Session";
 import { readUser, updateUser, deleteUser } from "./DbOperator"
+
 
 /*
 Create web server, respond to HTTP requests 
@@ -20,6 +21,10 @@ Only server creates users, brackets, and sessions
 */
 
 // **** Variables **** //
+
+const sessionManager = SessionManager.getInstance;
+const userManager = UserManager.getInstance;
+const bracketManager = BracketManager.getInstance;
 
 const app = express();
 
@@ -50,30 +55,8 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
 // Add error handler
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(EnvVars.CookieProps.Secret));
 
-//trying to comment out to see if anything breaks
-// app.use(cookieParser(EnvVars.CookieProps.Secret));
-
-/* Define custom type for user routes */
-
-// TODO rename this more specifically
-type body = 
-{
-  username: string;
-  email: string;
-  password_hash: string;
-  created_at: Date;
-  updated_at: Date;
-  id?: number;
-};
-/* Define custom type for session routes */
-
-// TODO rename this more specifically
-type sessionBody = 
-{
-  sessionID: string;
-  user_id: number;
-};
 
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
 //reactrouter takes over once entrypoint is served
@@ -88,7 +71,7 @@ app.use(
     secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2I",
     genid: () =>
     {
-      return "" // TODO use this to get Session manager and call SessionManager.createSession;
+       // TODO use this to get Session manager and call SessionManager.createSession;
     },
     resave: false,
     saveUninitialized: true,

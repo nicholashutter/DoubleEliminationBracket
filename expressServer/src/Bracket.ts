@@ -1,4 +1,4 @@
-import {User, UserManager} from "./user";
+import UserMananger from "./user";
 
 type Seed = number; 
 
@@ -104,7 +104,7 @@ export default class BracketManager extends Bracket
         super();
          
     }
-    public static getInstance(): BracketManager
+    public static get getInstance(): BracketManager
     {
         if (!BracketManager.#instance)
         {

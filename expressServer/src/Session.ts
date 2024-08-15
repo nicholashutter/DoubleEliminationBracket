@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 /* 
 Session class associates sessions with userIDs for authentication
 */ 
-export class Session
+class Session
 {
   sessionID: string;
   userID: string;
@@ -27,7 +27,7 @@ export class Session
 }
 
 //SessionManager class wraps sessions and provides a global entry point for all sessions plus encapsulation
-export class SessionManager extends Session
+export default class SessionManager extends Session
 {
   Sessions: Array<Session>;
   static #instance: SessionManager;
@@ -42,7 +42,7 @@ export class SessionManager extends Session
   }
 
   //establish singleton pattern
-  public static get instance(): SessionManager
+  public static get getInstance(): SessionManager
   {
     if (!SessionManager.#instance)
     {
