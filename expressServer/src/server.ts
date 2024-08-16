@@ -1,5 +1,3 @@
-import cookieParser from "cookie-parser";
-import morgan from "morgan";
 import path from "path";
 import helmet from "helmet";
 import express from "express";
@@ -11,18 +9,17 @@ import session from "express-session";
 
 import BracketManager from "./Bracket";
 import UserManager from "./user";
-import SessionManager from "./Session";
 import { readUser, updateUser, deleteUser } from "./DbOperator"
 
 
 /*
 Create web server, respond to HTTP requests 
-Only server creates users, brackets, and sessions
+Only server creates users, brackets and express sessions
 */
 
 // **** Variables **** //
 
-const sessionManager = SessionManager.getInstance;
+
 const userManager = UserManager.getInstance;
 const bracketManager = BracketManager.getInstance;
 
@@ -33,18 +30,13 @@ const app = express();
 // Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(EnvVars.CookieProps.Secret));
 const corsOptions: cors.CorsOptions = 
 {
   origin: "http://localhost:3000",
 };
 app.use(cors(corsOptions));
 
-// Show routes called in console during development
-if (EnvVars.NodeEnv === NodeEnvs.Dev.valueOf())
-{
-  app.use(morgan("dev"));
-}
+
 
 // Security
 if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
@@ -55,7 +47,7 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
 // Add error handler
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(EnvVars.CookieProps.Secret));
+
 
 
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
@@ -69,10 +61,6 @@ app.use(
   session({
     name: "Tournament Session",
     secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2I",
-    genid: () =>
-    {
-       // TODO use this to get Session manager and call SessionManager.createSession;
-    },
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false },
