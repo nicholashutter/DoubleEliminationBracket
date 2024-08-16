@@ -1,4 +1,5 @@
-import UserMananger from "./user";
+import UserManager from "./user";
+import { User } from "./user";
 
 type Seed = number; 
 

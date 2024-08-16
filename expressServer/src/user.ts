@@ -1,7 +1,7 @@
 /*
 Class user holds common user properties 
 */
-class User
+export class User
 {
   /*
 Function Constructor initialize class members and generate id if none provided
