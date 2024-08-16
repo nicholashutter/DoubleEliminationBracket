@@ -63,7 +63,8 @@ app.use(
     secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2I",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: false, maxAge: 10800000},
+    rolling: true
     // TODO need to make sure cookie expires using maxAge property and cookie deletes on close of application
   })
 );

@@ -1,3 +1,4 @@
+import {User} from "../../expressServer/src/user";
 import { useRouteError, Link, Outlet } from "react-router-dom";
 import "./HomePage.css";
 import { useEffect, useState, ReactNode } from "react";
@@ -12,6 +13,7 @@ export const HomePage = (props: {
   
   }, [serverUrl]);
 
+  // TODO find out if we can just send the entire user object or we need to do some sort of casting 
   const credentials = {username: "nicholas",
     password: "nicholas"
   }
