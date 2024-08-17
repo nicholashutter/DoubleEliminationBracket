@@ -1,16 +1,18 @@
-import path from "path";
-import helmet from "helmet";
 import express from "express";
-import "express-async-errors";
 import EnvVars from "./common/EnvVars";
-import cors from "cors";
+import path from "path";
+import "express-async-errors";
+import helmet from "helmet";
 import { NodeEnvs } from "./common/misc";
 import session from "express-session";
-
 import BracketManager from "./Bracket";
 import UserManager from "./user";
 import { readUser, updateUser, deleteUser } from "./DbOperator"
 
+/*
+TODO learn common module so you can export a file of functions and access them using filename.function  
+You will want to use that to export DbOperator and when you write your route files 
+*/
 
 /*
 Create web server, respond to HTTP requests 
@@ -30,31 +32,16 @@ const app = express();
 // Basic middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const corsOptions: cors.CorsOptions = 
+const corsOptions: cors.CorsOptions =
 {
   origin: "http://localhost:3000",
 };
 app.use(cors(corsOptions));
 
 
-
-// Security
-if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
-{
-  app.use(helmet());
-}
-
-// Add error handler
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
 //reactrouter takes over once entrypoint is served
-const staticDir = path.join(__dirname, "../../reactclient/build");
-
-app.use(express.static(staticDir));
+app.use(express.static(path.join(__dirname, "../../reactclient/build")));
 
 //Include express-session
 app.use(
@@ -63,11 +50,17 @@ app.use(
     secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2I",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, maxAge: 10800000},
+    cookie: { secure: false, maxAge: 10800000 },
     rolling: true
     // TODO need to make sure cookie expires using maxAge property and cookie deletes on close of application
   })
 );
+
+// Security
+if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
+{
+  app.use(helmet());
+}
 
 
 //express route serves entrypoint when get request recieved at base url

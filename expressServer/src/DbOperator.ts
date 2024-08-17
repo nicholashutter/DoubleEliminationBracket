@@ -1,5 +1,5 @@
 import mariadb from "mariadb";
-import {UserManager} from "./user";
+import UserManager from "./user";
 
 
 /*
@@ -109,4 +109,4 @@ async function doQuery(selectDb: string, query: string, params: any[])
   }
 }
 
-export { updateUser, deleteUser, readUser };
+export { updateUser, deleteUser, readUser as DbOperator};
