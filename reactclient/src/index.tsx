@@ -1,4 +1,5 @@
 import axios from axios; 
+import User from "./user";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";

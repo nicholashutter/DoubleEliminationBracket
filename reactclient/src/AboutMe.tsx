@@ -1,7 +1,11 @@
 import axios from axios; 
+import User from "./user";
  "./AboutMe.css";
 
 import { useState, useEffect, ReactNode } from "react";
+
+
+
 
 const AboutMe = (props: { children?: ReactNode }): React.JSX.Element => {
   return (

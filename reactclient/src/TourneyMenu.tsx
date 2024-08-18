@@ -1,4 +1,5 @@
 import axios from axios; 
+import User from "./user";
 import { useState, useEffect, ReactNode } from "react";
 
 import "./TourneyMenu.css";
