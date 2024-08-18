@@ -1,3 +1,5 @@
+import axios from axios; 
+
 import "./JoinTourney.css";
 
 import { useState, useEffect, ReactNode } from "react";

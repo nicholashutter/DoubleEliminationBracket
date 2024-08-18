@@ -1,4 +1,5 @@
-import "./AboutMe.css";
+import axios from axios; 
+ "./AboutMe.css";
 
 import { useState, useEffect, ReactNode } from "react";
 

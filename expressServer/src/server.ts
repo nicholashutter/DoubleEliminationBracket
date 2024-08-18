@@ -1,18 +1,18 @@
 import express from "express";
 import EnvVars from "./common/EnvVars";
 import path from "path";
+import cors from "cors";
 import "express-async-errors";
 import helmet from "helmet";
 import { NodeEnvs } from "./common/misc";
 import session from "express-session";
 import BracketManager from "./Bracket";
 import UserManager from "./user";
-import { readUser, updateUser, deleteUser } from "./DbOperator"
+import * as DbOperator from "./DbOperator"
 
-/*
-TODO learn common module so you can export a file of functions and access them using filename.function  
-You will want to use that to export DbOperator and when you write your route files 
-*/
+const authRoutes = require("./routes/authenticationRoute");
+const bracketRoutes = require("./routes/bracketRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 /*
 Create web server, respond to HTTP requests 
@@ -24,6 +24,7 @@ Only server creates users, brackets and express sessions
 
 const userManager = UserManager.getInstance;
 const bracketManager = BracketManager.getInstance;
+
 
 const app = express();
 
@@ -47,7 +48,7 @@ app.use(express.static(path.join(__dirname, "../../reactclient/build")));
 app.use(
   session({
     name: "Tournament Session",
-    secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2I",
+    secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2Ilj2354opiuasfd1423",
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false, maxAge: 10800000 },
@@ -69,45 +70,22 @@ app.get("/", (req, res) =>
   res.sendFile("index.html", { root: staticDir });
 });
 
-//TODO rewrite w encryption
-app.post("/login", (req, res) =>
-{
-
-  const credentials = {
-    username: "nicholas",
-    password: "nicholas"
-  };
-
-  const { username, password } = req.body;
-
-  try
-  {
-    if (username == credentials.username && password == credentials.password)
-    {
-      req.session.user?.updateAuthenticated();
-      res.send("Login Success");
-      console.log("Login Success");
-    }
-    else
-    {
-      throw new Error("");
-    }
-  }
-  catch (err)
-  {
-    res.send("Login Failed");
-    console.log("Login Failed");
-  }
-
-});
 
 /* 
-    TODO app.route(api/bracket)
+    app.route(api/bracket)
 */
+app.use(bracketRoutes);
 
 /* 
-    TODO app.route(api/user)
+    app.route(api/user)
 */
+app.use(userRoutes);
+
+
+/* 
+    app.route(/login /logout )
+*/
+app.use(authRoutes);
 
 
 
