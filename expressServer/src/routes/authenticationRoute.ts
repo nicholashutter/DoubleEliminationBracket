@@ -1,5 +1,7 @@
-const express = require('express');
+import express from 'express';
 import {Request, Response} from "express";
+import session from 'express-session';
+import bcrypt from "bcrypt"; 
 const router = express.Router();
 
 router.get("/login", (req:Request, res:Response )=>
@@ -18,6 +20,7 @@ router.post("/login", (req:Request, res:Response) =>
     redirect to home page if valid session
     done with req.BODY
     */
+   
 });
 
 router.delete("/api/logout", (req:Request, res:Response)=> 

@@ -1,6 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
+import bcrypt from "bcrypt"; 
 import {Request, Response} from "express";
 import * as db from "../DbOperator";
 import UserManager from "../user";
@@ -23,16 +24,17 @@ router.post("/api/createUser", (req:Request, res:Response) =>
             Also need to establish a session and reroute to create or join tourney 
             If new user, then session.authentication = true
     */
-    try 
-    {
-        db.updateUser(userManager.createUser(req.body.userName, req.body.passwordHash, req.body.email));
-    }
-    catch (err) 
-    {
-        console.log(err);
-        res.send("Create User Failed"); 
+  bcrypt.hash(req.body.passwordHash, 10)
+  .then(function (hash) {
+    db.updateUser(userManager.createUser(req.body.userName, hash, req.body.email));
+  })
+  .catch(function (error) 
+  {
+    console.log(error.message);
+    res.send("Create User Failure"); 
+});
 
-    }
+   
     res.send("Create User Success");
 });
 
