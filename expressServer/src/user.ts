@@ -19,7 +19,7 @@ Function Constructor initialize class members and generate id if none provided
   private allTimeWins: number;
   private allTimeLosses: number;
   private totalGamesPlayed: number;
-  private datesPlayed: Map<Date, number>;
+  private datesPlayed: Array<Date>;
 
   protected constructor(
     username?: string,
@@ -46,7 +46,7 @@ Function Constructor initialize class members and generate id if none provided
     this.currentRank = -1; //value -1 indicates default
     this.allTimeWins = -1;
     this.allTimeLosses = -1;
-    this.datesPlayed = new Map<Date, number>();
+    this.datesPlayed = [];
     this.totalGamesPlayed = -1 
   }
   /*
@@ -224,11 +224,10 @@ Functions Getters and Setters with some basic input validation
   {
     this.inGame = this.inGame ? true : false;
   }
-//this function can either update the class member directly for loading from database or increment the value 
   updateDatesPlayed()
   {
     this.totalGamesPlayed++;
-    this.datesPlayed.set(new Date(), this.totalGamesPlayed);
+    this.datesPlayed.push(new Date());
   }
 
   set setGamesPlayed(totalGamesPlayed: number)
@@ -236,9 +235,19 @@ Functions Getters and Setters with some basic input validation
     this.totalGamesPlayed = totalGamesPlayed;
   }
 
-  set setDatesPlayed(datesPlayed: Map<Date, number>)
+  get getGamesPlayed()
+  {
+    return this.totalGamesPlayed;
+  }
+
+  set setDatesPlayed(datesPlayed:Array<Date>)
   {
     this.datesPlayed = datesPlayed;
+  }
+
+  get getDatesPlayed()
+  {
+    return this.datesPlayed;
   }
 
 }
@@ -271,10 +280,11 @@ export default class UserManager extends User
     passwordHash: string,
     email: string,
     id?: number
-  )
+  ):number
   {
     const user = new User(username, passwordHash, email, id);
     this.Users.push(user);
+    return user.getUserID;
   }
 
   public updateUser(username: string,
@@ -287,7 +297,7 @@ export default class UserManager extends User
     allTimeWins?: number,
     allTimeLosses?: number,
     totalGamesPlayed?: number,
-    datesPlayed?: Map<Date, number>,
+    datesPlayed?: Array<Date>,
     seed?: number, 
     lastUpdate?: Date, 
     created?: Date, 

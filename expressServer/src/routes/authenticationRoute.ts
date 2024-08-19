@@ -1,8 +1,8 @@
 const express = require('express');
-
+import {Request, Response} from "express";
 const router = express.Router();
 
-router.get("/login", (req, res )=>
+router.get("/login", (req:Request, res:Response )=>
     {
         /* TODO
         should return whether session is valid or not
@@ -11,7 +11,7 @@ router.get("/login", (req, res )=>
         */
     });
 
-router.post("/login", (req, res) => 
+router.post("/login", (req:Request, res:Response) => 
 {
     /* TODO
     logic to login new user if no valid session, 
@@ -20,7 +20,7 @@ router.post("/login", (req, res) =>
     */
 });
 
-router.delete("/api/logout", (req, res)=> 
+router.delete("/api/logout", (req:Request, res:Response)=> 
 {
     /* TODO
     logic to manually destroy session but not

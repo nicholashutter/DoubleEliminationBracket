@@ -1,8 +1,15 @@
-const express = require('express');
-
+import express from 'express';
 const router = express.Router();
 
-router.get("/api/getUser", (req, res )=>
+import {Request, Response} from "express";
+import * as db from "../DbOperator";
+import UserManager from "../user";
+import BracketManager from "../Bracket";
+
+const userManager = UserManager.getInstance;
+const bracketManager = BracketManager.getInstance;
+
+router.get("/api/getUser", (req:Request, res:Response )=>
     {
         /* TODO
         logic to return selected user,
@@ -10,15 +17,26 @@ router.get("/api/getUser", (req, res )=>
         */
     });
 
-router.post("/api/createUser", (req, res) => 
+router.post("/api/createUser", (req:Request, res:Response) => 
 {
     /* TODO
-    logic to create new user and upload to 
-    database if not exists,  done with json request.BODY
+            Also need to establish a session and reroute to create or join tourney 
+            If new user, then session.authentication = true
     */
+    try 
+    {
+        db.updateUser(userManager.createUser(req.body.userName, req.body.passwordHash, req.body.email));
+    }
+    catch (err) 
+    {
+        console.log(err);
+        res.send("Create User Failed"); 
+
+    }
+    res.send("Create User Success");
 });
 
-router.put("/api/updateUser", (req, res) =>
+router.put("/api/updateUser", (req:Request, res:Response) =>
 {
     /* TODO
     logic to get selected user, copy all properties, 
@@ -29,7 +47,7 @@ router.put("/api/updateUser", (req, res) =>
     */
 });
 
-router.delete("/api/leaveBracket", (req, res)=> 
+router.delete("/api/removeUser", (req:Request, res:Response)=> 
 {
     /* TODO
     logic to get selected user, delete them, 

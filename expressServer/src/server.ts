@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 import express from "express";
 import EnvVars from "./common/EnvVars";
 import path from "path";
@@ -8,7 +10,7 @@ import { NodeEnvs } from "./common/misc";
 import session from "express-session";
 import BracketManager from "./Bracket";
 import UserManager from "./user";
-import * as DbOperator from "./DbOperator"
+
 
 const authRoutes = require("./routes/authenticationRoute");
 const bracketRoutes = require("./routes/bracketRoutes");
@@ -42,6 +44,8 @@ app.use(cors(corsOptions));
 
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
 //reactrouter takes over once entrypoint is served
+
+const staticDir = path.join(__dirname, "../../reactclient/build");
 app.use(express.static(path.join(__dirname, "../../reactclient/build")));
 
 //Include express-session
@@ -86,8 +90,6 @@ app.use(userRoutes);
     app.route(/login /logout )
 */
 app.use(authRoutes);
-
-
 
 // **** Export default **** //
 

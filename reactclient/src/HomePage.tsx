@@ -1,6 +1,5 @@
-import axios from axios; 
+import axios from "axios"; 
 import User from "./user";
-import {User} from "../../expressServer/src/user";
 import { useRouteError, Link, Outlet } from "react-router-dom";
 import "./HomePage.css";
 import { useEffect, useState, ReactNode } from "react";

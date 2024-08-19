@@ -1,6 +1,6 @@
-import axios from axios; 
+import axios from "axios"; 
 import User from "./user";
- "./AboutMe.css";
+import "./AboutMe.css";
 
 import { useState, useEffect, ReactNode } from "react";
 

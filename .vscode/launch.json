@@ -13,6 +13,7 @@
           "${workspaceFolder}/expressServer/node_modules/ts-node/register"
         ],
         "args": [
+          "--watch",
           "${workspaceFolder}/expressServer/src/index.ts"
         ],
         "resolveSourceMapLocations": [

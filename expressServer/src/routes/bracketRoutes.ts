@@ -1,8 +1,8 @@
 const express = require('express');
-
+import {Request, Response} from "express";
 const router = express.Router();
 
-router.get("/api/getBracket", (req, res )=>
+router.get("/api/getBracket", (req:Request, res:Response )=>
     {
         /* TODO
         logic to return selected bracket,
@@ -10,7 +10,7 @@ router.get("/api/getBracket", (req, res )=>
         */
     });
 
-router.post("/api/createBracket", (req, res) => 
+router.post("/api/createBracket", (req:Request, res:Response) => 
 {
     /* TODO
     logic to create new bracket, enter sent user, 
@@ -18,7 +18,7 @@ router.post("/api/createBracket", (req, res) =>
     */
 });
 
-router.put("/api/joinBracket", (req, res) =>
+router.put("/api/joinBracket", (req:Request, res:Response) =>
 {
     /* TODO
     logic to get current brackets by bracketID, 
@@ -28,7 +28,7 @@ router.put("/api/joinBracket", (req, res) =>
     */
 });
 
-router.delete("/api/leaveBracket", (req, res)=> 
+router.delete("/api/leaveBracket", (req:Request, res:Response)=> 
 {
     /* TODO
     logic to get current bracket by bracketID, 
