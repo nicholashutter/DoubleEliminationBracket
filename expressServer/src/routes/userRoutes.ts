@@ -6,6 +6,7 @@ import {Request, Response} from "express";
 import * as db from "../DbOperator";
 import UserManager from "../user";
 import BracketManager from "../Bracket";
+import { isUserLoggedIn } from './authenticationRoute';
 
 const userManager = UserManager.getInstance;
 const bracketManager = BracketManager.getInstance;

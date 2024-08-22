@@ -10,6 +10,7 @@ import { NodeEnvs } from "./common/misc";
 import session from "express-session";
 import BracketManager from "./Bracket";
 import UserManager from "./user";
+import { isUserLoggedIn } from "./routes/authenticationRoute";
 
 
 const authRoutes = require("./routes/authenticationRoute");
@@ -53,7 +54,7 @@ app.use(
   session({
     name: "Tournament Session",
     secret: "Gyb|MTqq%YW(`N$86a5+K]tHCQ9}2Ilj2354opiuasfd1423",
-    resave: false,
+    resave: true,
     saveUninitialized: true,
     cookie: { secure: false, maxAge: 10800000 },
     rolling: true
@@ -69,8 +70,10 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
 
 
 //express route serves entrypoint when get request recieved at base url
-app.get("/", (req, res) =>
+app.get("/", isUserLoggedIn, (req, res) =>
 {
+
+  //add middleware to check for auth before sending full app 
   res.sendFile("index.html", { root: staticDir });
 });
 

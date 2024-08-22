@@ -1,3 +1,5 @@
+import { get } from "http";
+
 /*
 Class user holds common user properties 
 */
@@ -353,22 +355,54 @@ export default class UserManager extends User
 
   }
 
-  public getUser(userID: number): User
+  public getUser<T>(value:T): User
   {
     let user = new User("-1", "-1", "-1");
-    try
+
+    
+    const getByUserName = (value:string) =>
     {
-      const foundUser = this.Users.find(user => user.getUserID === userID);
-      if (foundUser === undefined)
+      try
       {
-        throw new Error("user.ts line 33: User not found in Users collection");
+        const foundUser = this.Users.find(user => user.getUserName === value);
+        if (foundUser === undefined)
+        {
+          throw new Error("user.ts line 33: User not found in Users collection");
+        }
+        else
+        {
+          user = foundUser;
+        }
       }
-      else
-      {
-        user = foundUser;
-      }
+      catch (error) { console.log(error); }
     }
-    catch (error) { console.log(error); }
+
+    const getByUserID = (value:number) =>
+    {
+      try
+      {
+        const foundUser = this.Users.find(user => user.getUserID === value);
+        if (foundUser === undefined)
+        {
+          throw new Error("user.ts line 33: User not found in Users collection");
+        }
+        else
+        {
+          user = foundUser;
+        }
+      }
+      catch (error) { console.log(error); }
+    }
+
+    if (typeof value === "string" )
+      {
+        getByUserName(value);
+      }
+    else if (typeof value === "number")
+      {
+        getByUserID(value);
+      }  
+    
     return user;
   }
 
