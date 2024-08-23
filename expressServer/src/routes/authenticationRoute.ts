@@ -1,26 +1,10 @@
 import express from 'express';
-import {Request, Response, NextFunction} from "express";
+import {Request, Response} from "express";
 import session from 'express-session';
-import bcrypt from "bcrypt"; 
 const router = express.Router();
+
+import bcrypt from "bcrypt"; 
 import UserManager from '../user';
-
-export const isUserLoggedIn = (req:Request, res:Response, next:NextFunction) =>
-{
-    console.log(req.session);
-
-    if (req.session.user)
-    {
-        console.log("User has a matching session");
-        next(); 
-    }
-    else
-    {
-        console.log("User has no matching session");
-        res.redirect("/login"); 
-    }
-
-}
 
 router.get("/login", (req:Request, res:Response )=>
     {

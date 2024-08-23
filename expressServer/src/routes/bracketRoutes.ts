@@ -1,5 +1,4 @@
 import express from 'express';
-import { isUserLoggedIn } from "./authenticationRoute";
 import {Request, Response} from "express";
 const router = express.Router();
 

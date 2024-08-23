@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import express from "express";
+import session from "express-session";
+import {Request, Response, NextFunction} from "express";
 import EnvVars from "./common/EnvVars";
 import path from "path";
 import cors from "cors";
 import "express-async-errors";
 import helmet from "helmet";
 import { NodeEnvs } from "./common/misc";
-import session from "express-session";
 import BracketManager from "./Bracket";
 import UserManager from "./user";
-import { isUserLoggedIn } from "./routes/authenticationRoute";
 
 
 const authRoutes = require("./routes/authenticationRoute");
@@ -42,7 +42,6 @@ const corsOptions: cors.CorsOptions =
 };
 app.use(cors(corsOptions));
 
-
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
 //reactrouter takes over once entrypoint is served
 
@@ -68,10 +67,28 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
   app.use(helmet());
 }
 
+//middleware checking for valid credentials at each api endpoint
+const validateLogin = function (req:Request, res:Response, next:NextFunction)
+{
+    console.log(req.session);
+
+    if (req.session.user)
+    {
+        console.log("User has a matching session");
+        next(); 
+    }
+    else
+    {
+        console.log("User has no matching session");
+        res.redirect("/login"); 
+    }
+
+}
+
+app.use(validateLogin);
 
 //express route serves entrypoint when get request recieved at base url
-app.get("/", isUserLoggedIn, (req, res) =>
-{
+app.get("/", (req, res) => {
 
   //add middleware to check for auth before sending full app 
   res.sendFile("index.html", { root: staticDir });
