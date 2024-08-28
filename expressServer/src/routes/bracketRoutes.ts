@@ -1,6 +1,12 @@
 import express from 'express';
 import {Request, Response} from "express";
 const router = express.Router();
+import {User} from "../user";
+import UserManager from '../user';
+import BracketManager from '../Bracket';
+
+const userManager =  UserManager.getInstance; 
+const bracketManger = BracketManager.getInstance;
 
 router.get("/api/getBracket", (req:Request, res:Response )=>
     {
@@ -12,9 +18,12 @@ router.get("/api/getBracket", (req:Request, res:Response )=>
 
 router.post("/api/createBracket", (req:Request, res:Response) => 
 {
-    /* TODO
-    logic to create new bracket, enter sent user, 
-    return bracketID, done with json request.BODY
+    /*
+        foundUser = userManager.getUser(req.session.user.id);
+        roomCode = bracketManager.createBracket(foundUser.getUserID); 
+
+        res.send(roomCode)
+
     */
 });
 

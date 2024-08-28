@@ -1,6 +1,4 @@
 import UserManager from "./user";
-import * as selectDoubleBracket from "./selectDoubleBracket";
-import * as selectSingleBracket from "./selectSingleBracket";
 import { User } from "./user";
 import crypto from "crypto"; 
 type Seed = number; 
@@ -14,15 +12,19 @@ class Bracket
     userManager:UserManager;
     isRunning: boolean;
     //each bracket should have bracketData holding users and their seed values
-    protected bracketData: Map<User, Seed>; 
+    protected users: Map<User, Seed>; 
+    protected alreadyPlayed: Map<User, Seed>;
     protected winner; 
     protected roomCode; 
+    protected totalByes; 
+    protected numOfPlayers; 
     
 
     protected constructor()
     {
         this.isRunning = true;
-        this.bracketData = new Map();
+        this.users = new Map();
+        this.alreadyPlayed = new Map();
         this.winner = {
             player1: 0,
             player2: 0,
@@ -36,6 +38,8 @@ class Bracket
             return returnValue;
         } 
         this.userManager = UserManager.getInstance;
+        this.totalByes = 0; 
+        this.numOfPlayers = 0;
     }
 
     joinBracket(userID:number)
@@ -46,12 +50,14 @@ class Bracket
        {
         if (currentUser.getUserName == "-1")
             {
-             throw new Error ("Unable to join specified bracket. No matching user found");
+             throw new Error ("Unable to join specified bracket. No matching user found. Err 007");
             }
         else 
             {
-                currentUser.setInGame = true; 
-                this.bracketData.set(currentUser, this.generateSeed(this.bracketData.size));
+                currentUser.setInGame = true;
+                this.userManager.updateUser(currentUser);  
+                /* DOCUMENT */
+                this.users.set(currentUser, this.generateSeed(this.users.size));
             }
        }
        catch (e)
@@ -61,89 +67,136 @@ class Bracket
        
     }
 
+    leaveBracket(userID:number)
+    {
+        const currentUser =  this.userManager.getUser(userID); 
+
+       try
+       {
+        if (currentUser.getUserName == "-1")
+            {
+             throw new Error ("Unable to join specified bracket. No matching user found. Err 008");
+            }
+        else 
+            {
+                currentUser.setInGame = false;
+                this.userManager.updateUser(currentUser);  
+                /* DOCUMENT */
+                this.users.delete(currentUser);
+            }
+       }
+       catch (e)
+       {
+         console.log(e); 
+       }
+    }
+
     generateSeed(value:number)
     {
         return Math.floor(Math.random() * value);
     }
 
-    startMatch(numOfPlayers:number, singleOrDouble:string)
+    startMatch(singleOrDouble:string)
     {
         this.isRunning = true
+        this.numOfPlayers = this.users.size
 
-        let totalByes = 0; 
-        
-        if (numOfPlayers < 2)
+        if (this.numOfPlayers < 2)
             {
                 console.log("Failed to start match. Err 003"); 
             }
-            else if (numOfPlayers < 5)
+            else if (this.numOfPlayers < 5)
             {
-                totalByes = 4 - numOfPlayers;
-                numOfPlayers = 4; 
+                this.totalByes = 4 - this.numOfPlayers;
+                this.numOfPlayers = 4; 
             }
-            else if (numOfPlayers < 9)
+            else if (this.numOfPlayers < 9)
             {
-                totalByes = 8 - numOfPlayers;
-                numOfPlayers = 9;
+                this.totalByes = 8 - this.numOfPlayers;
+                this.numOfPlayers = 9;
             }
-            else if (numOfPlayers < 17)
+            else if (this.numOfPlayers < 17)
             {
-                totalByes = 16 - numOfPlayers;
-                numOfPlayers = 16;
+                this.totalByes = 16 - this.numOfPlayers;
+                this.numOfPlayers = 16;
             }
-            else if (numOfPlayers < 33)
+            else if (this.numOfPlayers < 33)
             {
-                totalByes = 32 - numOfPlayers;
-                numOfPlayers = 32; 
+                this.totalByes = 32 - this.numOfPlayers;
+                this.numOfPlayers = 32; 
             }
+        
+            this.users.forEach((value, key) =>
+                {
+                    key.setInGame = true; 
+                })
 
-        if (singleOrDouble == "single")
+            /* based on number of byes randomly select number of byes users to send to alreadyplayed */ 
+    }
+
+    loadPlayers()
+    {
+        let low = 0;
+        let lower = 0; 
+        let player1:any; 
+        let player2:any;
+
+       const pickPlayer1 = () =>
+       {
+        this.users.forEach((value, key) =>
         {
-            
-            switch (numOfPlayers)
+            if (low < value)
             {
-                case 2:
-                    return selectSingleBracket.twoPlayers;
-                case 4:
-                    return selectSingleBracket.fourPlayers;
-                case 8:
-                    return selectSingleBracket.eightPlayers;
-                case 16:
-                    return selectSingleBracket.sixteenPlayers;
-                case 32:
-                    return selectSingleBracket.thirtyTwoPlayers;
-                case 64:
-                    return selectSingleBracket.sixtyFourPlayers;  
+                low = value;
             }
+            else if (low == value)
+            {
+                player1 = key; 
+            }
+        })
         }
         
-        else if (singleOrDouble == "double")
+
+        const pickPlayer2 = () =>
         {
-            switch (numOfPlayers)
+            this.users.forEach((value, key) =>
             {
-                case 2:
-                    return selectDoubleBracket.twoPlayers;
-                case 4:
-                    return selectDoubleBracket.fourPlayers;
-                case 8:
-                    return selectDoubleBracket.eightPlayers;
-                case 16:
-                    return selectDoubleBracket.sixteenPlayers;
-                case 32:
-                    return selectDoubleBracket.thirtyTwoPlayers;
-                case 64:
-                    return selectDoubleBracket.sixtyFourPlayers; 
-                    
+                if (lower < value)
+                {
+                    low = value;
+                }
+                else if (lower == value)
+                {
+                    player2 = key; 
+                }
+            })
+        }    
+            
+        pickPlayer1(); 
+        pickPlayer2();
+
+        while (this.alreadyPlayed.has (player1))
+        {
+            pickPlayer1 ();
+            pickPlayer2 ();
+        }
+        try 
+        {
+            if (player1 && player2)
+                {
+                    return {player1, player2}
+                }
+            else 
+            {
+                throw new Error("Unable to find players. Err 010");  
             }
         }
-
-        this.bracketData.size 
-
-        const sortedArray = Array.from(this.bracketData).sort((a,b) => a[1] -b[1]);
-
-        const [player1, player2] = Array.from(sortedArray).slice(0,2);
-
-        return {player1, player2};
+        catch (e)
+        {
+            console.log(e); 
+        }
+        
+        
     }
 
     endMatch(winner: string)
@@ -161,6 +214,10 @@ class Bracket
             console.log (e);
         }
 
+        this.users.forEach((value, key) =>
+        {
+            key.setInGame = false; 
+        })
         this.isRunning = false;
     }
 
@@ -204,7 +261,7 @@ class Bracket
                 console.log("Unknown error. Err 002"); 
             }
         }
-
+        //TODO updateUsers and load new users if ISrunning == true
     }
 
     get getRoomCode ()
@@ -219,12 +276,12 @@ export default class BracketManager extends Bracket
     
     static #instance: BracketManager;
 
-    private brackets: Array <User>;  
+    private brackets: Array <Bracket>;  
 
     private constructor()
     {
         super();
-        this.brackets = new Array <User>();
+        this.brackets = new Array <Bracket>();
          
     }
     public static get getInstance(): BracketManager
@@ -237,31 +294,79 @@ export default class BracketManager extends Bracket
         return BracketManager.#instance;
     }
 
-    public createBracket()
+    public createRoom(userID:number)
     {
-        //TODO
-        //create new Bracket(); 
-        //call initBracket(); 
+        const foundUser = this.userManager.getUser(userID); 
+
+        try 
+        {
+            if (foundUser.getUserName == "-1")
+                {
+                    throw new Error("Unable to create room. Err 004");
+                }
+        }
+        catch (e) 
+        {
+            console.log(e);
+        }
+        
+       const currentBracket = new Bracket();
+       this.brackets.push(currentBracket);
+       const roomCode = currentBracket.getRoomCode; 
+       currentBracket.joinBracket(foundUser.getUserID); 
+
+       return roomCode; 
     }
 
-    public deleteBracket()
+    public leaveRoom(userID:number, roomCode:string)
     {
-        //TODO
-        //remove bracket from bracketManager
+        const foundUser = this.userManager.getUser(userID); 
+
+        try 
+        {
+            const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
+            if (foundBracket)
+            {
+                foundBracket.leaveBracket(foundUser.getUserID); 
+            }
+            else 
+            {
+                throw new Error("Unable to find bracket specified. Err 005");
+            }
+        }
+        catch (e)
+        {
+            console.log(e)
+        }
     }
 
-    public joinBracket()
+    public joinRoom(userID:number, roomCode:string)
     {
-        //TODO
-        //get bracket from bracketManager by id
-        // add user (sessionID) to bracket
+        const foundUser = this.userManager.getUser(userID); 
+
+        try 
+        {
+            const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
+            if (foundBracket)
+            {
+                foundBracket.joinBracket(foundUser.getUserID); 
+            }
+            else 
+            {
+                throw new Error("Unable to find bracket specified. Err 006");
+            }
+        }
+        catch (e)
+        {
+            console.log(e)
+        }
+        
     }
 
-    public leaveBracket()
+    public removeBracket()
     {
         //TODO
-        //get bracket from bracketManager by id
-        // remove user (sessionID) from bracket
+        //should only be called by api when match is ended 
     }
 
 

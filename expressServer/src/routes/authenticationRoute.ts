@@ -1,10 +1,7 @@
 import express from 'express';
 import {Request, Response} from "express";
-import session from 'express-session';
-const router = express.Router();
-
-import bcrypt from "bcrypt"; 
 import UserManager from '../user';
+const router = express.Router();
 
 router.get("/login", (req:Request, res:Response )=>
     {
@@ -27,6 +24,8 @@ router.post("/login", async (req:Request, res:Response) =>
 
         //TODO check if you need redirect here 
         res.status(200).send("Logged In. Other endpoints unlocked");
+
+        //send application here
    } 
    else 
    {

@@ -289,7 +289,33 @@ export default class UserManager extends User
     return user.getUserID;
   }
 
-  public updateUser(username: string,
+  public updateUser(currentUser:User)
+  {
+    try
+    {
+      const foundUser = this.Users.find((user) => user.getUserID == currentUser.getUserID);
+      const userLocation = this.Users.indexOf(currentUser);
+      if (foundUser!.getUserName == "-1"|| foundUser === undefined)
+      {
+        throw new Error ("Unable to find specified User. Err 009");
+      }
+      else 
+      {
+        delete this.Users[userLocation];
+        this.Users[userLocation] = currentUser; 
+        console.log("User Updated Successfully"); 
+      }
+
+    }
+
+    catch (e)
+    {
+      console.log(e);
+    }
+    
+  }
+
+  public replaceUser(username: string,
     passwordHash: string,
     email: string,
     id?: number,
