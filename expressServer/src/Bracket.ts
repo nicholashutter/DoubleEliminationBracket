@@ -1,7 +1,7 @@
 import UserManager from "./user";
 import { User } from "./user";
-import crypto from "crypto"; 
-type Seed = number; 
+import crypto from "crypto";
+type Seed = number;
 
 
 /*
@@ -9,22 +9,20 @@ Run the bracket and update users
 */
 class Bracket
 {
-    userManager:UserManager;
+    userManager: UserManager;
     isRunning: boolean;
     //each bracket should have bracketData holding users and their seed values
-    protected users: Map<User, Seed>; 
-    protected alreadyPlayed: Map<User, Seed>;
-    protected winner; 
-    protected roomCode; 
-    protected totalByes; 
-    protected numOfPlayers; 
-    
+    protected users: Map<User, Seed>;
+    protected winner;
+    protected roomCode;
+    protected totalByes;
+    protected numOfPlayers;
+
 
     protected constructor()
     {
         this.isRunning = true;
         this.users = new Map();
-        this.alreadyPlayed = new Map();
         this.winner = {
             player1: 0,
             player2: 0,
@@ -36,172 +34,163 @@ class Bracket
             let returnValue = salt[crypto.randomInt(3)]
             returnValue += crypto.randomInt(99000);
             return returnValue;
-        } 
+        }
         this.userManager = UserManager.getInstance;
-        this.totalByes = 0; 
+        this.totalByes = 0;
         this.numOfPlayers = 0;
     }
 
-    joinBracket(userID:number)
+    joinBracket(userID: number)
     {
-       const currentUser =  this.userManager.getUser(userID); 
+        const currentUser = this.userManager.getUser(userID);
 
-       try
-       {
-        if (currentUser.getUserName == "-1")
+        try
+        {
+            if (currentUser.getUserName == "-1")
             {
-             throw new Error ("Unable to join specified bracket. No matching user found. Err 007");
+                throw new Error("Unable to join specified bracket. No matching user found. Err 007");
             }
-        else 
+            else 
             {
                 currentUser.setInGame = true;
-                this.userManager.updateUser(currentUser);  
+                this.userManager.updateUser(currentUser);
                 /* DOCUMENT */
                 this.users.set(currentUser, this.generateSeed(this.users.size));
             }
-       }
-       catch (e)
-       {
-         console.log(e); 
-       }
-       
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
+
     }
 
-    leaveBracket(userID:number)
+    leaveBracket(userID: number)
     {
-        const currentUser =  this.userManager.getUser(userID); 
+        const currentUser = this.userManager.getUser(userID);
 
-       try
-       {
-        if (currentUser.getUserName == "-1")
+        try
+        {
+            if (currentUser.getUserName == "-1")
             {
-             throw new Error ("Unable to join specified bracket. No matching user found. Err 008");
+                throw new Error("Unable to join specified bracket. No matching user found. Err 008");
             }
-        else 
+            else 
             {
                 currentUser.setInGame = false;
-                this.userManager.updateUser(currentUser);  
+                this.userManager.updateUser(currentUser);
                 /* DOCUMENT */
                 this.users.delete(currentUser);
             }
-       }
-       catch (e)
-       {
-         console.log(e); 
-       }
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
     }
 
-    generateSeed(value:number)
+    generateSeed(value: number)
     {
         return Math.floor(Math.random() * value);
     }
 
-    startMatch(singleOrDouble:string)
+    calculateByes()
+    {
+        if (this.numOfPlayers < 2)
+        {
+            console.log("Failed to start match. Err 003");
+        }
+        else if (this.numOfPlayers < 5)
+        {
+            this.totalByes = 4 - this.numOfPlayers;
+            this.numOfPlayers = 4;
+        }
+        else if (this.numOfPlayers < 9)
+        {
+            this.totalByes = 8 - this.numOfPlayers;
+            this.numOfPlayers = 9;
+        }
+        else if (this.numOfPlayers < 17)
+        {
+            this.totalByes = 16 - this.numOfPlayers;
+            this.numOfPlayers = 16;
+        }
+        else if (this.numOfPlayers < 33)
+        {
+            this.totalByes = 32 - this.numOfPlayers;
+            this.numOfPlayers = 32;
+        }
+    }
+
+    startSinglesMatch()
     {
         this.isRunning = true
         this.numOfPlayers = this.users.size
+        this.calculateByes(); 
 
-        if (this.numOfPlayers < 2)
-            {
-                console.log("Failed to start match. Err 003"); 
-            }
-            else if (this.numOfPlayers < 5)
-            {
-                this.totalByes = 4 - this.numOfPlayers;
-                this.numOfPlayers = 4; 
-            }
-            else if (this.numOfPlayers < 9)
-            {
-                this.totalByes = 8 - this.numOfPlayers;
-                this.numOfPlayers = 9;
-            }
-            else if (this.numOfPlayers < 17)
-            {
-                this.totalByes = 16 - this.numOfPlayers;
-                this.numOfPlayers = 16;
-            }
-            else if (this.numOfPlayers < 33)
-            {
-                this.totalByes = 32 - this.numOfPlayers;
-                this.numOfPlayers = 32; 
-            }
+        const player1 = this.loadPlayers() as User;
+        const player2 = this.loadPlayers() as User;
+
+        return { player1, player2 }
+    }
+
+    startDoublesMatch()
+    {
+        this.isRunning = true
+        this.numOfPlayers = this.users.size
+        this.calculateByes(); 
+
+        /* 
         
-            this.users.forEach((value, key) =>
-                {
-                    key.setInGame = true; 
-                })
+            TODO in doubles, only pull in players that have the same number of eliminations
+            In doubles only pull in players that have same number of rounds
+        */
 
-            /* based on number of byes randomly select number of byes users to send to alreadyplayed */ 
+        const player1 = this.loadPlayers() as User;
+        const player2 = this.loadPlayers() as User;
+
+        return { player1, player2 }
     }
 
     loadPlayers()
     {
         let low = 0;
-        let lower = 0; 
-        let player1:any; 
-        let player2:any;
+        let player1: any = null;
 
-       const pickPlayer1 = () =>
-       {
-        this.users.forEach((value, key) =>
-        {
-            if (low < value)
-            {
-                low = value;
-            }
-            else if (low == value)
-            {
-                player1 = key; 
-            }
-        })
-        }
-        
-
-        const pickPlayer2 = () =>
+        const findUser = () =>
         {
             this.users.forEach((value, key) =>
             {
-                if (lower < value)
+                if (low < value)
                 {
                     low = value;
                 }
-                else if (lower == value)
+                else if (low == value)
                 {
-                    player2 = key; 
+
+                    player1 = key as User;
                 }
             })
-        }    
-            
-        pickPlayer1(); 
-        pickPlayer2();
-
-        while (this.alreadyPlayed.has (player1))
-        {
-            pickPlayer1 ();
-            pickPlayer2 ();
         }
-        try 
+
+        findUser();
+
+        if (player1.getInGame == true)
         {
-            if (player1 && player2)
-                {
-                    return {player1, player2}
-                }
-            else 
+            while (player1.getInGame == true)
             {
-                throw new Error("Unable to find players. Err 010");  
+                findUser();
             }
         }
-        catch (e)
-        {
-            console.log(e); 
-        }
-        
-        
+
+        player1.setInGame = true;
+
+        return player1;
     }
 
     endMatch(winner: string)
     {
-        const winningUser = this.userManager.getUser(winner); 
+        const winningUser = this.userManager.getUser(winner);
         try 
         {
             if (winningUser.getUserName == "-1")
@@ -211,17 +200,19 @@ class Bracket
         }
         catch (e)
         {
-            console.log (e);
+            console.log(e);
         }
 
         this.users.forEach((value, key) =>
         {
-            key.setInGame = false; 
+            key.setInGame = false;
         })
         this.isRunning = false;
+
+        
     }
 
-    selectWinner(winner:string)
+    selectWinner(winner: string)
     {
         switch (winner)
         {
@@ -237,7 +228,7 @@ class Bracket
 
             default:
                 console.log("Invalid argument");
-                break; 
+                break;
         }
 
         if (this.winner.currentVotes == 2)
@@ -245,26 +236,26 @@ class Bracket
             if (this.winner.player1 == 2)
             {
                 this.endMatch("player1");
-                this.winner.currentVotes = 0; 
+                this.winner.currentVotes = 0;
             }
             else if (this.winner.player2 == 2)
             {
                 this.endMatch("player2");
-                this.winner.currentVotes = 0; 
+                this.winner.currentVotes = 0;
             }
             else if (this.winner.player1 < 2 && this.winner.player2 < 2)
             {
-                return -1; 
+                return -1;
             }
             else 
             {
-                console.log("Unknown error. Err 002"); 
+                console.log("Unknown error. Err 002");
             }
         }
         //TODO updateUsers and load new users if ISrunning == true
     }
 
-    get getRoomCode ()
+    get getRoomCode()
     {
         return this.roomCode;
     }
@@ -273,16 +264,16 @@ class Bracket
 
 export default class BracketManager extends Bracket
 {
-    
+
     static #instance: BracketManager;
 
-    private brackets: Array <Bracket>;  
+    private brackets: Array<Bracket>;
 
     private constructor()
     {
         super();
-        this.brackets = new Array <Bracket>();
-         
+        this.brackets = new Array<Bracket>();
+
     }
     public static get getInstance(): BracketManager
     {
@@ -294,40 +285,40 @@ export default class BracketManager extends Bracket
         return BracketManager.#instance;
     }
 
-    public createRoom(userID:number)
+    public createRoom(userID: number)
     {
-        const foundUser = this.userManager.getUser(userID); 
+        const foundUser = this.userManager.getUser(userID);
 
         try 
         {
             if (foundUser.getUserName == "-1")
-                {
-                    throw new Error("Unable to create room. Err 004");
-                }
+            {
+                throw new Error("Unable to create room. Err 004");
+            }
         }
         catch (e) 
         {
             console.log(e);
         }
-        
-       const currentBracket = new Bracket();
-       this.brackets.push(currentBracket);
-       const roomCode = currentBracket.getRoomCode; 
-       currentBracket.joinBracket(foundUser.getUserID); 
 
-       return roomCode; 
+        const currentBracket = new Bracket();
+        this.brackets.push(currentBracket);
+        const roomCode = currentBracket.getRoomCode;
+        currentBracket.joinBracket(foundUser.getUserID);
+
+        return roomCode;
     }
 
-    public leaveRoom(userID:number, roomCode:string)
+    public leaveRoom(userID: number, roomCode: string)
     {
-        const foundUser = this.userManager.getUser(userID); 
+        const foundUser = this.userManager.getUser(userID);
 
         try 
         {
             const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
             if (foundBracket)
             {
-                foundBracket.leaveBracket(foundUser.getUserID); 
+                foundBracket.leaveBracket(foundUser.getUserID);
             }
             else 
             {
@@ -340,16 +331,16 @@ export default class BracketManager extends Bracket
         }
     }
 
-    public joinRoom(userID:number, roomCode:string)
+    public joinRoom(userID: number, roomCode: string)
     {
-        const foundUser = this.userManager.getUser(userID); 
+        const foundUser = this.userManager.getUser(userID);
 
         try 
         {
             const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
             if (foundBracket)
             {
-                foundBracket.joinBracket(foundUser.getUserID); 
+                foundBracket.joinBracket(foundUser.getUserID);
             }
             else 
             {
@@ -360,7 +351,7 @@ export default class BracketManager extends Bracket
         {
             console.log(e)
         }
-        
+
     }
 
     public removeBracket()

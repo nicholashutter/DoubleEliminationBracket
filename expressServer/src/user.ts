@@ -14,9 +14,9 @@ Function Constructor initialize class members and generate id if none provided
   private passwordHash: string;
   private created: Date;
   private lastUpdate: Date;
-  private authenticated: boolean;
-  private seed: number; 
+  private eliminations: number;
   private inGame: boolean;
+  private round: number; 
   private currentRank: number;
   private allTimeWins: number;
   private allTimeLosses: number;
@@ -42,9 +42,9 @@ Function Constructor initialize class members and generate id if none provided
     this.email = email!;
     this.created = new Date();
     this.lastUpdate = new Date();
-    this.authenticated = false;
-    this.seed = -1; 
+    this.eliminations = 0; 
     this.inGame = false;
+    this.round = 0;
     this.currentRank = -1; //value -1 indicates default
     this.allTimeWins = -1;
     this.allTimeLosses = -1;
@@ -117,6 +117,16 @@ Functions Getters and Setters with some basic input validation
     this.lastUpdate = new Date();
   }
 
+  set setEliminations(value:number)
+  {
+    this.eliminations = value;
+  }
+
+  get getEliminations()
+  {
+    return this.eliminations;
+  }
+
   get getCreated(): Date
   {
     return this.created;
@@ -131,32 +141,6 @@ Functions Getters and Setters with some basic input validation
   {
     this.created = new Date();
   }
-
-  get getAuthenticated(): boolean
-  {
-    return this.authenticated;
-  }
-
-  set setAuthenticated(authenticated: boolean)
-  {
-    this.authenticated = authenticated;
-  }
-
-  updateAuthenticated()
-  {
-    this.authenticated = this.authenticated ? true : false;
-  }
-
-  get getSeed(): number
-  {
-    return this.seed;
-  }
-
-  set setSeed(seed: number)
-  {
-    this.seed = seed; 
-  }
-
   get getCurrentRank(): number
   {
     return this.currentRank;
