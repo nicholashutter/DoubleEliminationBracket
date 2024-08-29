@@ -17,6 +17,9 @@ class Bracket
     protected roomCode;
     protected totalByes;
     protected numOfPlayers;
+    protected player1:User; 
+    protected player2:User;
+    protected currentRound; 
 
 
     protected constructor()
@@ -38,6 +41,9 @@ class Bracket
         this.userManager = UserManager.getInstance;
         this.totalByes = 0;
         this.numOfPlayers = 0;
+        this.currentRound = 0; 
+        this.player1 = this.userManager.getUser(this.userManager.createUser("","","", 0)); 
+        this.player2 = this.userManager.getUser("");
     }
 
     joinBracket(userID: number)
@@ -89,14 +95,14 @@ class Bracket
         }
     }
 
-    generateSeed(value: number)
+    private generateSeed(value: number)
     {
         return Math.floor(Math.random() * value);
     }
 
-    calculateByes()
+    private calculateByes()
     {
-        if (this.numOfPlayers < 2)
+        if (this.numOfPlayers < 3)
         {
             console.log("Failed to start match. Err 003");
         }
@@ -122,11 +128,22 @@ class Bracket
         }
     }
 
-    startSinglesMatch()
+    private applyByes()
+    {
+        for (let i = 0; i < this.totalByes; i++)
+        {
+            const userSkipsRound = this.loadPlayers() as User; 
+            userSkipsRound.setRound = userSkipsRound.getRound + 1;
+        }
+    }
+
+    startSinglesRound()
     {
         this.isRunning = true
+        this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size
-        this.calculateByes(); 
+        this.calculateByes();
+        this.applyByes();
 
         const player1 = this.loadPlayers() as User;
         const player2 = this.loadPlayers() as User;
@@ -134,28 +151,28 @@ class Bracket
         return { player1, player2 }
     }
 
-    startDoublesMatch()
+    startDoublesRound()
     {
         this.isRunning = true
+        this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size
-        this.calculateByes(); 
-
-        /* 
-        
-            TODO in doubles, only pull in players that have the same number of eliminations
-            In doubles only pull in players that have same number of rounds
-        */
+        this.calculateByes();
+        this.applyByes();
 
         const player1 = this.loadPlayers() as User;
+       
         const player2 = this.loadPlayers() as User;
+       
 
-        return { player1, player2 }
+
+        return {player1, player2}
     }
 
-    loadPlayers()
+   private loadPlayers()
     {
         let low = 0;
-        let player1: any = null;
+        const localUserID = this.userManager.createUser("", "", "");
+        let player1 = this.userManager.getUser(localUserID); 
 
         const findUser = () =>
         {
@@ -168,34 +185,44 @@ class Bracket
                 else if (low == value)
                 {
 
-                    player1 = key as User;
+                    player1 = key;
                 }
             })
         }
 
         findUser();
 
-        if (player1.getInGame == true)
+        if (player1.getInGame == true && this.currentRound !== player1.getRound)
         {
-            while (player1.getInGame == true)
+            
+            for (let i = 0; player1.getInGame == true && this.currentRound !== player1.getRound; i++)
             {
                 findUser();
+
+                if (i == this.users.size + 1)
+                {
+                    player1.setUserName = "-1"; 
+                    break; 
+                }  
             }
         }
-
+        this.userManager.deleteUser(localUserID);
         player1.setInGame = true;
-
+        player1.setRound = player1.getRound + 1; 
         return player1;
     }
 
-    endMatch(winner: string)
+    endRound(winner: string)
     {
         const winningUser = this.userManager.getUser(winner);
+        winningUser.setAllTimeWins = winningUser.getAllTimeWins + 1;
         try 
         {
             if (winningUser.getUserName == "-1")
             {
-                throw new Error("User not found. Err 001");
+                this.endMatch(); 
+                throw new Error(`Unable to find user who is 
+                    either inGame or on currentRound. Is bracket over?`);
             }
         }
         catch (e)
@@ -203,55 +230,80 @@ class Bracket
             console.log(e);
         }
 
-        this.users.forEach((value, key) =>
-        {
-            key.setInGame = false;
-        })
-        this.isRunning = false;
-
         
     }
 
-    selectWinner(winner: string)
+    endMatch ()
+    {
+        this.users.forEach((value, key) =>
+            {
+                key.setInGame = false;
+                key.setRound = 0;
+            })
+        this.isRunning = false;
+        this.currentRound = 0;
+
+        this.users.forEach((value, key)=>
+        {
+            const player1 = this.userManager.getUser(key.getUserID)
+
+            this.userManager.updateUser(player1);
+        })
+    }
+
+    selectWinner(winner:string)
     {
         switch (winner)
         {
             case "player1":
-                this.winner.player1++;
-                this.winner.currentVotes++;
+                this.winner.player1 = this.winner.player1 + 1;
+                this.winner.currentVotes = this.winner.currentVotes +1;
                 break;
 
             case "player2":
-                this.winner.player2++;
-                this.winner.currentVotes++;
+                this.winner.player2 = this.winner.player2 +1;
+                this.winner.currentVotes = this.winner.currentVotes +1;
                 break;
 
             default:
                 console.log("Invalid argument");
                 break;
         }
-
-        if (this.winner.currentVotes == 2)
+        try
         {
-            if (this.winner.player1 == 2)
-            {
-                this.endMatch("player1");
-                this.winner.currentVotes = 0;
-            }
-            else if (this.winner.player2 == 2)
-            {
-                this.endMatch("player2");
-                this.winner.currentVotes = 0;
-            }
-            else if (this.winner.player1 < 2 && this.winner.player2 < 2)
-            {
-                return -1;
-            }
-            else 
-            {
-                console.log("Unknown error. Err 002");
-            }
+            if (this.winner.currentVotes == 2)
+                {
+                    if (this.winner.player1 == 2)
+                    {
+                        this.endRound("player1");
+                        this.winner.currentVotes = 0;
+                    }
+                    else if (this.winner.player2 == 2)
+                    {
+                        this.endRound("player2");
+                        this.winner.currentVotes = 0;
+                    }
+                    else if (this.winner.player1 < 2 && this.winner.player2 < 2)
+                    {
+                        return -1;
+                    }
+                    else 
+                    {
+                        console.log("Unknown error. Err 002");
+                    }
+                }
+            else if (this.winner.currentVotes > 2)
+                {
+                    throw new Error(`currentVotes variable greater than 2. 
+                        This should not be possible. Attempting to self heal. Cast votes again. Err 011`);
+                        this.winner.currentVotes = 0; 
+                } 
         }
+        catch (e)
+        {
+            console.log(e); 
+        }
+        
         //TODO updateUsers and load new users if ISrunning == true
     }
 

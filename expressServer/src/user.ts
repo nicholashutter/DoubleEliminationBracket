@@ -30,7 +30,7 @@ Function Constructor initialize class members and generate id if none provided
     id?: number
   )
   {
-    if (!id)
+    if (id)
     {
       this.id = Math.floor(Math.random() * 1000);
     } else
@@ -171,11 +171,6 @@ Functions Getters and Setters with some basic input validation
     this.allTimeWins = value;
   }
 
-  updateAllTimeWins()
-  {
-    this.allTimeWins++; 
-  }
-
   get getAllTimeLosses(): number
   {
     return this.allTimeLosses;
@@ -184,11 +179,6 @@ Functions Getters and Setters with some basic input validation
   set setAllTimeLosses(value: number)
   {
     this.allTimeLosses = value;
-  }
-
-  updateAllTimeLosses()
-  {
-    this.allTimeLosses++;
   }
 
   get getPasswordHash(): string
@@ -206,14 +196,13 @@ Functions Getters and Setters with some basic input validation
     this.inGame = inGame;
   }
 
-  updateInGame()
+  get getRound()
   {
-    this.inGame = this.inGame ? true : false;
+    return this.round; 
   }
-  updateDatesPlayed()
+  set setRound(value:number)
   {
-    this.totalGamesPlayed++;
-    this.datesPlayed.push(new Date());
+    this.round = value; 
   }
 
   set setGamesPlayed(totalGamesPlayed: number)
@@ -303,14 +292,12 @@ export default class UserManager extends User
     passwordHash: string,
     email: string,
     id?: number,
-    authenticated?: boolean,
     inGame?: boolean,
     currentRank?: number,
     allTimeWins?: number,
     allTimeLosses?: number,
     totalGamesPlayed?: number,
-    datesPlayed?: Array<Date>,
-    seed?: number, 
+    datesPlayed?: Array<Date>, 
     lastUpdate?: Date, 
     created?: Date, 
 
@@ -321,10 +308,6 @@ export default class UserManager extends User
     if (id)
     {
       user.setUserID = id;
-    }
-    if (authenticated)
-    {
-      user.setAuthenticated = authenticated;
     }
     if (inGame)
     {
@@ -349,10 +332,6 @@ export default class UserManager extends User
     if (datesPlayed)
     {
       user.setDatesPlayed = datesPlayed;
-    }
-    if (seed)
-    {
-      user.setSeed = seed;
     }
     if (lastUpdate)
     {
