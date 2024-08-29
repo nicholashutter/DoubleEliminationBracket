@@ -111,12 +111,7 @@ Functions Getters and Setters with some basic input validation
   {
     this.lastUpdate = value;
   }
-
-  updateLastUpdate()
-  {
-    this.lastUpdate = new Date();
-  }
-
+  
   set setEliminations(value:number)
   {
     this.eliminations = value;
@@ -137,10 +132,6 @@ Functions Getters and Setters with some basic input validation
     this.created = value;
   }
 
-  updateCreated()
-  {
-    this.created = new Date();
-  }
   get getCurrentRank(): number
   {
     return this.currentRank;
@@ -149,16 +140,6 @@ Functions Getters and Setters with some basic input validation
   set setCurrentRank(value: number)
   {
     this.currentRank = value;
-  }
-
-  incrementCurrentRank()
-  {
-    this.currentRank++; 
-  }
-
-  decrementCurrentRank()
-  {
-    this.currentRank--;
   }
 
   get getAllTimeWins(): number
