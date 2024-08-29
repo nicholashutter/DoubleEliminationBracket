@@ -3,10 +3,26 @@ interface User {
     userName?: string;
     email?: string;
     passwordHash?: string;
-    authenticated?: boolean;
-    seed?: number;
+    created?: Date;
+    lastUpdate?: Date;
+    eliminations?: number;
     inGame?: boolean;
+    round?: number; 
     currentRank?: number;
+    allTimeWins?: number;
+    allTimeLosses?: number;
+    totalGamesPlayed?: number;
+    datesPlayed?: Array<Date>;
+}
+export interface SessionInfo
+{
+    roomCode?:string; 
 }
 
 export default User; 
+
+
+
+
+
+

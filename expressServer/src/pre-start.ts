@@ -5,14 +5,15 @@
  */
 
 // NOTE: DO NOT IMPORT ANY SOURCE CODE HERE
-import path from 'path';
-import dotenv from 'dotenv';
-import { parse } from 'ts-command-line-args';
+import path from "path";
+import dotenv from "dotenv";
+import { parse } from "ts-command-line-args";
 
 
 // **** Types **** //
 
-interface IArgs {
+interface IArgs
+{
   env: string;
 }
 
@@ -23,15 +24,16 @@ interface IArgs {
 const args = parse<IArgs>({
   env: {
     type: String,
-    defaultValue: 'development',
+    defaultValue: "development",
     alias: 'e',
   },
 });
 
 // Set the env file
 const result2 = dotenv.config({
-  path: path.join(__dirname, `../env/${args.env}.env`),
+  path: path.join(__dirname, "../env/${args.env}.env"),
 });
-if (result2.error) {
+if (result2.error)
+{
   throw result2.error;
 }

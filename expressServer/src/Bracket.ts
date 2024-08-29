@@ -2,8 +2,6 @@ import UserManager from "./user";
 import { User } from "./user";
 import crypto from "crypto";
 type Seed = number;
-
-
 /*
 Run the bracket and update users
 */
@@ -17,9 +15,9 @@ class Bracket
     protected roomCode;
     protected totalByes;
     protected numOfPlayers;
-    protected player1:User; 
-    protected player2:User;
-    protected currentRound; 
+    protected player1: User;
+    protected player2: User;
+    protected currentRound;
 
 
     protected constructor()
@@ -41,8 +39,8 @@ class Bracket
         this.userManager = UserManager.getInstance;
         this.totalByes = 0;
         this.numOfPlayers = 0;
-        this.currentRound = 0; 
-        this.player1 = this.userManager.getUser(this.userManager.createUser("","","", 0)); 
+        this.currentRound = 0;
+        this.player1 = this.userManager.getUser(this.userManager.createUser("", "", "", 0));
         this.player2 = this.userManager.getUser("");
     }
 
@@ -132,7 +130,7 @@ class Bracket
     {
         for (let i = 0; i < this.totalByes; i++)
         {
-            const userSkipsRound = this.loadPlayers() as User; 
+            const userSkipsRound = this.loadPlayers() as User;
             userSkipsRound.setRound = userSkipsRound.getRound + 1;
         }
     }
@@ -160,19 +158,19 @@ class Bracket
         this.applyByes();
 
         const player1 = this.loadPlayers() as User;
-       
+
         const player2 = this.loadPlayers() as User;
-       
 
 
-        return {player1, player2}
+
+        return { player1, player2 }
     }
 
-   private loadPlayers()
+    private loadPlayers()
     {
         let low = 0;
         const localUserID = this.userManager.createUser("", "", "");
-        let player1 = this.userManager.getUser(localUserID); 
+        let player1 = this.userManager.getUser(localUserID);
 
         const findUser = () =>
         {
@@ -194,21 +192,21 @@ class Bracket
 
         if (player1.getInGame == true && this.currentRound !== player1.getRound)
         {
-            
+
             for (let i = 0; player1.getInGame == true && this.currentRound !== player1.getRound; i++)
             {
                 findUser();
 
                 if (i == this.users.size + 1)
                 {
-                    player1.setUserName = "-1"; 
-                    break; 
-                }  
+                    player1.setUserName = "-1";
+                    break;
+                }
             }
         }
         this.userManager.deleteUser(localUserID);
         player1.setInGame = true;
-        player1.setRound = player1.getRound + 1; 
+        player1.setRound = player1.getRound + 1;
         return player1;
     }
 
@@ -220,7 +218,7 @@ class Bracket
         {
             if (winningUser.getUserName == "-1")
             {
-                this.endMatch(); 
+                this.endMatch();
                 throw new Error(`Unable to find user who is 
                     either inGame or on currentRound. Is bracket over?`);
             }
@@ -230,20 +228,20 @@ class Bracket
             console.log(e);
         }
 
-        
+
     }
 
-    endMatch ()
+    endMatch()
     {
         this.users.forEach((value, key) =>
-            {
-                key.setInGame = false;
-                key.setRound = 0;
-            })
+        {
+            key.setInGame = false;
+            key.setRound = 0;
+        })
         this.isRunning = false;
         this.currentRound = 0;
 
-        this.users.forEach((value, key)=>
+        this.users.forEach((value, key) =>
         {
             const player1 = this.userManager.getUser(key.getUserID)
 
@@ -251,18 +249,18 @@ class Bracket
         })
     }
 
-    selectWinner(winner:string)
+    selectWinner(winner: string)
     {
         switch (winner)
         {
             case "player1":
                 this.winner.player1 = this.winner.player1 + 1;
-                this.winner.currentVotes = this.winner.currentVotes +1;
+                this.winner.currentVotes = this.winner.currentVotes + 1;
                 break;
 
             case "player2":
-                this.winner.player2 = this.winner.player2 +1;
-                this.winner.currentVotes = this.winner.currentVotes +1;
+                this.winner.player2 = this.winner.player2 + 1;
+                this.winner.currentVotes = this.winner.currentVotes + 1;
                 break;
 
             default:
@@ -272,38 +270,38 @@ class Bracket
         try
         {
             if (this.winner.currentVotes == 2)
+            {
+                if (this.winner.player1 == 2)
                 {
-                    if (this.winner.player1 == 2)
-                    {
-                        this.endRound("player1");
-                        this.winner.currentVotes = 0;
-                    }
-                    else if (this.winner.player2 == 2)
-                    {
-                        this.endRound("player2");
-                        this.winner.currentVotes = 0;
-                    }
-                    else if (this.winner.player1 < 2 && this.winner.player2 < 2)
-                    {
-                        return -1;
-                    }
-                    else 
-                    {
-                        console.log("Unknown error. Err 002");
-                    }
+                    this.endRound("player1");
+                    this.winner.currentVotes = 0;
                 }
-            else if (this.winner.currentVotes > 2)
+                else if (this.winner.player2 == 2)
                 {
-                    throw new Error(`currentVotes variable greater than 2. 
+                    this.endRound("player2");
+                    this.winner.currentVotes = 0;
+                }
+                else if (this.winner.player1 < 2 && this.winner.player2 < 2)
+                {
+                    return -1;
+                }
+                else 
+                {
+                    console.log("Unknown error. Err 002");
+                }
+            }
+            else if (this.winner.currentVotes > 2)
+            {
+                throw new Error(`currentVotes variable greater than 2. 
                         This should not be possible. Attempting to self heal. Cast votes again. Err 011`);
-                        this.winner.currentVotes = 0; 
-                } 
+                this.winner.currentVotes = 0;
+            }
         }
         catch (e)
         {
-            console.log(e); 
+            console.log(e);
         }
-        
+
         //TODO updateUsers and load new users if ISrunning == true
     }
 
@@ -318,15 +316,15 @@ export default class BracketManager extends Bracket
 {
 
     static #instance: BracketManager;
-
     private brackets: Array<Bracket>;
 
     private constructor()
     {
         super();
-        this.brackets = new Array<Bracket>();
 
+        this.brackets = new Array<Bracket>();
     }
+
     public static get getInstance(): BracketManager
     {
         if (!BracketManager.#instance)
@@ -335,6 +333,17 @@ export default class BracketManager extends Bracket
         }
 
         return BracketManager.#instance;
+    }
+
+    public showAllRooms()
+    {
+        const snapShot = this.brackets;
+
+        /*
+            TODO implement this with information propogating up from brackets themselves without exposing PII 
+            This is a debugging function primarily    
+        */
+        return snapShot;
     }
 
     public createRoom(userID: number)
@@ -354,8 +363,11 @@ export default class BracketManager extends Bracket
         }
 
         const currentBracket = new Bracket();
+
         this.brackets.push(currentBracket);
+
         const roomCode = currentBracket.getRoomCode;
+
         currentBracket.joinBracket(foundUser.getUserID);
 
         return roomCode;
@@ -368,15 +380,17 @@ export default class BracketManager extends Bracket
         try 
         {
             const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
+
             if (foundBracket)
             {
                 foundBracket.leaveBracket(foundUser.getUserID);
             }
             else 
             {
-                throw new Error("Unable to find bracket specified. Err 005");
+                throw new Error("Unable to find bracket specified. Possible Null or incorrect type. Err 005");
             }
         }
+
         catch (e)
         {
             console.log(e)
@@ -390,15 +404,18 @@ export default class BracketManager extends Bracket
         try 
         {
             const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
+
             if (foundBracket)
             {
                 foundBracket.joinBracket(foundUser.getUserID);
             }
+
             else 
             {
                 throw new Error("Unable to find bracket specified. Err 006");
             }
         }
+
         catch (e)
         {
             console.log(e)
@@ -406,10 +423,10 @@ export default class BracketManager extends Bracket
 
     }
 
-    public removeBracket()
+    public destroyBracket()
     {
         //TODO
-        //should only be called by api when match is ended 
+        //debating whether I will even need this
     }
 
 

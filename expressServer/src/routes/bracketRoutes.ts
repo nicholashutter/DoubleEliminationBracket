@@ -1,51 +1,72 @@
 import express from 'express';
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 const router = express.Router();
-import {User} from "../user";
+import { User } from "../user";
 import UserManager from '../user';
 import BracketManager from '../Bracket';
 
-const userManager =  UserManager.getInstance; 
-const bracketManger = BracketManager.getInstance;
 
-router.get("/api/getBracket", (req:Request, res:Response )=>
+router.get("/api/Bracket", (req: Request, res: Response) =>
+{
+    const bracketManager = BracketManager.getInstance;
+
+    res.json(bracketManager.showAllRooms())
+})
+
+router.post("/api/Bracket", (req: Request, res: Response) => 
+{
+    const userManager = UserManager.getInstance;
+
+    const bracketManager = BracketManager.getInstance;
+
+    let sessionUser = req.session.user as User;
+
+    sessionUser = userManager.getUser(sessionUser.getUserID);
+
+    const roomCode = bracketManager.createRoom(sessionUser.getUserID);
+
+    res.send(roomCode);
+});
+
+router.put("/api/Bracket", (req: Request, res: Response) =>
+{
+    const userManager = UserManager.getInstance;
+
+    const bracketManager = BracketManager.getInstance;
+
+    let sessionUser = req.session.user as User;
+
+    sessionUser = userManager.getUser(sessionUser.getUserID);
+
+    try
     {
-        /* TODO
-        logic to return selected bracket,
-        done with req.params
-        */
-    });
+        if (req.session.sessionInfo!.roomCode)
+        {
+            bracketManager.joinRoom(sessionUser.getUserID, req.session.sessionInfo!.roomCode)
+        }
+        else
+        {
+            throw new Error(`Invalid response from client. Possible null value or incorrect type.
+                 Try sending response again. Err 012`);
+        }
+    }
+    catch (e)
+    {
+        console.log(e);
+    }
 
-router.post("/api/createBracket", (req:Request, res:Response) => 
-{
-    /*
-        foundUser = userManager.getUser(req.session.user.id);
-        roomCode = bracketManager.createBracket(foundUser.getUserID); 
 
-        res.send(roomCode)
-
-    */
 });
 
-router.put("/api/joinBracket", (req:Request, res:Response) =>
+router.delete("/api/Bracket/:userID/:roomCode", (req: Request, res: Response) => 
 {
-    /* TODO
-    logic to get current brackets by bracketID, 
-    return the one searched ifExists, 
-    add the selected player to selected bracket ,
-    done with req.BODY
-    */
-});
+    const userManager = UserManager.getInstance;
 
-router.delete("/api/leaveBracket", (req:Request, res:Response)=> 
-{
-    /* TODO
-    logic to get current bracket by bracketID, 
-    return the one searched ifExists, 
-    logic to check if user in selected bracket, 
-    remove user from bracket ifExists, 
-    done with req.params
-    */
+    const bracketManager = BracketManager.getInstance;
+
+    let sessionUser = userManager.getUser(req.params.userID);
+
+    bracketManager.leaveRoom(Number(req.params.userID), req.params.roomCode);
 });
 
 module.exports = router;

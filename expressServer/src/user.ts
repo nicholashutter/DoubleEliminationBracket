@@ -1,4 +1,4 @@
-import { get } from "http";
+
 
 /*
 Class user holds common user properties 
@@ -16,7 +16,7 @@ Function Constructor initialize class members and generate id if none provided
   private lastUpdate: Date;
   private eliminations: number;
   private inGame: boolean;
-  private round: number; 
+  private round: number;
   private currentRank: number;
   private allTimeWins: number;
   private allTimeLosses: number;
@@ -42,14 +42,14 @@ Function Constructor initialize class members and generate id if none provided
     this.email = email!;
     this.created = new Date();
     this.lastUpdate = new Date();
-    this.eliminations = 0; 
+    this.eliminations = 0;
     this.inGame = false;
     this.round = 0;
     this.currentRank = -1; //value -1 indicates default
     this.allTimeWins = -1;
     this.allTimeLosses = -1;
     this.datesPlayed = [];
-    this.totalGamesPlayed = -1 
+    this.totalGamesPlayed = -1
   }
   /*
 Functions Getters and Setters with some basic input validation
@@ -59,14 +59,14 @@ Functions Getters and Setters with some basic input validation
     return this.id!;
   }
 
-  set setUserID(value: number)
+  set setUserID(userID: number)
   {
     if (this.id === undefined)
     {
-      this.id = value;
+      this.id = userID;
     } else
     {
-      console.log("Cannot update userID. UserID already exists");
+      console.log("Unable to update UserID because one already exists. This should not be possible. Err 016");
     }
   }
 
@@ -75,9 +75,9 @@ Functions Getters and Setters with some basic input validation
     return this.userName;
   }
 
-  set setUserName(value: string)
+  set setUserName(userName: string)
   {
-    this.userName = value;
+    this.userName = userName;
   }
 
   get getEmail(): string
@@ -94,7 +94,7 @@ Functions Getters and Setters with some basic input validation
         this.email = email;
       } else
       {
-        throw new Error("user.ts line 82: Incorrectly formatted email");
+        throw new Error("Email format incompatible. Please resubmit. Err 17");
       }
     } catch (e)
     {
@@ -107,14 +107,14 @@ Functions Getters and Setters with some basic input validation
     return this.lastUpdate;
   }
 
-  set setLastUpdate(value:Date)
+  set setLastUpdate(lastUpdate: Date)
   {
-    this.lastUpdate = value;
+    this.lastUpdate = lastUpdate;
   }
-  
-  set setEliminations(value:number)
+
+  set setEliminations(eliminations: number)
   {
-    this.eliminations = value;
+    this.eliminations = eliminations;
   }
 
   get getEliminations()
@@ -127,9 +127,9 @@ Functions Getters and Setters with some basic input validation
     return this.created;
   }
 
-  set setCreated(value:Date)
+  set setCreated(created: Date)
   {
-    this.created = value;
+    this.created = created;
   }
 
   get getCurrentRank(): number
@@ -137,9 +137,9 @@ Functions Getters and Setters with some basic input validation
     return this.currentRank;
   }
 
-  set setCurrentRank(value: number)
+  set setCurrentRank(currentRank: number)
   {
-    this.currentRank = value;
+    this.currentRank = currentRank;
   }
 
   get getAllTimeWins(): number
@@ -147,9 +147,9 @@ Functions Getters and Setters with some basic input validation
     return this.allTimeWins;
   }
 
-  set setAllTimeWins(value: number)
+  set setAllTimeWins(allTimeWins: number)
   {
-    this.allTimeWins = value;
+    this.allTimeWins = allTimeWins;
   }
 
   get getAllTimeLosses(): number
@@ -157,9 +157,9 @@ Functions Getters and Setters with some basic input validation
     return this.allTimeLosses;
   }
 
-  set setAllTimeLosses(value: number)
+  set setAllTimeLosses(allTimeLosses: number)
   {
-    this.allTimeLosses = value;
+    this.allTimeLosses = allTimeLosses;
   }
 
   get getPasswordHash(): string
@@ -179,11 +179,11 @@ Functions Getters and Setters with some basic input validation
 
   get getRound()
   {
-    return this.round; 
+    return this.round;
   }
-  set setRound(value:number)
+  set setRound(round: number)
   {
-    this.round = value; 
+    this.round = round;
   }
 
   set setGamesPlayed(totalGamesPlayed: number)
@@ -196,7 +196,7 @@ Functions Getters and Setters with some basic input validation
     return this.totalGamesPlayed;
   }
 
-  set setDatesPlayed(datesPlayed:Array<Date>)
+  set setDatesPlayed(datesPlayed: Array<Date>)
   {
     this.datesPlayed = datesPlayed;
   }
@@ -215,7 +215,7 @@ export default class UserManager extends User
   private Users: Array<User>;
 
   private constructor(
-    
+
   )
   {
     super(); //empty parent object garbage collector should delete
@@ -236,28 +236,33 @@ export default class UserManager extends User
     passwordHash: string,
     email: string,
     id?: number
-  ):number
+  ): number
   {
     const user = new User(username, passwordHash, email, id);
     this.Users.push(user);
     return user.getUserID;
   }
 
-  public updateUser(currentUser:User)
+  public updateUser(currentUser: User)
   {
     try
     {
       const foundUser = this.Users.find((user) => user.getUserID == currentUser.getUserID);
+
       const userLocation = this.Users.indexOf(currentUser);
-      if (foundUser!.getUserName == "-1"|| foundUser === undefined)
+
+      if (foundUser!.getUserName == "-1" || foundUser === undefined)
       {
-        throw new Error ("Unable to find specified User. Err 009");
+        throw new Error("Unable to find specified User. Err 009");
       }
+
       else 
       {
         delete this.Users[userLocation];
-        this.Users[userLocation] = currentUser; 
-        console.log("User Updated Successfully"); 
+
+        this.Users[userLocation] = currentUser;
+
+        console.log("User Updated Successfully");
       }
 
     }
@@ -266,7 +271,7 @@ export default class UserManager extends User
     {
       console.log(e);
     }
-    
+
   }
 
   public replaceUser(username: string,
@@ -278,14 +283,14 @@ export default class UserManager extends User
     allTimeWins?: number,
     allTimeLosses?: number,
     totalGamesPlayed?: number,
-    datesPlayed?: Array<Date>, 
-    lastUpdate?: Date, 
-    created?: Date, 
+    datesPlayed?: Array<Date>,
+    lastUpdate?: Date,
+    created?: Date,
 
   )
   {
     const user = new User(username, passwordHash, email);
-  
+
     if (id)
     {
       user.setUserID = id;
@@ -325,54 +330,59 @@ export default class UserManager extends User
 
   }
 
-  public getUser<T>(value:T): User
+  public getUser<T>(value: T): User
   {
     let user = new User("-1", "-1", "-1");
 
-    
-    const getByUserName = (value:string) =>
+
+    const getByUserName = (value: string) =>
     {
       try
       {
         const foundUser = this.Users.find(user => user.getUserName === value);
+
         if (foundUser === undefined)
         {
-          throw new Error("user.ts line 33: User not found in Users collection");
+          throw new Error("User not found in Users collection. Err 013");
         }
         else
         {
           user = foundUser;
         }
       }
+
       catch (error) { console.log(error); }
     }
 
-    const getByUserID = (value:number) =>
+    const getByUserID = (value: number) =>
     {
       try
       {
         const foundUser = this.Users.find(user => user.getUserID === value);
+
         if (foundUser === undefined)
         {
-          throw new Error("user.ts line 33: User not found in Users collection");
+          throw new Error("User not found in Users collection. Err 014");
         }
+
         else
         {
           user = foundUser;
         }
       }
+
       catch (error) { console.log(error); }
     }
 
-    if (typeof value === "string" )
-      {
-        getByUserName(value);
-      }
+    if (typeof value === "string")
+    {
+      getByUserName(value);
+    }
     else if (typeof value === "number")
-      {
-        getByUserID(value);
-      }  
-    
+    {
+      getByUserID(value);
+    }
+
     return user;
   }
 
@@ -381,10 +391,12 @@ export default class UserManager extends User
     try
     {
       const foundUser = this.Users.find(user => user.getUserID === userID);
+
       if (foundUser === undefined)
       {
-        throw new Error("user.ts line 33: User not found in Users collection");
+        throw new Error("User not found in Users collection. Err 015");
       }
+
       else
       {
         this.Users.splice(this.Users.findIndex(User => User.getUserID === userID), 1);
