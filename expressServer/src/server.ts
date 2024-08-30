@@ -4,7 +4,6 @@ import express from "express";
 import session from "express-session";
 import { Request, Response, NextFunction } from "express";
 import EnvVars from "./common/EnvVars";
-import path from "path";
 import cors from "cors";
 import "express-async-errors";
 import helmet from "helmet";
@@ -13,9 +12,10 @@ import BracketManager from "./Bracket";
 import UserManager from "./user";
 
 
-const authRoutes = require("./routes/authenticationRoute");
+const path = require('node:path');
 const bracketRoutes = require("./routes/bracketRoutes");
 const userRoutes = require("./routes/userRoutes");
+const resourceRoutes = require("./routes/resourceRoutes");
 
 export interface SessionInfo
 {
@@ -24,21 +24,11 @@ export interface SessionInfo
 
 /*
 Create web server, respond to HTTP requests 
-Only server creates users, brackets and express sessions
 */
-
-// **** Variables **** //
-
-
-const userManager = UserManager.getInstance;
-const bracketManager = BracketManager.getInstance;
-
-
 const app = express();
 
-// **** Setup **** //
 
-// Basic middleware
+// **** Middleware **** //
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions: cors.CorsOptions =
@@ -46,15 +36,6 @@ const corsOptions: cors.CorsOptions =
   origin: "http://localhost:3000",
 };
 app.use(cors(corsOptions));
-
-// Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
-//reactrouter takes over once entrypoint is served
-
-
-app.use(express.static(path.join(__dirname, "../../reactclient/build")));
-
-app.use(express.static(path.join(__dirname, "./public")));
-
 
 //Include express-session
 app.use(
@@ -74,34 +55,74 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
   app.use(helmet());
 }
 
-//middleware checking for valid credentials at each api endpoint
+app.use("react", express.static(path.join (__dirname, "../../reactclient/build")));
+app.use("express", express.static( path.join (__dirname, "./public")));
+app.use(resourceRoutes); 
+
+// Authentication
 const validateLogin = function (req: Request, res: Response, next: NextFunction)
 {
   console.log(req.session);
 
   if (req.session.user)
   {
-    console.log("User has a matching session");
-
+    console.log("User has a matching session Err 021");
+    res.status(200).write ("User has a matching session Err 022");
     next();
   }
   else
   {
-    console.log("User has no matching session");
-
-    res.redirect("/login");
+    console.log("User has no matching session Err 020");
+    res.status(401).redirect("/login");
+    
   }
 
 }
 
+// **** Routing **** //
+
+app.get("/login", (req: Request, res: Response) =>
+  {
+      res.status(200).sendFile(path.join(__dirname, "./public", "/loginPage.html"));
+ 
+  });
+  
+app.post("/login", async (req: Request, res: Response) => 
+  {
+  
+      const userManager: UserManager = UserManager.getInstance;
+  
+  
+      const foundUser = userManager.getUser(req.body.userName);
+  
+      if (foundUser.getUserName != "-1")
+      {
+          req.session.user = foundUser;
+  
+          req.session.save();
+  
+          res.status(200).sendFile(path.join(__dirname, "../../reactclient/build", "index.html")); 
+  
+      }
+      else 
+      {
+          res.status(401).send("User not found. Application endpoints remain locked");
+      }
+  });
+  
+app.get("/logout", async (req: Request, res: Response) => 
+  {
+      req.session.destroy((err) => console.log(`User logged out: ${err}`));
+      res.redirect("/login")
+  });
+
+
 app.use(validateLogin);
 
-//express route serves entrypoint when get request recieved at base url
 app.get("/", (req, res) =>
 {
-  res.sendFile("./public/HomePage.html");
+  res.redirect("./login");
 });
-
 
 /* 
     app.route(api/bracket)
@@ -113,11 +134,6 @@ app.use(bracketRoutes);
 */
 app.use(userRoutes);
 
-
-/* 
-    app.route(/login /logout )
-*/
-app.use(authRoutes);
 
 // **** Export default **** //
 

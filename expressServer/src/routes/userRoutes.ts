@@ -5,17 +5,21 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import * as db from "../DbOperator";
 import UserManager from "../user";
+import {User} from "../user";
 import BracketManager from "../Bracket";
+
 
 const userManager = UserManager.getInstance;
 const bracketManager = BracketManager.getInstance;
 
-router.get("/api/getUser", (req: Request, res: Response) =>
+router.get("/api/getUser/:userID", (req: Request, res: Response) =>
 {
-    /* TODO
-    logic to return selected user,
-    done with req.params
-    */
+    const sessionUser = userManager.getUser(req.params.userID)
+
+    res.write(`This response should contain the userID you sent in: ${sessionUser.getUserID}. 
+        If not something went wrong. `)
+
+    res.json (sessionUser);
 });
 
 router.post("/api/createUser", (req: Request, res: Response) => 
@@ -35,24 +39,30 @@ router.post("/api/createUser", (req: Request, res: Response) =>
     res.send("Create User Success");
 });
 
-router.put("/api/updateUser", (req: Request, res: Response) =>
+router.put("/api/updateUser", async (req: Request, res: Response) =>
 {
-    /* TODO
-    logic to get selected user, copy all properties, 
-    create new user with updated properties, 
-    copy all non updated properties, 
-    delete original user, upload replacement user to 
-    database, done with json request.BODY
-    */
+   let sessionUser = req.session.user as User; 
+   
+   sessionUser = userManager.getUser(sessionUser.getUserID);
+
+   userManager.updateUser(sessionUser);
+
+   await db.updateUser(sessionUser.getUserID);
+
 });
 
-router.delete("/api/removeUser", (req: Request, res: Response) => 
+router.delete("/api/removeUser/:userID", async (req: Request, res: Response) => 
 {
     /* TODO
     logic to get selected user, delete them, 
     delete from datatbase
     done with req.params
     */
+   const sessionUser = req.body.session.user as User;
+
+   userManager.deleteUser(sessionUser.getUserID);
+
+   await db.deleteUser(sessionUser.getUserID);
 });
 
 module.exports = router;

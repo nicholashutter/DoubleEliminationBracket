@@ -4,10 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Authentication</title>
+    <script>
+        const url = "http://localhost:9000/api/fetchBackground";
+        window.onload = function ()
+        {
+            
+            console.log("fetchBackground function fired");
+        fetch(url)
+        .then(response => response.blob())
+        .then(blob =>{
+                let img = URL.createObjectURL(blob); 
+                document.querySelector(".bodyClass").setAttribute("background", img);
+                document.querySelector(".bodyClass").setAttribute("backgroundRepeat", "no-repeat");
+                document.querySelector(".bodyClass").setAttribute("backgroundPosition", "center");
+                document.querySelector(".bodyClass").setAttribute("backgroundSize", "cover");
+            }
+        
+        )
+        .catch(error => console.log(error))
+        }
+        
+    </script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: url('smash.png') no-repeat center center fixed;
             background-size: cover;
             color: white;
             margin: 0;
@@ -76,7 +96,7 @@
         }
     </style>
 </head>
-<body>
+<body class="bodyClass">
     <div class="container">
         <h2 class="title">Welcome!</h2>
         <form action="#" method="post">

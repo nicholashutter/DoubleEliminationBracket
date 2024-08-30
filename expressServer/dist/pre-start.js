@@ -9,8 +9,8 @@ const ts_command_line_args_1 = require("ts-command-line-args");
 const args = (0, ts_command_line_args_1.parse)({
     env: {
         type: String,
-        defaultValue: 'development',
-        alias: 'e',
+        defaultValue: "development",
+        alias: "e",
     },
 });
 const result2 = dotenv_1.default.config({

@@ -94,7 +94,7 @@ Functions Getters and Setters with some basic input validation
         this.email = email;
       } else
       {
-        throw new Error("Email format incompatible. Please resubmit. Err 17");
+        throw new Error("Email format incompatible. Please resubmit. Err 017");
       }
     } catch (e)
     {
