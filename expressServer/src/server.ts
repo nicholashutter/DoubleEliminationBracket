@@ -50,8 +50,11 @@ app.use(cors(corsOptions));
 // Set static directory to build directory for react allowing the index.html and index.js to be the entrypoints from here
 //reactrouter takes over once entrypoint is served
 
-const staticDir = path.join(__dirname, "../../reactclient/build");
+
 app.use(express.static(path.join(__dirname, "../../reactclient/build")));
+
+app.use(express.static(path.join(__dirname, "./public")));
+
 
 //Include express-session
 app.use(
@@ -62,7 +65,6 @@ app.use(
     saveUninitialized: true,
     cookie: { secure: false, maxAge: 10800000 },
     rolling: true
-    // TODO need to make sure cookie expires using maxAge property and cookie deletes on close of application
   })
 );
 
@@ -97,9 +99,7 @@ app.use(validateLogin);
 //express route serves entrypoint when get request recieved at base url
 app.get("/", (req, res) =>
 {
-
-  //TODO should serve login form first, then only send full app on user auth
-  res.sendFile("index.html", { root: staticDir });
+  res.sendFile("./public/HomePage.html");
 });
 
 

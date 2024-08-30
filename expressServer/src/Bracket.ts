@@ -1,7 +1,11 @@
+
 import UserManager from "./user";
 import { User } from "./user";
 import crypto from "crypto";
+
+
 type Seed = number;
+type matchType = "single"|"double"|"default"
 /*
 Run the bracket and update users
 */
@@ -18,6 +22,7 @@ class Bracket
     protected player1: User;
     protected player2: User;
     protected currentRound;
+    protected matchType: matchType;
 
 
     protected constructor()
@@ -42,6 +47,7 @@ class Bracket
         this.currentRound = 0;
         this.player1 = this.userManager.getUser(this.userManager.createUser("", "", "", 0));
         this.player2 = this.userManager.getUser("");
+        this.matchType = "default";
     }
 
     joinBracket(userID: number)
@@ -137,7 +143,8 @@ class Bracket
 
     startSinglesRound()
     {
-        this.isRunning = true
+        this.isRunning = true;
+        this.matchType = "single";
         this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size
         this.calculateByes();
@@ -152,6 +159,7 @@ class Bracket
     startDoublesRound()
     {
         this.isRunning = true
+        this.matchType = "double";
         this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size
         this.calculateByes();
@@ -240,6 +248,7 @@ class Bracket
         })
         this.isRunning = false;
         this.currentRound = 0;
+        this.matchType = "default";
 
         this.users.forEach((value, key) =>
         {
@@ -292,9 +301,10 @@ class Bracket
             }
             else if (this.winner.currentVotes > 2)
             {
+                this.winner.currentVotes = 0;
                 throw new Error(`currentVotes variable greater than 2. 
                         This should not be possible. Attempting to self heal. Cast votes again. Err 011`);
-                this.winner.currentVotes = 0;
+                
             }
         }
         catch (e)
@@ -302,7 +312,23 @@ class Bracket
             console.log(e);
         }
 
-        //TODO updateUsers and load new users if ISrunning == true
+        
+        if (this.isRunning)
+        {
+            switch (this.matchType)
+            {
+                case "single":
+                    this.startSinglesRound();
+                    break; 
+
+                case "double":
+                    this.startDoublesRound();
+                    break; 
+                case "default":
+                    throw new Error(`Cannot determine what type of round to start next or bracket not propertly initialized. 
+                        Fatal error. Err 017`);
+            }
+        }
     }
 
     get getRoomCode()

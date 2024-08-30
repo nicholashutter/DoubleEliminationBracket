@@ -23,9 +23,10 @@ router.post("/login", async (req: Request, res: Response) =>
         req.session.save();
 
         
-        res.status(200).send("Logged In. Other endpoints unlocked");
+        res.status(200).write("Logged In. Other endpoints unlocked");
 
-        // TODO send application here 
+        res.sendFile("../../../reactclient/build/index.html"); 
+
     }
     else 
     {

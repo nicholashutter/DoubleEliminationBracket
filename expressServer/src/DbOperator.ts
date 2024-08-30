@@ -1,7 +1,6 @@
 import mariadb from "mariadb";
 import UserManager from "./user";
 
-//TODO fix this 
 async function updateUser(userID: number)
 {
 
@@ -40,8 +39,10 @@ async function updateUser(userID: number)
     foundUser.getAllTimeWins as number,
     foundUser.getAllTimeLosses as number,
     foundUser.getGamesPlayed as number
-    // TODO some way to store all dates the user has played over time 
-    // will probably have to create and load from another database table 
+    /*
+    --> Either restructure database to add another table, or use JSON data type in mariaDB
+        to get all games played by date 
+    */
   ];
 
 
