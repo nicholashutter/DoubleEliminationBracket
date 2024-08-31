@@ -10,7 +10,8 @@ import helmet from "helmet";
 import { NodeEnvs } from "./common/misc";
 import BracketManager from "./Bracket";
 import UserManager from "./user";
-
+import bcrypt from "bcrypt";
+import * as db from "./DbOperator"
 
 const path = require('node:path');
 const bracketRoutes = require("./routes/bracketRoutes");
@@ -97,12 +98,22 @@ app.post("/login", async (req: Request, res: Response) =>
   
       if (foundUser.getUserName != "-1")
       {
-          req.session.user = foundUser;
+          const passwordHash = foundUser.getPasswordHash;
+          const match = await bcrypt.compare(req.body.passwordHash, passwordHash);
+
+          if (match)
+          {
+            req.session.user = foundUser;
   
-          req.session.save();
+            req.session.save();
   
-          res.status(200).sendFile(path.join(__dirname, "../../reactclient/build", "index.html")); 
+            res.status(200).sendFile(path.join(__dirname, "../../reactclient/build", "index.html")); 
   
+          }
+          else 
+          {
+            res.status(401).send("Password not found. Application endpoints remain locked");
+          }
       }
       else 
       {

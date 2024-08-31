@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,33 +9,63 @@
         const url = "http://localhost:9000/api/fetchBackground";
         window.onload = function ()
         {
-        let form = document.querySelector(".formClass");
-        form.addEventListener("submit", (event) =>
-    {
-        alert("onSubmit fired successfully"); 
+            let form = document.querySelector(".formClass");
+            form.addEventListener("submit", async (event) =>
+            {
+                
+                const formData = new FormData(form);
+                const userName = formData.get("username");
+                const passwordHash = formData.get("password");
 
-        //TODO this should take username and password (hash) and compare to database values
-        // if username and password (hash) exist then auth, if not this page will just get sent again 
-    }); 
+                const myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
 
-        console.log("fetchBackground function fired");
-        fetch(url)
-        .then(response => response.blob())
-        .then(blob =>{
-                let img = URL.createObjectURL(blob); 
-                document.querySelector(".bodyClass").setAttribute("background", img);
-                document.querySelector(".bodyClass").setAttribute("backgroundRepeat", "no-repeat");
-                document.querySelector(".bodyClass").setAttribute("backgroundPosition", "center");
-                document.querySelector(".bodyClass").setAttribute("backgroundSize", "cover");
-            }
-        
-        )
-        .catch(error => console.log(error))
+                const myRequest = new Request("http://localhost:9000/login",
+                    {
+                        method: "POST",
+                        body: JSON.stringify(
+                            {
+                                userName: `${userName}`,
+                                passwordHash: `${passwordHash}`
+                            }),
+                        headers: myHeaders,
+                    });
+
+                try
+                {
+                    const res = await fetch(myRequest);
+                
+                    if (!res.ok)
+                    {
+                        throw new Error (`Response status: ${res.status}`);
+                    }
+                }
+                catch(e)
+                {
+                    console.log(e);
+                }
+            
+            });
+
+            console.log("fetchBackground function fired");
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob =>
+                {
+                    let img = URL.createObjectURL(blob);
+                    document.querySelector(".bodyClass").setAttribute("background", img);
+                    document.querySelector(".bodyClass").setAttribute("backgroundRepeat", "no-repeat");
+                    document.querySelector(".bodyClass").setAttribute("backgroundPosition", "center");
+                    document.querySelector(".bodyClass").setAttribute("backgroundSize", "cover");
+                }
+
+                )
+                .catch(error => console.log(error))
         }
 
-        
-        
-        
+
+
+
     </script>
     <style>
         body {
@@ -48,28 +79,35 @@
             align-items: center;
             height: 100vh;
         }
+
         .container {
             text-align: center;
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            background: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent background */
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow for container */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            /* Shadow for container */
             max-width: 400px;
             width: 90%;
         }
+
         .title {
             font-size: 2.5em;
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         .form-group label {
             font-size: 1.2em;
             display: block;
             margin-bottom: 5px;
         }
+
         .form-group input[type="text"],
         .form-group input[type="password"] {
             width: 100%;
@@ -77,8 +115,10 @@
             font-size: 1em;
             border: none;
             border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            background-color: rgba(255, 255, 255, 0.8);
+            /* Semi-transparent white background */
         }
+
         .form-group input[type="submit"] {
             width: 100%;
             padding: 10px;
@@ -90,23 +130,28 @@
             color: white;
             transition: background-color 0.3s;
         }
+
         .form-group input[type="submit"]:hover {
             background-color: #45a049;
         }
+
         .form-group .switch-text {
             margin-top: 10px;
             font-size: 1.1em;
         }
+
         .form-group .switch-text a {
             color: #2196F3;
             text-decoration: none;
             margin-right: 10px;
         }
+
         .form-group .switch-text a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body class="bodyClass">
     <div class="container">
         <h2 class="title">Welcome!</h2>
@@ -132,4 +177,5 @@
         </form>
     </div>
 </body>
+
 </html>

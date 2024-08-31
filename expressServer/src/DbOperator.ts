@@ -15,6 +15,10 @@ async function updateUser(userID: number)
       currentRank, allTimeWins, allTimeLosses, totalGamesPlayed) 
       VALUES (?, ?, ?, ?, ?, ?,?,?,?,?,?);`;
 
+  /* 
+    Control flow to convert boolean value to number that 
+    Database can interpret
+  */
   let foundInGame: number | boolean = foundUser.getInGame;
 
   if (foundInGame) 
