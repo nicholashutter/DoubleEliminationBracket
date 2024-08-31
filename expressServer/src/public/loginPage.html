@@ -8,8 +8,16 @@
         const url = "http://localhost:9000/api/fetchBackground";
         window.onload = function ()
         {
-            
-            console.log("fetchBackground function fired");
+        let form = document.querySelector(".formClass");
+        form.addEventListener("submit", (event) =>
+    {
+        alert("onSubmit fired successfully"); 
+
+        //TODO this should take username and password (hash) and compare to database values
+        // if username and password (hash) exist then auth, if not this page will just get sent again 
+    }); 
+
+        console.log("fetchBackground function fired");
         fetch(url)
         .then(response => response.blob())
         .then(blob =>{
@@ -23,6 +31,9 @@
         )
         .catch(error => console.log(error))
         }
+
+        
+        
         
     </script>
     <style>
@@ -99,7 +110,7 @@
 <body class="bodyClass">
     <div class="container">
         <h2 class="title">Welcome!</h2>
-        <form action="#" method="post">
+        <form action="#" method="post" class="formClass">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
