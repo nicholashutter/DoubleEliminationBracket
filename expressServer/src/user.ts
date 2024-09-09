@@ -283,7 +283,7 @@ export default class UserManager extends User
   public replaceUser(username: string,
     passwordHash: string,
     email: string,
-    id?: number,
+    id: number,
     inGame?: boolean,
     currentRank?: number,
     allTimeWins?: number,
@@ -295,7 +295,7 @@ export default class UserManager extends User
 
   )
   {
-    const user = new User(username, passwordHash, email);
+    const user = new User(username, passwordHash, email, -1);
 
     if (id)
     {
@@ -338,7 +338,7 @@ export default class UserManager extends User
 
   public getUser<T>(value: T): User
   {
-    let user = new User("-1", "-1", "-1");
+    let user = new User("-1", "-1", "-1", -1);
 
 
     const getByUserName = (value: string) =>

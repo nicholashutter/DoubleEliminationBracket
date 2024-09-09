@@ -4,7 +4,7 @@ import UserManager from "./user";
 
 describe("getUserID", function ()
 {
-    it("should get a randomly generated userID", function ()
+    it("should return the userID I pass in", function ()
     {   
         const manager = UserManager.getInstance;
         const userID = manager.createUser("","", "", 100);
@@ -13,9 +13,10 @@ describe("getUserID", function ()
     })
 });
 
+
 describe ("createUser", ()=>
 {
-    it ("creates empty user object and adds to Users array", ()=> 
+    it ("should generate a new userID if I do not pass one in", ()=> 
     {
         const manager = UserManager.getInstance;
         const userID = manager.createUser("test", "test", "test");
