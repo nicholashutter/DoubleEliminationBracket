@@ -1,5 +1,4 @@
 
-
 /*
 Class user holds common user properties 
 */
@@ -8,7 +7,7 @@ export class User
   /*
 Function Constructor initialize class members and generate id if none provided
 */
-  private id?: number;
+  private id: number;
   private userName: string;
   private email: string;
   private passwordHash: string;
@@ -24,22 +23,16 @@ Function Constructor initialize class members and generate id if none provided
   private datesPlayed: Array<Date>;
 
   protected constructor(
-    username?: string,
-    passwordHash?: string,
-    email?: string,
-    id?: number
+    username: string,
+    passwordHash: string,
+    email: string,
+    id: number
   )
   {
-    if (id)
-    {
-      this.id = Math.floor(Math.random() * 1000);
-    } else
-    {
-      this.id = id;
-    }
-    this.userName = username!;
-    this.passwordHash = passwordHash!;
-    this.email = email!;
+    this.id = id;
+    this.userName = username;
+    this.passwordHash = passwordHash;
+    this.email = email;
     this.created = new Date();
     this.lastUpdate = new Date();
     this.eliminations = 0;
@@ -218,7 +211,8 @@ export default class UserManager extends User
 
   )
   {
-    super(); //empty parent object garbage collector should delete
+    super("","", "", -1);
+    //blank user must be created for managerclass to be possible 
     this.Users = [];
   }
 
@@ -238,9 +232,21 @@ export default class UserManager extends User
     id?: number
   ): number
   {
-    const user = new User(username, passwordHash, email, id);
-    this.Users.push(user);
-    return user.getUserID;
+    let newUserID = 0; 
+    if (id)
+    {
+      const user = new User(username, passwordHash, email, id);
+      this.Users.push(user);
+      newUserID = user.getUserID;
+    }
+    else
+    {
+      const user = new User(username, passwordHash, email, Math.floor(Math.random() * 1000));
+      this.Users.push(user);
+      newUserID = user.getUserID;
+    }
+   
+    return newUserID;
   }
 
   public updateUser(currentUser: User)
