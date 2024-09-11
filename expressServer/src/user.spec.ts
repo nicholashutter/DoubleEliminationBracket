@@ -2,7 +2,7 @@ import { User } from "./user";
 import UserManager from "./user";
 
 
-describe("getUserID", function ()
+describe("getUserID", ()=>
 {
     it("should return the userID I pass in", function ()
     {   
@@ -25,3 +25,4 @@ describe ("createUser", ()=>
     }
     )
 })
+

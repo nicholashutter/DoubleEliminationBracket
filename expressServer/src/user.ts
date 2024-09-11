@@ -22,37 +22,47 @@ Function Constructor initialize class members and generate id if none provided
   private totalGamesPlayed: number;
   private datesPlayed: Array<Date>;
 
-  protected constructor(
-    username: string,
-    passwordHash: string,
-    email: string,
-    id: number
-  )
+  public constructor()
   {
-    this.id = id;
-    this.userName = username;
-    this.passwordHash = passwordHash;
-    this.email = email;
+    //-1 value anywhere in this application is a default value
+    this.id = -1;
+    this.userName = "";
+    this.passwordHash = "";
+    this.email = "";
     this.created = new Date();
     this.lastUpdate = new Date();
-    this.eliminations = 0;
+    this.eliminations = -1;
     this.inGame = false;
-    this.round = 0;
-    this.currentRank = -1; //value -1 indicates default
+    this.round = -1;
+    this.currentRank = -1; 
     this.allTimeWins = -1;
     this.allTimeLosses = -1;
     this.datesPlayed = [];
     this.totalGamesPlayed = -1
   }
+  public init(username: string,
+    passwordHash: string,
+    email: string,
+    id?: number)
+  {
+    this.userName = username;
+    this.passwordHash = passwordHash;
+    this.email = email;
+
+    if (id)
+    {
+      this.id = id;
+    }
+  }
   /*
 Functions Getters and Setters with some basic input validation
 */
-  get getUserID(): number
+  public get getUserID(): number
   {
     return this.id!;
   }
 
-  set setUserID(userID: number)
+  public set setUserID(userID: number)
   {
     if (this.id === undefined)
     {
@@ -63,22 +73,22 @@ Functions Getters and Setters with some basic input validation
     }
   }
 
-  get getUserName(): string
+  public get getUserName(): string
   {
     return this.userName;
   }
 
-  set setUserName(userName: string)
+  public set setUserName(userName: string)
   {
     this.userName = userName;
   }
 
-  get getEmail(): string
+  public get getEmail(): string
   {
     return this.email;
   }
 
-  set setEmail(email: string)
+  public set setEmail(email: string)
   {
     try
     {
@@ -95,106 +105,106 @@ Functions Getters and Setters with some basic input validation
     }
   }
 
-  get getLastUpdate(): Date
+  public get getLastUpdate(): Date
   {
     return this.lastUpdate;
   }
 
-  set setLastUpdate(lastUpdate: Date)
+  public set setLastUpdate(lastUpdate: Date)
   {
     this.lastUpdate = lastUpdate;
   }
 
-  set setEliminations(eliminations: number)
+  public set setEliminations(eliminations: number)
   {
     this.eliminations = eliminations;
   }
 
-  get getEliminations()
+  public get getEliminations()
   {
     return this.eliminations;
   }
 
-  get getCreated(): Date
+  public get getCreated(): Date
   {
     return this.created;
   }
 
-  set setCreated(created: Date)
+  public set setCreated(created: Date)
   {
     this.created = created;
   }
 
-  get getCurrentRank(): number
+  public get getCurrentRank(): number
   {
     return this.currentRank;
   }
 
-  set setCurrentRank(currentRank: number)
+  public set setCurrentRank(currentRank: number)
   {
     this.currentRank = currentRank;
   }
 
-  get getAllTimeWins(): number
+  public get getAllTimeWins(): number
   {
     return this.allTimeWins;
   }
 
-  set setAllTimeWins(allTimeWins: number)
+  public set setAllTimeWins(allTimeWins: number)
   {
     this.allTimeWins = allTimeWins;
   }
 
-  get getAllTimeLosses(): number
+  public get getAllTimeLosses(): number
   {
     return this.allTimeLosses;
   }
 
-  set setAllTimeLosses(allTimeLosses: number)
+  public set setAllTimeLosses(allTimeLosses: number)
   {
     this.allTimeLosses = allTimeLosses;
   }
 
-  get getPasswordHash(): string
+  public get getPasswordHash(): string
   {
     return this.passwordHash;
   }
 
-  get getInGame(): boolean
+  public get getInGame(): boolean
   {
     return this.inGame;
   }
 
-  set setInGame(inGame: boolean)
+  public set setInGame(inGame: boolean)
   {
     this.inGame = inGame;
   }
 
-  get getRound()
+  public get getRound()
   {
     return this.round;
   }
-  set setRound(round: number)
+  public set setRound(round: number)
   {
     this.round = round;
   }
 
-  set setGamesPlayed(totalGamesPlayed: number)
+  public set setGamesPlayed(totalGamesPlayed: number)
   {
     this.totalGamesPlayed = totalGamesPlayed;
   }
 
-  get getGamesPlayed()
+  public get getGamesPlayed()
   {
     return this.totalGamesPlayed;
   }
 
-  set setDatesPlayed(datesPlayed: Array<Date>)
+  public set setDatesPlayed(datesPlayed: Array<Date>)
   {
     this.datesPlayed = datesPlayed;
   }
 
-  get getDatesPlayed()
+  public get getDatesPlayed()
   {
     return this.datesPlayed;
   }
@@ -202,7 +212,7 @@ Functions Getters and Setters with some basic input validation
 }
 
 
-export default class UserManager extends User
+export default class UserManager 
 {
   static #instance: UserManager;
   private Users: Array<User>;
@@ -211,8 +221,6 @@ export default class UserManager extends User
 
   )
   {
-    super("","", "", -1);
-    //blank user must be created for managerclass to be possible 
     this.Users = [];
   }
 
@@ -230,23 +238,14 @@ export default class UserManager extends User
     passwordHash: string,
     email: string,
     id?: number
-  ): number
+  )
   {
-    let newUserID = 0; 
-    if (id)
-    {
-      const user = new User(username, passwordHash, email, id);
-      this.Users.push(user);
-      newUserID = user.getUserID;
-    }
-    else
-    {
-      const user = new User(username, passwordHash, email, Math.floor(Math.random() * 1000));
-      this.Users.push(user);
-      newUserID = user.getUserID;
-    }
-   
-    return newUserID;
+    const localUser = new User(); 
+    localUser.init(username, passwordHash, email, id);
+    this.Users.push(localUser);
+
+    return localUser.getUserID;
+
   }
 
   public updateUser(currentUser: User)
@@ -295,57 +294,58 @@ export default class UserManager extends User
 
   )
   {
-    const user = new User(username, passwordHash, email, -1);
+    const localUser = new User();
+    localUser.init(username, passwordHash, email, id); 
 
     if (id)
     {
-      user.setUserID = id;
+      localUser.setUserID = id;
     }
     if (inGame)
     {
-      user.setInGame = inGame;
+      localUser.setInGame = inGame;
     }
     if (currentRank)
     {
-      user.setCurrentRank = currentRank;
+      localUser.setCurrentRank = currentRank;
     }
     if (allTimeWins)
     {
-      user.setAllTimeWins = allTimeWins;
+      localUser.setAllTimeWins = allTimeWins;
     }
     if (allTimeLosses)
     {
-      user.setAllTimeLosses = allTimeLosses;
+      localUser.setAllTimeLosses = allTimeLosses;
     }
     if (totalGamesPlayed)
     {
-      user.setGamesPlayed = totalGamesPlayed;
+      localUser.setGamesPlayed = totalGamesPlayed;
     }
     if (datesPlayed)
     {
-      user.setDatesPlayed = datesPlayed;
+      localUser.setDatesPlayed = datesPlayed;
     }
     if (lastUpdate)
     {
-      user.setLastUpdate
+      localUser.setLastUpdate
     }
     if (created)
     {
-      user.setCreated = created;
+      localUser.setCreated = created;
     }
 
   }
 
   public getUser<T>(value: T): User
   {
-    let user = new User("-1", "-1", "-1", -1);
+    let localUser = new User();
 
 
     const getByUserName = (value: string) =>
     {
       try
       {
-        const foundUser = this.Users.find(user => user.getUserName === value);
+        const foundUser = this.Users.find(localUser => localUser.getUserName === value);
 
         if (foundUser === undefined)
         {
@@ -353,7 +353,7 @@ export default class UserManager extends User
         }
         else
         {
-          user = foundUser;
+          localUser = foundUser;
         }
       }
 
@@ -364,7 +364,7 @@ export default class UserManager extends User
     {
       try
       {
-        const foundUser = this.Users.find(user => user.getUserID === value);
+        const foundUser = this.Users.find(localUser => localUser.getUserID === value);
 
         if (foundUser === undefined)
         {
@@ -373,7 +373,7 @@ export default class UserManager extends User
 
         else
         {
-          user = foundUser;
+          localUser = foundUser;
         }
       }
 
@@ -389,14 +389,14 @@ export default class UserManager extends User
       getByUserID(value);
     }
 
-    return user;
+    return localUser;
   }
 
   public deleteUser(userID: number)
   {
     try
     {
-      const foundUser = this.Users.find(user => user.getUserID === userID);
+      const foundUser = this.Users.find(localUser => localUser.getUserID === userID);
 
       if (foundUser === undefined)
       {
@@ -405,7 +405,7 @@ export default class UserManager extends User
 
       else
       {
-        this.Users.splice(this.Users.findIndex(User => User.getUserID === userID), 1);
+        this.Users.splice(this.Users.findIndex(localUser => localUser.getUserID === userID), 1);
       }
     }
     catch (error) { console.log(error); }
