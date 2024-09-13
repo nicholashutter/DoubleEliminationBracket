@@ -26,15 +26,15 @@ Function Constructor initialize class members and generate id if none provided
   {
     //-1 value anywhere in this application is a default value
     this.id = -1;
-    this.userName = "";
-    this.passwordHash = "";
-    this.email = "";
+    this.userName = "-1";
+    this.passwordHash = "-1";
+    this.email = "-1";
     this.created = new Date();
     this.lastUpdate = new Date();
     this.eliminations = -1;
     this.inGame = false;
     this.round = -1;
-    this.currentRank = -1; 
+    this.currentRank = -1;
     this.allTimeWins = -1;
     this.allTimeLosses = -1;
     this.datesPlayed = [];
@@ -92,7 +92,7 @@ Functions Getters and Setters with some basic input validation
   {
     try
     {
-      if (!email.includes("@") || !email.includes("."))
+      if (email.includes("@") || email.includes("."))
       {
         this.email = email;
       } else
@@ -233,6 +233,7 @@ export default class UserManager
     return UserManager.#instance;
   }
 
+
   public createUser(
     username: string,
     passwordHash: string,
@@ -240,9 +241,35 @@ export default class UserManager
     id?: number
   )
   {
-    const localUser = new User(); 
-    localUser.init(username, passwordHash, email, id);
-    this.Users.push(localUser);
+    const localUser = new User();
+
+    if (id)
+    {
+      localUser.init(username, passwordHash, email, id);
+      this.Users.push(localUser);
+    }
+    else
+    {
+      let randomID = Math.floor(Math.random() * 1000);  
+      let foundUser = this.Users.find((user) => user.getUserID == randomID);
+      if (foundUser === undefined)
+      {
+        localUser.init(username, passwordHash, email, );
+        this.Users.push(localUser);
+      }
+      else
+      {
+        while (foundUser)
+        {
+          randomID = Math.floor(Math.random()*1000);
+          foundUser = this.Users.find((user) => user.getUserID == randomID);
+        }
+      }
+      
+  
+      
+    }
+
 
     return localUser.getUserID;
 
@@ -279,88 +306,34 @@ export default class UserManager
 
   }
 
-  public replaceUser(username: string,
-    passwordHash: string,
-    email: string,
-    id: number,
-    inGame?: boolean,
-    currentRank?: number,
-    allTimeWins?: number,
-    allTimeLosses?: number,
-    totalGamesPlayed?: number,
-    datesPlayed?: Array<Date>,
-    lastUpdate?: Date,
-    created?: Date,
 
-  )
-  {
-    const localUser = new User();
-    localUser.init(username, passwordHash, email, id); 
-
-    if (id)
-    {
-      localUser.setUserID = id;
-    }
-    if (inGame)
-    {
-      localUser.setInGame = inGame;
-    }
-    if (currentRank)
-    {
-      localUser.setCurrentRank = currentRank;
-    }
-    if (allTimeWins)
-    {
-      localUser.setAllTimeWins = allTimeWins;
-    }
-    if (allTimeLosses)
-    {
-      localUser.setAllTimeLosses = allTimeLosses;
-    }
-    if (totalGamesPlayed)
-    {
-      localUser.setGamesPlayed = totalGamesPlayed;
-    }
-    if (datesPlayed)
-    {
-      localUser.setDatesPlayed = datesPlayed;
-    }
-    if (lastUpdate)
-    {
-      localUser.setLastUpdate
-    }
-    if (created)
-    {
-      localUser.setCreated = created;
-    }
-
-  }
 
   public getUser<T>(value: T): User
   {
     let localUser = new User();
 
-
-    const getByUserName = (value: string) =>
+    if (typeof value === "string")
     {
-      try
-      {
-        const foundUser = this.Users.find(localUser => localUser.getUserName === value);
+      const foundUser = this.Users.find(localUser => localUser.getUserName === value);
 
-        if (foundUser === undefined)
+        if (foundUser === undefined || foundUser.getUserID == -1|| foundUser.getUserID === undefined)
         {
           throw new Error("User not found in Users collection. Err 013");
+        }
+        else if (foundUser.getUserName == ""|| String(foundUser.getUserID) == "")
+        {
+          throw new Error("Default user returned which implies user not found. Err 022");
+        }
+        else if (foundUser.getUserName == "-1"||foundUser.getUserID == -1)
+        {
+          throw new Error("Default user returned which implies user not found. Err 023");
         }
         else
         {
           localUser = foundUser;
         }
-      }
-
-      catch (error) { console.log(error); }
     }
-
-    const getByUserID = (value: number) =>
+    else if (typeof value === "number")
     {
       try
       {
@@ -370,6 +343,18 @@ export default class UserManager
         {
           throw new Error("User not found in Users collection. Err 014");
         }
+        else if (foundUser.getUserName == "")
+        {
+          throw new Error("Default user returned which implies user not found. Err 022");
+        }
+        else if (foundUser.getUserName == "-1")
+        {
+          throw new Error("Default user returned which implies user not found. Err 023");
+        }
+        else if (foundUser.getUserID === undefined)
+        {
+          throw new Error("Default user returned which implies user not found. Err 024");
+        }
 
         else
         {
@@ -378,15 +363,6 @@ export default class UserManager
       }
 
       catch (error) { console.log(error); }
-    }
-
-    if (typeof value === "string")
-    {
-      getByUserName(value);
-    }
-    else if (typeof value === "number")
-    {
-      getByUserID(value);
     }
 
     return localUser;

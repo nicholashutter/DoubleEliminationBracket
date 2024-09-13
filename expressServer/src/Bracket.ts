@@ -45,8 +45,8 @@ class Bracket
         this.totalByes = 0;
         this.numOfPlayers = 0;
         this.currentRound = 0;
-        this.player1 = this.userManager.getUser(this.userManager.createUser("", "", "", 0));
-        this.player2 = this.userManager.getUser("");
+        this.player1 = this.userManager.getUser(this.userManager.createUser("-1", "-1", "-1", -1));
+        this.player2 = this.userManager.getUser(this.userManager.createUser("-1", "-1", "-1", -1));
         this.matchType = "default";
     }
 

@@ -127,12 +127,20 @@ app.get("/logout", async (req: Request, res: Response) =>
       res.redirect("/login")
   });
 
+app.get("/testAPI", async (req:Request, res: Response) =>
+{
+  const manager = UserManager.getInstance;
+  const userID = manager.createUser("test","test", "test", 100);
+  const user = manager.getUser(userID);
+  console.log(user);
+});
+
 
 app.use(validateLogin);
 
 app.get("/", (req, res) =>
 {
-  res.redirect("./login");
+  res.redirect("/login");
 });
 
 /* 
