@@ -242,6 +242,14 @@ export default class UserManager
   )
   {
     const localUser = new User();
+    const generateUniqueID = () =>
+    {
+      const randomID = Math.floor(Math.random()*1000);
+      const foundUser = this.Users.find((user) => user.getUserID == randomID);
+      if (foundUser)
+      generateUniqueID(); 
+      return randomID; 
+    }
 
     if (id)
     {
@@ -250,24 +258,8 @@ export default class UserManager
     }
     else
     {
-      let randomID = Math.floor(Math.random() * 1000);  
-      let foundUser = this.Users.find((user) => user.getUserID == randomID);
-      if (foundUser === undefined)
-      {
-        localUser.init(username, passwordHash, email, );
-        this.Users.push(localUser);
-      }
-      else
-      {
-        while (foundUser)
-        {
-          randomID = Math.floor(Math.random()*1000);
-          foundUser = this.Users.find((user) => user.getUserID == randomID);
-        }
-      }
-      
-  
-      
+      localUser.init(username, passwordHash, email, generateUniqueID());
+      this.Users.push(localUser);
     }
 
 

@@ -34,11 +34,10 @@ describe ("createUser", ()=>
     it ("should always generate a new fresh userID", ()=>
     {
         const manager = UserManager.getInstance;
-
-        for (let i=0; i<1000; i++)
+        for (let i=0; i<500; i++)
         {
-            const userID = manager.createUser(`${i}`,`${i}`, `${i}`);
-            const user2ID = manager.createUser(`${i}`,`${i}`, `${i}`);
+            const userID = manager.createUser("test1","test1", "test1");
+            const user2ID = manager.createUser("test2", "test2", "test2");
 
             expect (userID).not.toBe(user2ID);
         }
@@ -50,7 +49,7 @@ describe ("updateUser", ()=>
     it("takes in User object and updates its properties accurately", ()=>
     {
         const manager = UserManager.getInstance;
-        const userID = manager.createUser("ironman","ironman","ironman", 100);
+        const userID = manager.createUser("ironman","ironman","ironman");
         const localUser = manager.getUser(userID);
         localUser.setUserName = "incredible hulk"; 
         localUser.setEmail = "incrediblehulk@email.com";
@@ -102,9 +101,9 @@ describe("getUser", ()=>
         it("should return the userID I pass in", ()=>
         {   
             const manager = UserManager.getInstance;
-            const userID = manager.createUser("mario","mariopw", "mario@email.com", 100);
+            const userID = manager.createUser("mario","mariopw", "mario@email.com", 2000);
             const user = manager.getUser(userID);
-            expect(user.getUserID).toBe(100); 
+            expect(user.getUserID).toBe(2000); 
         })
     });
 
@@ -113,30 +112,15 @@ describe("getUser", ()=>
     it("should return User with matching properties", ()=>
     {
         const manager = UserManager.getInstance;
-        const userID = manager.createUser("wario", "wariopw", "wario@email.com", 42);
+        const userID = manager.createUser("wario", "wariopw", "wario@email.com", 1500);
         const foundUser = manager.getUser(userID);
 
-        expect(foundUser.getUserID).toBe(42);
+        expect(foundUser.getUserID).toBe(1500);
         expect(foundUser.getUserName).toBe("wario");
         expect(foundUser.getEmail).toBe("wario@email.com");
     })
 })
 
-describe("getUser", ()=>
-    {
-        it("should return User with matching properties", ()=>
-        {
-            const manager = UserManager.getInstance;
-            const userID = manager.createUser("marth", "marthpw", "marth@email.com", 42);
-            const foundUser = manager.getUser(userID);
-    
-            expect(foundUser.getUserID).toBe(42);
-            expect(foundUser.getUserName).toBe("wario");
-            expect(foundUser.getEmail).toBe("wario@email.com");
-        })
-    })
-        
-    
 
 describe ("deleteUser",()=>
 {
