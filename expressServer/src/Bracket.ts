@@ -392,7 +392,7 @@ export default class BracketManager extends Bracket
 
         this.brackets.push(currentBracket);
 
-        const roomCode = currentBracket.getRoomCode;
+        const roomCode = currentBracket.getRoomCode();
 
         currentBracket.joinBracket(foundUser.getUserID);
 

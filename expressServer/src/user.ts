@@ -379,6 +379,11 @@ export default class UserManager
     catch (error) { console.log(error); }
   }
 
+  public showAllUsers()
+  {
+    const showUsers = this.Users;
 
+    return showUsers; 
+  }
 }
 
