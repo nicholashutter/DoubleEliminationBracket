@@ -64,7 +64,7 @@ async function readUser(userID: number)
   const selectDb = "use userdb";
 
   const query =
-    `SELECT FROM users WHERE user_id = ?`;
+    `SELECT FROM users WHERE id = ?`;
 
 
   const params =
@@ -85,7 +85,7 @@ async function deleteUser(userID: number)
   const selectDb = "use userdb";
 
   const query =
-    "SELECT FROM users WHERE user_id = ?";
+    "DELETE FROM users WHERE id = ?";
 
   const params =
     [
@@ -133,5 +133,5 @@ async function doQuery(selectDb: string, query: string, params: any[])
   }
 }
 
-export { updateUser, readUser, deleteUser }
+export { updateUser, readUser, deleteUser, doQuery }
 

@@ -53,11 +53,7 @@ router.put("/api/updateUser", async (req: Request, res: Response) =>
 
 router.delete("/api/removeUser/:userID", async (req: Request, res: Response) => 
 {
-    /* TODO
-    logic to get selected user, delete them, 
-    delete from datatbase
-    done with req.params
-    */
+
    const sessionUser = req.body.session.user as User;
 
    userManager.deleteUser(sessionUser.getUserID);
