@@ -22,7 +22,7 @@ Function Constructor initialize class members and generate id if none provided
   private totalGamesPlayed: number;
   private datesPlayed: Array<Date>;
 
-  public constructor()
+  constructor()
   {
     //-1 value anywhere in this application is a default value
     this.id = -1;
@@ -49,7 +49,7 @@ Function Constructor initialize class members and generate id if none provided
     this.passwordHash = passwordHash;
     this.email = email;
 
-    if (id)
+    if (id !== undefined)
     {
       this.id = id;
     }
@@ -244,21 +244,23 @@ export default class UserManager
     const localUser = new User();
     const generateUniqueID = () =>
     {
-      const randomID = Math.floor(Math.random()*1000);
+      const randomID = Math.floor(Math.random() * 1000);
       const foundUser = this.Users.find((user) => user.getUserID == randomID);
-      if (foundUser)
-      generateUniqueID(); 
-      return randomID; 
+      if (foundUser )
+      {
+        setTimeout(() => {generateUniqueID();}, 1500)
+      }
+      return randomID;
     }
 
-    if (id)
+    if (id === undefined)
     {
-      localUser.init(username, passwordHash, email, id);
+      localUser.init(username, passwordHash, email, generateUniqueID());
       this.Users.push(localUser);
     }
     else
     {
-      localUser.init(username, passwordHash, email, generateUniqueID());
+      localUser.init(username, passwordHash, email, id);
       this.Users.push(localUser);
     }
 
@@ -286,7 +288,7 @@ export default class UserManager
 
         this.Users[userLocation] = currentUser;
 
-        console.log("User Updated Successfully");
+        // console.log("User Updated Successfully");
       }
 
     }
@@ -305,25 +307,32 @@ export default class UserManager
     let localUser = new User();
 
     if (typeof value === "string")
-    {
-      const foundUser = this.Users.find(localUser => localUser.getUserName === value);
+{
+      try
+      {
+        const foundUser = this.Users.find(localUser => localUser.getUserName === value);
 
-        if (foundUser === undefined || foundUser.getUserID == -1|| foundUser.getUserID === undefined)
+        if (foundUser === undefined || foundUser.getUserID === undefined)
         {
           throw new Error("User not found in Users collection. Err 013");
         }
-        else if (foundUser.getUserName == ""|| String(foundUser.getUserID) == "")
-        {
-          throw new Error("Default user returned which implies user not found. Err 022");
-        }
-        else if (foundUser.getUserName == "-1"||foundUser.getUserID == -1)
+        else if (foundUser.getUserID == -1 || foundUser.getUserName == "-1")
         {
           throw new Error("Default user returned which implies user not found. Err 023");
+        }
+        else if (foundUser.getUserName == "" || String(foundUser.getUserID) == "")
+        {
+          throw new Error("Default user returned which implies user not found. Err 022");
         }
         else
         {
           localUser = foundUser;
         }
+      }
+      catch (e)
+      {
+        console.log(e);
+      }
     }
     else if (typeof value === "number")
     {
@@ -383,7 +392,7 @@ export default class UserManager
   {
     const showUsers = this.Users;
 
-    return showUsers; 
+    return showUsers;
   }
 }
 

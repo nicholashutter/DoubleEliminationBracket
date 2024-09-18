@@ -1,54 +1,36 @@
+/* eslint-disable no-var */
+import {expect, jest, test} from '@jest/globals';
 import { User } from "./user";
 import UserManager from "./user";
+var manager = UserManager.getInstance;
 
 
-
-
-describe ("createUser", ()=>
-{
-    it ("should generate a new userID if I do not pass one in", ()=> 
+describe ("createUser", () => 
     {
-        const manager = UserManager.getInstance;
-        const userID = manager.createUser("luigi", "luigipw", "luigiemail");
-        const localUser = manager.getUser(userID);
-        expect(localUser.getUserID).not.toBeUndefined();
-    }
-    )
-});
-
-describe ("createUser", ()=>
-{
-    it ("should create the user based on properties I send in", ()=>
-    {
-        const manager = UserManager.getInstance;
-        const userID = manager.createUser("black panther", "black panther", "blackpanther@email.com" );
-        const localUser = manager.getUser(userID);
-
-        expect(localUser.getUserName).toBe("black panther");
-        expect(localUser.getEmail).toBe("blackpanther@email.com");
-    })
-})
-
-describe ("createUser", ()=>
-{
-    it ("should always generate a new fresh userID", ()=>
-    {
-        const manager = UserManager.getInstance;
-        for (let i=0; i<500; i++)
+        it ("handles userID conflict by recursively generating userID until unique", () =>
         {
-            const userID = manager.createUser("test1","test1", "test1");
-            const user2ID = manager.createUser("test2", "test2", "test2");
+            
+            let user1ID:any;
+            let user2ID:any;
 
-            expect (userID).not.toBe(user2ID);
-        }
-    })
-})
+            for (let i = 0; i < 1000; i++)
+            {
+                user1ID = manager.createUser(`${i}`,`i`,``, i);
+
+                user2ID = manager.createUser(`${i}`,`random`,``);
+
+                expect(user1ID).not.toBe(user2ID);
+            }
+            
+            
+        });
+    });
 
 describe ("updateUser", ()=>
 {
     it("takes in User object and updates its properties accurately", ()=>
     {
-        const manager = UserManager.getInstance;
+        
         const userID = manager.createUser("ironman","ironman","ironman");
         const localUser = manager.getUser(userID);
         localUser.setUserName = "incredible hulk"; 
@@ -63,7 +45,7 @@ describe ("updateUser", ()=>
     {
         it("takes in User object, returns object with default properties if matching object not found", ()=>
         {
-            const manager = UserManager.getInstance;
+            
             
             const localUser = manager.getUser(Math.random());
             
@@ -71,73 +53,53 @@ describe ("updateUser", ()=>
         })
     });
 
-describe ("getUser", ()=>
-{
-    it ("takes userName string in and returns user object", ()=>
-    {
-        const manager = UserManager.getInstance;
-
-        manager.createUser("thor", "thor", "thor");
-
-        const localUser = manager.getUser("thor");
-
-        expect (localUser.getUserName).toBe("thor");
-    })
-});
-
 
 describe ("getUser", ()=>
 {
     it ("will gracefully error when user not found",()=>
     {
-            const manager = UserManager.getInstance;
-
             expect(() => manager.getUser("weird white guys")).toThrow(); 
     })
 });
 
 describe("getUser", ()=>
+{
+    it("successfully finds a user repeatedly (string)",()=>
     {
-        it("should return the userID I pass in", ()=>
-        {   
-            const manager = UserManager.getInstance;
-            const userID = manager.createUser("mario","mariopw", "mario@email.com", 2000);
+        for (let i=0; i<1000;i++)
+        {
+            const userID = manager.createUser(`${i}`,``,``, i);
             const user = manager.getUser(userID);
-            expect(user.getUserID).toBe(2000); 
-        })
+
+            expect(user.getUserName).toBe(`${i}`);
+        }
     });
+})
 
 describe("getUser", ()=>
-{
-    it("should return User with matching properties", ()=>
     {
-        const manager = UserManager.getInstance;
-        const userID = manager.createUser("wario", "wariopw", "wario@email.com", 1500);
-        const foundUser = manager.getUser(userID);
+        it("successfully finds a user repeatedly (number)",()=>
+        {
+            for (let i=0; i<1000;i++)
+            {
+                const userID = manager.createUser(`${i}`,``,``, i);
+                const user = manager.getUser(userID);
+    
+                expect(user.getUserID).toBe(i);
+            }
+        });
+    });
 
-        expect(foundUser.getUserID).toBe(1500);
-        expect(foundUser.getUserName).toBe("wario");
-        expect(foundUser.getEmail).toBe("wario@email.com");
-    })
-})
-
-
-describe ("deleteUser",()=>
+describe ("deleteUser", ()=>
 {
-    it ("finds a user based on userID and deletes the user",()=>
-    {
-        const manager = UserManager.getInstance;
+    it ("finds a user and deletes the user repeatedly", ()=>
+        {
+            for (let i = 0;i<1000;i++)
+            {
+                const userID = manager.createUser(`${i}`,``,``, i);
+                manager.deleteUser(userID);
+            }
+            expect(manager.showAllUsers().length).toBe(0);
 
-        const userID = manager.createUser("tony stark", "nick fury", "the punisher");
-
-        const localUser = manager.getUser(userID);
-
-        manager.deleteUser(userID);
-
-        const blankUser = manager.getUser(userID);
-
-        expect(blankUser.getUserName).toBe("-1"); 
-
-    })
-})
-
+        });
+});

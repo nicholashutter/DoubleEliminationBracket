@@ -9,7 +9,7 @@ type matchType = "single"|"double"|"default"
 /*
 Run the bracket and update users
 */
-class Bracket
+export class Bracket
 {
     userManager: UserManager;
     isRunning: boolean;
@@ -19,35 +19,40 @@ class Bracket
     protected roomCode;
     protected totalByes;
     protected numOfPlayers;
-    protected player1: User;
-    protected player2: User;
+
     protected currentRound;
     protected matchType: matchType;
 
 
-    protected constructor()
+    constructor()
     {
-        this.isRunning = true;
-        this.users = new Map();
-        this.winner = {
-            player1: 0,
-            player2: 0,
-            currentVotes: 0,
-        }
-        this.roomCode = () =>
-        {
-            const salt = ["w", "x", "y", "z"];
-            let returnValue = salt[crypto.randomInt(3)]
-            returnValue += crypto.randomInt(99000);
-            return returnValue;
-        }
-        this.userManager = UserManager.getInstance;
-        this.totalByes = 0;
-        this.numOfPlayers = 0;
-        this.currentRound = 0;
-        this.player1 = this.userManager.getUser(this.userManager.createUser("-1", "-1", "-1", -1));
-        this.player2 = this.userManager.getUser(this.userManager.createUser("-1", "-1", "-1", -1));
-        this.matchType = "default";
+        const generateRoomCode = () =>
+            {
+                const salt = ["w", "x", "y", "z"];
+                let returnValue = salt[crypto.randomInt(3)]
+                returnValue += crypto.randomInt(99000);
+                return returnValue;
+            }
+
+            this.isRunning = true;
+            this.users = new Map();
+            this.winner = {
+                player1: 0,
+                player2: 0,
+                currentVotes:0,
+            }
+           
+            this.roomCode = generateRoomCode();
+            this.userManager = UserManager.getInstance;
+            this.totalByes = 0;
+            this.numOfPlayers = 0;
+            this.currentRound = 0;
+            this.matchType = "default"; 
+    }
+
+    get getBracketSize()
+    {
+        return this.users.size;
     }
 
     joinBracket(userID: number)
@@ -66,6 +71,7 @@ class Bracket
                 this.userManager.updateUser(currentUser);
                 /* DOCUMENT */
                 this.users.set(currentUser, this.generateSeed(this.users.size));
+                
             }
         }
         catch (e)
@@ -338,17 +344,17 @@ class Bracket
 
 }
 
-export default class BracketManager extends Bracket
+export default class BracketManager 
 {
 
     static #instance: BracketManager;
     private brackets: Array<Bracket>;
+    private userManager: UserManager;
 
     private constructor()
     {
-        super();
-
         this.brackets = new Array<Bracket>();
+        this.userManager = UserManager.getInstance;
     }
 
     public static get getInstance(): BracketManager
@@ -392,7 +398,7 @@ export default class BracketManager extends Bracket
 
         this.brackets.push(currentBracket);
 
-        const roomCode = currentBracket.getRoomCode();
+        const roomCode = currentBracket.getRoomCode;
 
         currentBracket.joinBracket(foundUser.getUserID);
 
@@ -405,7 +411,7 @@ export default class BracketManager extends Bracket
 
         try 
         {
-            const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
+            const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode == roomCode);
 
             if (foundBracket)
             {
@@ -429,7 +435,7 @@ export default class BracketManager extends Bracket
 
         try 
         {
-            const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode() == roomCode);
+            const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode == roomCode);
 
             if (foundBracket)
             {
