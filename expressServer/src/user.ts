@@ -242,18 +242,23 @@ export default class UserManager
   )
   {
     const localUser = new User();
-    const generateUniqueID = (count:number) =>
+
+    const generateUniqueID = (count: number) =>
     {
-      const randomID = Math.floor(Math.random() * 1000);
-      const foundUser = this.Users.find((user) => user.getUserID == randomID);
-      if (foundUser && count < 1000)
+      const randomID = (Math.random() + Date.now()) * 10;
+
+      this.Users.forEach(user =>
       {
-        generateUniqueID(count + 1);
-      }
-      else if (count >= 1000)
-      {
-        setTimeout(() =>{generateUniqueID(count +1)}, 2500);
-      }
+        if (user.getUserID == randomID)
+        {
+          if (count > 1000)
+          {
+            throw new Error("Collision Rate Higher than allowed: Err 100");
+          }
+          generateUniqueID(count + 1);
+        }
+      })
+
       return randomID;
     }
 
@@ -311,7 +316,7 @@ export default class UserManager
     let localUser = new User();
 
     if (typeof value === "string")
-{
+    {
       try
       {
         const foundUser = this.Users.find(localUser => localUser.getUserName === value);
@@ -392,11 +397,24 @@ export default class UserManager
     catch (error) { console.log(error); }
   }
 
+
+
   public showAllUsers()
   {
+    /* 
+    debug only
+    */
     const showUsers = this.Users;
 
     return showUsers;
+  }
+
+  public clearUsers()
+  {
+      /* 
+      debug only
+      */
+    this.Users = [];
   }
 }
 
