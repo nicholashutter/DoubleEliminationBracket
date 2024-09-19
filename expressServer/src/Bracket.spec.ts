@@ -3,6 +3,7 @@ import BracketManager from "./Bracket";
 import UserManager from "./user";
 import { User } from "./user";
 import { Bracket } from "./Bracket";
+import import logger from 'jet-logger';
 
 var bracketManager = BracketManager.getInstance;
 var userManager = UserManager.getInstance;
@@ -117,31 +118,54 @@ describe("joinRoom", () =>
         const roomcode = bracketManager.createRoom(userManager.createUser('', '', ''));
         for (let i = 0; i < 1000; i++)
         {
-            userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`,i);
-            const success = bracketManager.joinRoom(i,roomcode);
+            userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
+            const success = bracketManager.joinRoom(i, roomcode);
 
-            expect (success).toBe(true);
+            expect(success).toBe(true);
         }
 
     });
 });
 
 describe("leaveRoom", () =>
+{
+    it("removes User from selected room", () =>
     {
-        it("removes User from selected room", () =>
+        const roomcode = bracketManager.createRoom(userManager.createUser('', '', ''));
+        for (let i = 0; i < 1000; i++)
         {
-            const roomcode = bracketManager.createRoom(userManager.createUser('', '', ''));
-            for (let i = 0; i < 1000; i++)
-            {
-                userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`,i);
-                bracketManager.joinRoom(i,roomcode);
-                
-                const success = bracketManager.leaveRoom (i,roomcode);
+            userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
+            bracketManager.joinRoom(i, roomcode);
 
-                expect (success).toBe(true);
-            }
-    
-        });
+            const success = bracketManager.leaveRoom(i, roomcode);
+
+            expect(success).toBe(true);
+        }
+
     });
+});
 
-    
+describe("loadPlayers", () =>
+{
+    it("always return a player who hasn't played", () =>
+    {
+
+    });
+});
+
+describe("loadPlayers", () =>
+{
+    it("never return a player who has played", () =>
+    {
+
+    });
+});
+
+describe("loadPlayers", () =>
+{
+    it("only returns a player on currentRound", () =>
+    {
+
+    });
+});
+

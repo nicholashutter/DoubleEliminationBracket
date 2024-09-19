@@ -128,7 +128,7 @@ app.get("/logout", async (req: Request, res: Response) =>
   res.redirect("/login")
 });
 
-app.use(testingRoutes);
+//app.use(testingRoutes);
 
 
 app.use(validateLogin);
@@ -138,14 +138,9 @@ app.get("/", (req, res) =>
   res.redirect("/login");
 });
 
-/* 
-    app.route(api/bracket)
-*/
+
 app.use(bracketRoutes);
 
-/* 
-    app.route(api/user)
-*/
 app.use(userRoutes);
 
 

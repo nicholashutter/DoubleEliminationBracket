@@ -107,7 +107,7 @@ export class Bracket
             console.log(e);
         }
     }
-
+/*untested */
     private generateSeed(value: number)
     {   let counter = 0;
         let seed = 0;
@@ -118,7 +118,7 @@ export class Bracket
         }
         return seed; 
     }
-
+/*untested */
     private calculateByes()
     {
         if (this.numOfPlayers < 3)
@@ -146,7 +146,7 @@ export class Bracket
             this.numOfPlayers = 32;
         }
     }
-
+/*untested */
     private applyByes()
     {
         for (let i = 0; i < this.totalByes; i++)
@@ -155,7 +155,7 @@ export class Bracket
             userSkipsRound.setRound = userSkipsRound.getRound + 1;
         }
     }
-
+/*untested */
     startSinglesRound()
     {
         this.isRunning = true;
@@ -170,7 +170,7 @@ export class Bracket
 
         return { player1, player2 }
     }
-
+/*untested */
     startDoublesRound()
     {
         this.isRunning = true
@@ -188,12 +188,13 @@ export class Bracket
 
         return { player1, player2 }
     }
-
+/*untested */
     private loadPlayers()
     {
         let low = 0;
         const localUserID = this.userManager.createUser("", "", "");
         let player1 = this.userManager.getUser(localUserID);
+        this.userManager.deleteUser(localUserID);
 
         const findUser = () =>
         {
@@ -213,26 +214,15 @@ export class Bracket
 
         findUser();
 
-        if (player1.getInGame == true && this.currentRound !== player1.getRound)
+        if (player1.getRound >= this.currentRound)
         {
-
-            for (let i = 0; player1.getInGame == true && this.currentRound !== player1.getRound; i++)
-            {
-                findUser();
-
-                if (i == this.users.size + 1)
-                {
-                    player1.setUserName = "-1";
-                    break;
-                }
-            }
+            findUser();
         }
-        this.userManager.deleteUser(localUserID);
-        player1.setInGame = true;
+        
         player1.setRound = player1.getRound + 1;
         return player1;
     }
-
+/*untested */
     endRound(winner: string)
     {
         const winningUser = this.userManager.getUser(winner);
@@ -253,7 +243,7 @@ export class Bracket
 
 
     }
-
+/*untested */
     endMatch()
     {
         this.users.forEach((value, key) =>
@@ -272,7 +262,7 @@ export class Bracket
             this.userManager.updateUser(player1);
         })
     }
-
+/*untested */
     selectWinner(winner: string)
     {
         switch (winner)
