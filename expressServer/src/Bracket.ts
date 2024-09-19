@@ -52,8 +52,11 @@ export class Bracket
 
     get getBracketSize()
     {
-        return this.users.size;
+        
+        const localUsers = this.users
+        return localUsers.size;
     }
+
 
     joinBracket(userID: number)
     {
@@ -106,8 +109,14 @@ export class Bracket
     }
 
     private generateSeed(value: number)
-    {
-        return Math.floor(Math.random() * value);
+    {   let counter = 0;
+        let seed = 0;
+        while (counter < value)
+        {
+            seed = Math.floor(Math.random() * value);
+            counter++;
+        }
+        return seed; 
     }
 
     private calculateByes()
@@ -369,13 +378,16 @@ export default class BracketManager
 
     public showAllRooms()
     {
+        /* debug */
         const snapShot = this.brackets;
 
-        /*
-            TODO implement this with information propogating up from brackets themselves without exposing PII 
-            This is a debugging function primarily    
-        */
         return snapShot;
+    }
+
+    public clearBrackets()
+    {
+        /* debug */ 
+        this.brackets = []; 
     }
 
     public createRoom(userID: number)
@@ -416,9 +428,11 @@ export default class BracketManager
             if (foundBracket)
             {
                 foundBracket.leaveBracket(foundUser.getUserID);
+                return true; 
             }
             else 
             {
+                return false; 
                 throw new Error("Unable to find bracket specified. Possible Null or incorrect type. Err 005");
             }
         }
@@ -440,10 +454,12 @@ export default class BracketManager
             if (foundBracket)
             {
                 foundBracket.joinBracket(foundUser.getUserID);
+                return true; 
             }
 
             else 
-            {
+            { 
+                return false;
                 throw new Error("Unable to find bracket specified. Err 006");
             }
         }
@@ -454,13 +470,5 @@ export default class BracketManager
         }
 
     }
-
-    public destroyBracket()
-    {
-        //TODO
-        //debating whether I will even need this
-    }
-
-
 
 }

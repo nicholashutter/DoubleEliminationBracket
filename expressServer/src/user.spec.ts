@@ -2,15 +2,12 @@
 /* eslint-disable no-var */
 import {expect, jest, test} from '@jest/globals';
 import { User } from "./user";
-import UserManager from "./user";
-var manager = UserManager.getInstance;
+import UserManagerManager from "./user";
+var userManager = UserManagerManager.getInstance;
 
 beforeEach (() => 
     {
-        if (manager.showAllUsers.length > 0)
-            {
-                manager.clearUsers();
-            }
+        userManager.clearUsers();
     });
 
 describe ("createUser", () => 
@@ -23,9 +20,9 @@ describe ("createUser", () =>
 
             for (let i = 0; i < 1000; i++)
             {
-                user1ID = manager.createUser(`${i}`,`i`,``, i);
+                user1ID = userManager.createUser(`${i}`,`i`,``, i);
 
-                user2ID = manager.createUser(`${i}`,`random`,``);
+                user2ID = userManager.createUser(`${i}`,`random`,``);
 
                 if (user1ID == user2ID)
                 {
@@ -44,8 +41,8 @@ describe ("updateUser", ()=>
     it("takes in User object and updates its properties accurately", ()=>
     {
         
-        const userID = manager.createUser("ironman","ironman","ironman");
-        const localUser = manager.getUser(userID);
+        const userID = userManager.createUser("ironman","ironman","ironman");
+        const localUser = userManager.getUser(userID);
         localUser.setUserName = "incredible hulk"; 
         localUser.setEmail = "incrediblehulk@email.com";
 
@@ -59,7 +56,7 @@ describe ("updateUser", ()=>
         it("takes in User object, returns object with default properties if matching object not found", ()=>
         {
         
-            const localUser = manager.getUser(Math.random());
+            const localUser = userManager.getUser(Math.random());
             
             expect(localUser.getUserName).toBe("-1");
         })
@@ -70,7 +67,7 @@ describe ("getUser", ()=>
 {
     it ("will gracefully error when user not found",()=>
     {
-            expect(manager.getUser("weird white guys").getUserID).toBe(-1); 
+            expect(userManager.getUser("weird white guys").getUserID).toBe(-1); 
     })
 });
 
@@ -80,8 +77,8 @@ describe("getUser", ()=>
     {
         for (let i=0; i<500;i++)
         {
-            const userID = manager.createUser(`${i}`,``,``, i);
-            const user = manager.getUser(userID);
+            const userID = userManager.createUser(`${i}`,``,``, i);
+            const user = userManager.getUser(userID);
 
             expect(user.getUserName).toBe(`${i}`);
         }
@@ -95,8 +92,8 @@ describe("getUser", ()=>
         
             for (let i=0; i<500;i++)
             {
-                const userID = manager.createUser(`${i}`,``,``, i);
-                const user = manager.getUser(userID);
+                const userID = userManager.createUser(`${i}`,``,``, i);
+                const user = userManager.getUser(userID);
     
                 
                 expect(user.getUserID).toBe(i);
@@ -111,11 +108,11 @@ describe("clearUsers", () =>
 
         for (let i=0; i<1000;i++)
         {
-            manager.createUser('','','',i);
+            userManager.createUser('','','',i);
         }
-        manager.clearUsers();
+        userManager.clearUsers();
 
-        expect(manager.showAllUsers.length).toBe(0);
+        expect(userManager.showAllUsers.length).toBe(0);
     });
 })
 
@@ -126,14 +123,14 @@ describe ("deleteUser", ()=>
 
             for (let i = 0;i<1000;i++)
             {
-                const userID = manager.createUser(`${i}`,``,``, i);
+                const userID = userManager.createUser(`${i}`,``,``, i);
                 if (userID !== i)
                 {
                     debugger; 
                 }
-                manager.deleteUser(userID);
+                userManager.deleteUser(userID);
             }
-            expect(manager.showAllUsers().length).toBe(0);
+            expect(userManager.showAllUsers().length).toBe(0);
 
         });
 });
@@ -145,10 +142,10 @@ describe ("deleteUser", ()=>
 
         for (let i = 0;i<1000;i++)
             {
-                const userID = manager.createUser(`${i}`,``,``);
+                const userID = userManager.createUser(`${i}`,``,``);
     
-                manager.deleteUser(userID);
+                userManager.deleteUser(userID);
             }
-            expect(manager.showAllUsers().length).toBe(0);
+            expect(userManager.showAllUsers().length).toBe(0);
     });
 });
