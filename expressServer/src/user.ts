@@ -242,20 +242,24 @@ export default class UserManager
   )
   {
     const localUser = new User();
-    const generateUniqueID = () =>
+    const generateUniqueID = (count:number) =>
     {
       const randomID = Math.floor(Math.random() * 1000);
       const foundUser = this.Users.find((user) => user.getUserID == randomID);
-      if (foundUser )
+      if (foundUser && count < 1000)
       {
-        setTimeout(() => {generateUniqueID();}, 1500)
+        generateUniqueID(count + 1);
+      }
+      else if (count >= 1000)
+      {
+        setTimeout(() =>{generateUniqueID(count +1)}, 2500);
       }
       return randomID;
     }
 
     if (id === undefined)
     {
-      localUser.init(username, passwordHash, email, generateUniqueID());
+      localUser.init(username, passwordHash, email, generateUniqueID(0));
       this.Users.push(localUser);
     }
     else

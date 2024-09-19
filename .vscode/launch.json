@@ -37,7 +37,8 @@
       "args": [
         "${fileBasenameNoExtension}",
         "--config",
-        "${workspaceFolder}/expressServer/jest.config.ts"
+        "${workspaceFolder}/expressServer/jest.config.js",
+        "--detectOpenHandles",
       ],
       "console": "integratedTerminal",
       "windows": {

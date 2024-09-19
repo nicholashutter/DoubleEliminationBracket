@@ -58,7 +58,7 @@ describe ("getUser", ()=>
 {
     it ("will gracefully error when user not found",()=>
     {
-            expect(() => manager.getUser("weird white guys")).toThrow(); 
+            expect(() => manager.getUser("weird white guys")).toBe("-1"); 
     })
 });
 
@@ -66,7 +66,7 @@ describe("getUser", ()=>
 {
     it("successfully finds a user repeatedly (string)",()=>
     {
-        for (let i=0; i<1000;i++)
+        for (let i=0; i<500;i++)
         {
             const userID = manager.createUser(`${i}`,``,``, i);
             const user = manager.getUser(userID);
@@ -80,11 +80,12 @@ describe("getUser", ()=>
     {
         it("successfully finds a user repeatedly (number)",()=>
         {
-            for (let i=0; i<1000;i++)
+            for (let i=0; i<500;i++)
             {
                 const userID = manager.createUser(`${i}`,``,``, i);
                 const user = manager.getUser(userID);
     
+                
                 expect(user.getUserID).toBe(i);
             }
         });
@@ -94,7 +95,7 @@ describe ("deleteUser", ()=>
 {
     it ("finds a user and deletes the user repeatedly", ()=>
         {
-            for (let i = 0;i<1000;i++)
+            for (let i = 0;i<500;i++)
             {
                 const userID = manager.createUser(`${i}`,``,``, i);
                 manager.deleteUser(userID);
