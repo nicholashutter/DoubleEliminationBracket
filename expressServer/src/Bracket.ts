@@ -28,9 +28,18 @@ export class Bracket
     {
         const generateRoomCode = () =>
             {
-                const salt = ["w", "x", "y", "z"];
-                let returnValue = salt[crypto.randomInt(3)]
-                returnValue += crypto.randomInt(99000);
+                const salt = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+                let returnValue = '';
+                for (let i = 0; i < 2; i++) {
+                    returnValue += salt[crypto.randomInt(salt.length)];
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    returnValue += crypto.randomInt(10).toString(); 
+                }
+                
+                returnValue += salt[crypto.randomInt(salt.length)];
+
                 return returnValue;
             }
 
@@ -67,6 +76,8 @@ export class Bracket
             if (currentUser.getUserName == "-1")
             {
                 throw new Error("Unable to join specified bracket. No matching user found. Err 007");
+
+                return false; 
             }
             else 
             {
@@ -74,6 +85,7 @@ export class Bracket
                 this.userManager.updateUser(currentUser);
                 /* DOCUMENT */
                 this.users.set(currentUser, this.generateSeed(this.users.size));
+                return true; 
                 
             }
         }
@@ -108,16 +120,25 @@ export class Bracket
         }
     }
 /*untested */
-    private generateSeed(value: number)
-    {   let counter = 0;
-        let seed = 0;
-        while (counter < value)
+    
+    private generateSeed = (count: number) =>
         {
-            seed = Math.floor(Math.random() * value);
-            counter++;
+          const randomID = Math.floor(Math.random() * 1000) + Date.now();
+    
+          this.users.forEach((seed, user) =>
+          {
+            if (seed == randomID)
+            {
+                if (count > 1000)
+                {
+                    throw new Error ("RandomID could not be generated. Fatal. Err 101");
+                }
+                this.generateSeed(count +1);
+            }
+          })
+    
+          return randomID;
         }
-        return seed; 
-    }
 /*untested */
     private calculateByes()
     {
@@ -189,7 +210,14 @@ export class Bracket
         return { player1, player2 }
     }
 /*untested */
-    private loadPlayers()
+
+    public setCurrentRound(value:number)
+    {   
+        //debug
+        this.currentRound = value;
+    }
+
+    public loadPlayers()
     {
         let low = 0;
         const localUserID = this.userManager.createUser("", "", "");
@@ -198,28 +226,30 @@ export class Bracket
 
         const findUser = () =>
         {
-            this.users.forEach((value, key) =>
+            this.users.forEach((seed, user) =>
             {
-                if (low < value)
+                if (low < seed)
                 {
-                    low = value;
+                    low = seed;
+                    if (low == seed)
+                        {
+        
+                            player1 = user;
+                        }
                 }
-                else if (low == value)
-                {
-
-                    player1 = key;
-                }
+                
             })
         }
 
         findUser();
 
-        if (player1.getRound >= this.currentRound)
+        if (player1.getRound !== this.currentRound)
         {
             findUser();
         }
         
         player1.setRound = player1.getRound + 1;
+        this.userManager.updateUser(player1);
         return player1;
     }
 /*untested */

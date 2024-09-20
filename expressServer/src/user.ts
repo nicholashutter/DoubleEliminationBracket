@@ -48,6 +48,7 @@ Function Constructor initialize class members and generate id if none provided
     this.userName = username;
     this.passwordHash = passwordHash;
     this.email = email;
+    this.round = 0; 
 
     if (id !== undefined)
     {
@@ -245,7 +246,7 @@ export default class UserManager
 
     const generateUniqueID = (count: number) =>
     {
-      const randomID = (Math.random() + Date.now()) * 10;
+      let randomID = Math.floor(Math.random() * 1000) + Date.now();
 
       this.Users.forEach(user =>
       {

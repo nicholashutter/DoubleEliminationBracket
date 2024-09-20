@@ -3,7 +3,7 @@ import BracketManager from "./Bracket";
 import UserManager from "./user";
 import { User } from "./user";
 import { Bracket } from "./Bracket";
-import import logger from 'jet-logger';
+import logger from 'jet-logger';
 
 var bracketManager = BracketManager.getInstance;
 var userManager = UserManager.getInstance;
@@ -12,23 +12,48 @@ beforeEach(() =>
 {
     userManager.clearUsers();
     bracketManager.clearBrackets();
+    
 });
 
 describe("joinBracket ", () => 
 {
-    it("successfully joins user to bracket", () => 
+    it("successfully joins user to bracket, userID inserted", () => 
     {
         const bracket = new Bracket();
 
         for (let i = 0; i < 1000; i++)
         {
             userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
-            bracket.joinBracket(i);
-
+            const success = bracket.joinBracket(i);
+            if (!success)
+            {
+                debugger; 
+            }
+            expect(success).toBe(true );
         }
-        expect(bracket.getBracketSize).toBe(1000);
+        
     });
 });
+
+describe("joinBracket ", () => 
+    {
+        it("successfully joins user to bracket, userID generated", () => 
+        {
+            const bracket = new Bracket();
+    
+            for (let i = 0; i < 1000; i++)
+            {
+                const userID = userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
+                const success = bracket.joinBracket(userID);
+                if (!success)
+                {
+                    debugger; 
+                }
+                expect(success).toBe(true);
+            }
+            
+        });
+    });
 
 describe("leaveBracket", () =>
 {
@@ -149,9 +174,38 @@ describe("loadPlayers", () =>
 {
     it("always return a player who hasn't played", () =>
     {
+        
+        const bracket = new Bracket();
+        bracket.setCurrentRound(0); 
+        let player2: any; 
+        const localStorage:Array<any> = [];
+        for (let i = 0; i < 1000; i++)
+        {
+            const userID = userManager.createUser(`User: ${i}`, `Pw: ${i}`, `email${i}@email.com`);
 
+            const localUser = userManager.getUser(userID);
+
+            userManager.updateUser(localUser); 
+
+            bracket.joinBracket(userID);
+
+            const player1 = bracket.loadPlayers(); 
+
+            const player2 = localStorage.find ((User) => User.getUserID == localUser.getUserID)
+
+
+            expect(player2).toBe(undefined); 
+
+            userManager.updateUser(player1);
+
+            localStorage.push(player1);
+        }
     });
 });
+
+//TODO both joinbracket tests fail at very high indexs in the loop above 950
+//loadPlayers suddenly failing by returning an empty user
+//loadPlayers is incrementing the user's round inconsistently 
 
 describe("loadPlayers", () =>
 {
