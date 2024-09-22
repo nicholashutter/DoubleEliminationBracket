@@ -152,14 +152,6 @@ test("leaveRoom - removes User from selected room", async () =>
 test("loadPlayers - always return a player who hasn't played", async () =>
 {
 
-    //we take player1, gotten from loadplayers, and add it's userID to array
-    //player1 increment its currentRound and update the object 
-    //get player2 from loadplayers 
-    //check if player2.getUserID == any userID already in array
-    //this should not be possible since the chance of collision is almost none
-    //if player2 userID not found 
-    //add player2 userID to array 
-    //player2 increment its currentRound and update the object
 
     const bracket = new Bracket();
     bracket.setCurrentRound(0);
@@ -181,6 +173,14 @@ test("loadPlayers - always return a player who hasn't played", async () =>
 });
 
 
-//TODO both joinbracket tests fail at very high indexs in the loop above 950
-//loadPlayers suddenly failing by returning an empty user
-//loadPlayers is incrementing the user's round inconsistently 
+test("end to end test 1", async () =>
+    {
+        //create 1000 users
+        //create bracket
+        //add users to bracket
+        //startSinglesRound()?
+        //selectWinner()
+        //end
+        //
+
+    });

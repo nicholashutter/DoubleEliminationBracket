@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 
 type Seed = number;
-type matchType = "single"|"double"|"default"
+type matchType = "single" | "double" | "default"
 /*
 Run the bracket and update users
 */
@@ -27,41 +27,43 @@ export class Bracket
     constructor()
     {
         const generateRoomCode = () =>
+        {
+            const salt = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            let returnValue = '';
+            for (let i = 0; i < 2; i++)
             {
-                const salt = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-                let returnValue = '';
-                for (let i = 0; i < 2; i++) {
-                    returnValue += salt[crypto.randomInt(salt.length)];
-                }
-
-                for (let i = 0; i < 3; i++) {
-                    returnValue += crypto.randomInt(10).toString(); 
-                }
-                
                 returnValue += salt[crypto.randomInt(salt.length)];
-
-                return returnValue;
             }
 
-            this.isRunning = true;
-            this.users = new Map();
-            this.winner = {
-                player1: 0,
-                player2: 0,
-                currentVotes:0,
+            for (let i = 0; i < 3; i++)
+            {
+                returnValue += crypto.randomInt(10).toString();
             }
-           
-            this.roomCode = generateRoomCode();
-            this.userManager = UserManager.getInstance;
-            this.totalByes = 0;
-            this.numOfPlayers = 0;
-            this.currentRound = 0;
-            this.matchType = "default"; 
+
+            returnValue += salt[crypto.randomInt(salt.length)];
+
+            return returnValue;
+        }
+
+        this.isRunning = true;
+        this.users = new Map();
+        this.winner = {
+            player1: 0,
+            player2: 0,
+            currentVotes: 0,
+        }
+
+        this.roomCode = generateRoomCode();
+        this.userManager = UserManager.getInstance;
+        this.totalByes = 0;
+        this.numOfPlayers = 0;
+        this.currentRound = 0;
+        this.matchType = "default";
     }
 
     get getBracketSize()
     {
-        
+
         const localUsers = this.users
         return localUsers.size;
     }
@@ -69,43 +71,42 @@ export class Bracket
 
     async joinBracket(userID: number)
     {
-        console.log("line 72:Begin joinBracket");
+
         const currentUser = await this.userManager.getUser(userID);
-        console.log("line 73");
+
 
         if (currentUser === undefined)
         {
-            console.log("line 77");
-            throw new Error("Exactly what you thought, dig deeper. Trying to get a user based on given ID and we are getting undefined as a response");
+
+            throw new Error("ERR 222 FATAL");
         }
 
         try
         {
             if (currentUser.getUserName == "-1")
             {
-              //  throw new Error("Unable to join specified bracket. No matching user found. Err 007");
-              console.log("line 86");
-                return false; 
+                throw new Error("Unable to join specified bracket. No matching user found. Err 007");
+
             }
             else 
             {
                 currentUser.setInGame = true;
-                console.log("line 92");
+
                 this.userManager.updateUser(currentUser);
-                console.log("line 94");
+
                 /* DOCUMENT */
                 this.users.set(currentUser, this.generateSeed(this.users.size));
-                console.log("line 97");
-                return true; 
-                console.log("line 99");
+
+                return true;
+
             }
         }
         catch (e)
         {
             console.log(e);
-            console.log("line 105");
+
         }
-        console.log("line 108:end joinBracket");
+
     }
 
     async leaveBracket(userID: number)
@@ -131,27 +132,27 @@ export class Bracket
             console.log(e);
         }
     }
-/*untested */
-    
+    /*semi - tested */
+
     private generateSeed = (count: number) =>
+    {
+        const randomID = Math.floor(Math.random() * 1000) + Date.now();
+
+        this.users.forEach((seed, user) =>
         {
-          const randomID = Math.floor(Math.random() * 1000) + Date.now();
-    
-          this.users.forEach((seed, user) =>
-          {
             if (seed == randomID)
             {
                 if (count > 1000)
                 {
-                    throw new Error ("RandomID could not be generated. Fatal. Err 101");
+                    throw new Error("RandomID could not be generated. Fatal. Err 101");
                 }
-                this.generateSeed(count +1);
+                this.generateSeed(count + 1);
             }
-          })
-    
-          return randomID;
-        }
-/*untested */
+        })
+
+        return randomID;
+    }
+    /*untested */
     private calculateByes()
     {
         if (this.numOfPlayers < 3)
@@ -179,7 +180,7 @@ export class Bracket
             this.numOfPlayers = 32;
         }
     }
-/*untested */
+    /*untested */
     private async applyByes()
     {
         for (let i = 0; i < this.totalByes; i++)
@@ -188,8 +189,8 @@ export class Bracket
             userSkipsRound.setRound = userSkipsRound.getRound + 1;
         }
     }
-/*untested */
-   async startSinglesRound()
+    /*untested */
+    async startSinglesRound()
     {
         this.isRunning = true;
         this.matchType = "single";
@@ -203,8 +204,8 @@ export class Bracket
 
         return { player1, player2 }
     }
-/*untested */
-   async startDoublesRound()
+    /*untested */
+    async startDoublesRound()
     {
         this.isRunning = true
         this.matchType = "double";
@@ -221,10 +222,10 @@ export class Bracket
 
         return { player1, player2 }
     }
-/*untested */
+    /*untested */
 
-    public setCurrentRound(value:number)
-    {   
+    public setCurrentRound(value: number)
+    {
         //debug
         this.currentRound = value;
     }
@@ -244,12 +245,12 @@ export class Bracket
                 {
                     low = seed;
                     if (low == seed)
-                        {
-        
-                            player1 = user;
-                        }
+                    {
+
+                        player1 = user;
+                    }
                 }
-                
+
             })
         }
 
@@ -259,12 +260,12 @@ export class Bracket
         {
             findUser();
         }
-        
+
         player1.setRound = player1.getRound + 1;
         this.userManager.updateUser(player1);
         return player1;
     }
-/*untested */
+    /*untested */
     async endRound(winner: string)
     {
         const winningUser = await this.userManager.getUser(winner);
@@ -285,7 +286,7 @@ export class Bracket
 
 
     }
-/*untested */
+    /*untested */
     async endMatch()
     {
         this.users.forEach(async (value, key) =>
@@ -304,7 +305,7 @@ export class Bracket
             this.userManager.updateUser(player1);
         })
     }
-/*untested */
+    /*untested */
     selectWinner(winner: string)
     {
         switch (winner)
@@ -351,7 +352,7 @@ export class Bracket
                 this.winner.currentVotes = 0;
                 throw new Error(`currentVotes variable greater than 2. 
                         This should not be possible. Attempting to self heal. Cast votes again. Err 011`);
-                
+
             }
         }
         catch (e)
@@ -359,18 +360,18 @@ export class Bracket
             console.log(e);
         }
 
-        
+
         if (this.isRunning)
         {
             switch (this.matchType)
             {
                 case "single":
                     this.startSinglesRound();
-                    break; 
+                    break;
 
                 case "double":
                     this.startDoublesRound();
-                    break; 
+                    break;
                 case "default":
                     throw new Error(`Cannot determine what type of round to start next or bracket not propertly initialized. 
                         Fatal error. Err 017`);
@@ -413,21 +414,21 @@ export default class BracketManager
         /* debug */
         const snapShot = this.brackets;
 
-         
+
 
         return snapShot;
     }
 
     public clearBrackets()
     {
-        /* debug */ 
-        this.brackets = []; 
+        /* debug */
+        this.brackets = [];
     }
 
     public async createRoom(userID: number)
     {
         const foundUser = await this.userManager.getUser(userID);
-        
+
         try 
         {
             if (foundUser.getUserName == "-1")
@@ -462,11 +463,11 @@ export default class BracketManager
             if (foundBracket)
             {
                 foundBracket.leaveBracket(foundUser.getUserID);
-                return true; 
+                return true;
             }
             else 
             {
-                return false; 
+                return false;
                 throw new Error("Unable to find bracket specified. Possible Null or incorrect type. Err 005");
             }
         }
@@ -488,11 +489,11 @@ export default class BracketManager
             if (foundBracket)
             {
                 foundBracket.joinBracket(foundUser.getUserID);
-                return true; 
+                return true;
             }
 
             else 
-            { 
+            {
                 return false;
                 throw new Error("Unable to find bracket specified. Err 006");
             }
