@@ -67,38 +67,50 @@ export class Bracket
     }
 
 
-    joinBracket(userID: number)
+    async joinBracket(userID: number)
     {
-        const currentUser = this.userManager.getUser(userID);
+        console.log("line 72:Begin joinBracket");
+        const currentUser = await this.userManager.getUser(userID);
+        console.log("line 73");
+
+        if (currentUser === undefined)
+        {
+            console.log("line 77");
+            throw new Error("Exactly what you thought, dig deeper. Trying to get a user based on given ID and we are getting undefined as a response");
+        }
 
         try
         {
             if (currentUser.getUserName == "-1")
             {
-                throw new Error("Unable to join specified bracket. No matching user found. Err 007");
-
+              //  throw new Error("Unable to join specified bracket. No matching user found. Err 007");
+              console.log("line 86");
                 return false; 
             }
             else 
             {
                 currentUser.setInGame = true;
+                console.log("line 92");
                 this.userManager.updateUser(currentUser);
+                console.log("line 94");
                 /* DOCUMENT */
                 this.users.set(currentUser, this.generateSeed(this.users.size));
+                console.log("line 97");
                 return true; 
-                
+                console.log("line 99");
             }
         }
         catch (e)
         {
             console.log(e);
+            console.log("line 105");
         }
-
+        console.log("line 108:end joinBracket");
     }
 
-    leaveBracket(userID: number)
+    async leaveBracket(userID: number)
     {
-        const currentUser = this.userManager.getUser(userID);
+        const currentUser = await this.userManager.getUser(userID);
 
         try
         {
@@ -168,16 +180,16 @@ export class Bracket
         }
     }
 /*untested */
-    private applyByes()
+    private async applyByes()
     {
         for (let i = 0; i < this.totalByes; i++)
         {
-            const userSkipsRound = this.loadPlayers() as User;
+            const userSkipsRound = await this.loadPlayers() as User;
             userSkipsRound.setRound = userSkipsRound.getRound + 1;
         }
     }
 /*untested */
-    startSinglesRound()
+   async startSinglesRound()
     {
         this.isRunning = true;
         this.matchType = "single";
@@ -186,13 +198,13 @@ export class Bracket
         this.calculateByes();
         this.applyByes();
 
-        const player1 = this.loadPlayers() as User;
-        const player2 = this.loadPlayers() as User;
+        const player1 = await this.loadPlayers() as User;
+        const player2 = await this.loadPlayers() as User;
 
         return { player1, player2 }
     }
 /*untested */
-    startDoublesRound()
+   async startDoublesRound()
     {
         this.isRunning = true
         this.matchType = "double";
@@ -201,9 +213,9 @@ export class Bracket
         this.calculateByes();
         this.applyByes();
 
-        const player1 = this.loadPlayers() as User;
+        const player1 = await this.loadPlayers() as User;
 
-        const player2 = this.loadPlayers() as User;
+        const player2 = await this.loadPlayers() as User;
 
 
 
@@ -217,11 +229,11 @@ export class Bracket
         this.currentRound = value;
     }
 
-    public loadPlayers()
+    public async loadPlayers()
     {
         let low = 0;
-        const localUserID = this.userManager.createUser("", "", "");
-        let player1 = this.userManager.getUser(localUserID);
+        const localUserID = this.userManager.createUser(`User ${low}`, `PW ${low}`, `email${low}@email.com`);
+        let player1 = await this.userManager.getUser(localUserID);
         this.userManager.deleteUser(localUserID);
 
         const findUser = () =>
@@ -253,9 +265,9 @@ export class Bracket
         return player1;
     }
 /*untested */
-    endRound(winner: string)
+    async endRound(winner: string)
     {
-        const winningUser = this.userManager.getUser(winner);
+        const winningUser = await this.userManager.getUser(winner);
         winningUser.setAllTimeWins = winningUser.getAllTimeWins + 1;
         try 
         {
@@ -274,9 +286,9 @@ export class Bracket
 
     }
 /*untested */
-    endMatch()
+    async endMatch()
     {
-        this.users.forEach((value, key) =>
+        this.users.forEach(async (value, key) =>
         {
             key.setInGame = false;
             key.setRound = 0;
@@ -285,9 +297,9 @@ export class Bracket
         this.currentRound = 0;
         this.matchType = "default";
 
-        this.users.forEach((value, key) =>
+        this.users.forEach(async (value, key) =>
         {
-            const player1 = this.userManager.getUser(key.getUserID)
+            const player1 = await this.userManager.getUser(key.getUserID)
 
             this.userManager.updateUser(player1);
         })
@@ -401,6 +413,8 @@ export default class BracketManager
         /* debug */
         const snapShot = this.brackets;
 
+         
+
         return snapShot;
     }
 
@@ -410,10 +424,10 @@ export default class BracketManager
         this.brackets = []; 
     }
 
-    public createRoom(userID: number)
+    public async createRoom(userID: number)
     {
-        const foundUser = this.userManager.getUser(userID);
-
+        const foundUser = await this.userManager.getUser(userID);
+        
         try 
         {
             if (foundUser.getUserName == "-1")
@@ -437,9 +451,9 @@ export default class BracketManager
         return roomCode;
     }
 
-    public leaveRoom(userID: number, roomCode: string)
+    public async leaveRoom(userID: number, roomCode: string)
     {
-        const foundUser = this.userManager.getUser(userID);
+        const foundUser = await this.userManager.getUser(userID);
 
         try 
         {
@@ -463,9 +477,9 @@ export default class BracketManager
         }
     }
 
-    public joinRoom(userID: number, roomCode: string)
+    public async joinRoom(userID: number, roomCode: string)
     {
-        const foundUser = this.userManager.getUser(userID);
+        const foundUser = await this.userManager.getUser(userID);
 
         try 
         {

@@ -79,10 +79,7 @@ Functions Getters and Setters with some basic input validation
     return this.userName;
   }
 
-  public set setUserName(userName: string)
-  {
-    this.userName = userName;
-  }
+ 
 
   public get getEmail(): string
   {
@@ -242,6 +239,10 @@ export default class UserManager
     id?: number
   )
   {
+    if (username == '')
+    {
+      throw new Error ("username value required. Cannot proceed. Fatal. Err 227");
+    }
     const localUser = new User();
 
     const generateUniqueID = (count: number) =>
@@ -312,7 +313,7 @@ export default class UserManager
 
 
 
-  public getUser<T>(value: T): User
+  public async getUser<T>(value: T): Promise<User>
   {
     let localUser = new User();
 

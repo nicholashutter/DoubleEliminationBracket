@@ -12,9 +12,9 @@ import BracketManager from "../Bracket";
 const userManager = UserManager.getInstance;
 const bracketManager = BracketManager.getInstance;
 
-router.get("/api/getUser/:userID", (req: Request, res: Response) =>
+router.get("/api/getUser/:userID", async (req: Request, res: Response) =>
 {
-    const sessionUser = userManager.getUser(req.params.userID)
+    const sessionUser = await userManager.getUser(req.params.userID)
 
     res.write(`This response should contain the userID you sent in: ${sessionUser.getUserID}. 
         If not something went wrong. `)
@@ -22,7 +22,7 @@ router.get("/api/getUser/:userID", (req: Request, res: Response) =>
     res.json (sessionUser);
 });
 
-router.post("/api/createUser", (req: Request, res: Response) => 
+router.post("/api/createUser",  (req: Request, res: Response) => 
 {
     bcrypt.hash(req.body.passwordHash, 10)
         .then(function (hash)
@@ -43,7 +43,7 @@ router.put("/api/updateUser", async (req: Request, res: Response) =>
 {
    let sessionUser = req.session.user as User; 
    
-   sessionUser = userManager.getUser(sessionUser.getUserID);
+   sessionUser = await userManager.getUser(sessionUser.getUserID);
 
    userManager.updateUser(sessionUser);
 

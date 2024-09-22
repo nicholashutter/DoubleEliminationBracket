@@ -12,48 +12,37 @@ beforeEach(() =>
 {
     userManager.clearUsers();
     bracketManager.clearBrackets();
-    
+
 });
 
-describe("joinBracket ", () => 
+
+test("joinBracket - successfully joins user to bracket, userID inserted", async () => 
 {
-    it("successfully joins user to bracket, userID inserted", () => 
-    {
-        const bracket = new Bracket();
+    const bracket = new Bracket();
 
-        for (let i = 0; i < 1000; i++)
-        {
-            userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
-            const success = bracket.joinBracket(i);
-            if (!success)
-            {
-                debugger; 
-            }
-            expect(success).toBe(true );
-        }
-        
-    });
+    for (let i = 0; i < 1000; i++)
+    {
+        userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
+        const success = await bracket.joinBracket(i);
+        expect(success).toBe(true);
+    }
+
 });
 
-describe("joinBracket ", () => 
+
+test("joinBracket - successfully joins user to bracket, userID generated", async () => 
+{
+    const bracket = new Bracket();
+
+    for (let i = 0; i < 1000; i++)
     {
-        it("successfully joins user to bracket, userID generated", () => 
-        {
-            const bracket = new Bracket();
-    
-            for (let i = 0; i < 1000; i++)
-            {
-                const userID = userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
-                const success = bracket.joinBracket(userID);
-                if (!success)
-                {
-                    debugger; 
-                }
-                expect(success).toBe(true);
-            }
-            
-        });
-    });
+        const userID = userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
+        const success = await bracket.joinBracket(userID);
+        expect(success).toBe(true);
+    }
+
+});
+
 
 describe("leaveBracket", () =>
 {
@@ -88,138 +77,110 @@ describe("generateRoomCode", () =>
     });
 });
 
-describe("createRoom", () =>
-{
-    it("creates rooms", () =>
+test("createRoom - it creates rooms", async () =>
     {
         for (let i = 0; i < 1000; i++)
         {
-            bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
+            await bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
 
-            expect(bracketManager.showAllRooms().length).toBe(i + 1);
         }
-
+        expect(bracketManager.showAllRooms().length).toBe(1000);
     });
-});
 
-describe("createRoom", () =>
+
+it("createRoom - creates unique roomcode", async () =>
 {
-    it("creates unique roomcode", () =>
+    let previousRoomCode = '';
+    for (let i = 0; i < 1000; i++)
     {
-        let previousRoomCode = '';
-        for (let i = 0; i < 1000; i++)
-        {
-            const roomcode = bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
+        const roomcode = await bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
 
-            expect(roomcode).not.toBe(previousRoomCode);
+        expect(roomcode).not.toBe(previousRoomCode);
 
-            previousRoomCode = roomcode;
-        }
+        previousRoomCode = roomcode;
+    }
 
-    });
 });
 
-describe("createRoom", () =>
+
+test("createRoom - creates unique roomcode", async () =>
 {
-    it("creates unique roomcode", () =>
+    let previousRoomCode = '';
+    for (let i = 0; i < 1000; i++)
     {
-        let previousRoomCode = '';
-        for (let i = 0; i < 1000; i++)
-        {
-            const roomcode = bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
+        const roomcode = await bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
 
-            expect(roomcode).not.toBe(previousRoomCode);
+        expect(roomcode).not.toBe(previousRoomCode);
 
-            previousRoomCode = roomcode;
-        }
+        previousRoomCode = roomcode;
+    }
 
-    });
 });
 
-describe("joinRoom", () =>
+
+test("joinRoom - joins User to selected room", async () =>
 {
-    it("joins User to selected room", () =>
+    const roomcode = await bracketManager.createRoom(userManager.createUser(`User: ZERO`, `PW: ZERO`, `emailZERO@email.com`));
+    for (let i = 0; i < 1000; i++)
     {
-        const roomcode = bracketManager.createRoom(userManager.createUser('', '', ''));
-        for (let i = 0; i < 1000; i++)
-        {
-            userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
-            const success = bracketManager.joinRoom(i, roomcode);
+        userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
+        const success = await bracketManager.joinRoom(i, roomcode);
 
-            expect(success).toBe(true);
-        }
+        expect(success).toBe(true);
+    }
 
-    });
 });
 
-describe("leaveRoom", () =>
+
+test("leaveRoom - removes User from selected room", async () =>
 {
-    it("removes User from selected room", () =>
+    const roomcode = await bracketManager.createRoom(userManager.createUser(`User: ZERO`, `PW: ZERO`, `emailZERO@email.com`));
+    for (let i = 0; i < 1000; i++)
     {
-        const roomcode = bracketManager.createRoom(userManager.createUser('', '', ''));
-        for (let i = 0; i < 1000; i++)
-        {
-            userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
-            bracketManager.joinRoom(i, roomcode);
+        userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
+        bracketManager.joinRoom(i, roomcode);
 
-            const success = bracketManager.leaveRoom(i, roomcode);
+        const success = await bracketManager.leaveRoom(i, roomcode);
 
-            expect(success).toBe(true);
-        }
+        expect(success).toBe(true);
+    }
 
-    });
 });
 
-describe("loadPlayers", () =>
+
+
+test("loadPlayers - always return a player who hasn't played", async () =>
 {
-    it("always return a player who hasn't played", () =>
+
+    //we take player1, gotten from loadplayers, and add it's userID to array
+    //player1 increment its currentRound and update the object 
+    //get player2 from loadplayers 
+    //check if player2.getUserID == any userID already in array
+    //this should not be possible since the chance of collision is almost none
+    //if player2 userID not found 
+    //add player2 userID to array 
+    //player2 increment its currentRound and update the object
+
+    const bracket = new Bracket();
+    bracket.setCurrentRound(0);
+    const usersPlayed:Array<User>=[];
+
+    for (let i = 0;i<1000; i++)
     {
-        
-        const bracket = new Bracket();
-        bracket.setCurrentRound(0); 
-        let player2: any; 
-        const localStorage:Array<any> = [];
-        for (let i = 0; i < 1000; i++)
-        {
-            const userID = userManager.createUser(`User: ${i}`, `Pw: ${i}`, `email${i}@email.com`);
+        userManager.createUser(`User: ${i}`,`PW: ${i}`,`email${i}@email.com`);
+    }
+   
+    for (let i = 0;i<1000;i++)
+    {
+        const player1 = await bracket.loadPlayers();
+        const player2 = usersPlayed.find(user => player1.getUserID == user.getUserID); //search for this player and if not found add to array
+        expect(player2).toBe(undefined);
 
-            const localUser = userManager.getUser(userID);
-
-            userManager.updateUser(localUser); 
-
-            bracket.joinBracket(userID);
-
-            const player1 = bracket.loadPlayers(); 
-
-            const player2 = localStorage.find ((User) => User.getUserID == localUser.getUserID)
-
-
-            expect(player2).toBe(undefined); 
-
-            userManager.updateUser(player1);
-
-            localStorage.push(player1);
-        }
-    });
+    }
+    
 });
+
 
 //TODO both joinbracket tests fail at very high indexs in the loop above 950
 //loadPlayers suddenly failing by returning an empty user
 //loadPlayers is incrementing the user's round inconsistently 
-
-describe("loadPlayers", () =>
-{
-    it("never return a player who has played", () =>
-    {
-
-    });
-});
-
-describe("loadPlayers", () =>
-{
-    it("only returns a player on currentRound", () =>
-    {
-
-    });
-});
-

@@ -6,7 +6,7 @@ async function updateUser(userID: number)
 
   const userManager = UserManager.getInstance;
 
-  const foundUser = userManager.getUser(userID);
+  const foundUser = await userManager.getUser(userID);
 
   const selectDb = "use userdb";
 
@@ -59,7 +59,7 @@ async function readUser(userID: number)
 
   const userManager = UserManager.getInstance;
 
-  const foundUser = userManager.getUser(userID);
+  const foundUser = await userManager.getUser(userID);
 
   const selectDb = "use userdb";
 
@@ -80,7 +80,7 @@ async function deleteUser(userID: number)
 {
   const userManager = UserManager.getInstance;
 
-  const foundUser = userManager.getUser(userID);
+  const foundUser = await userManager.getUser(userID);
 
   const selectDb = "use userdb";
 

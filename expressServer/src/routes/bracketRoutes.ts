@@ -13,7 +13,7 @@ router.get("/api/Bracket", (req: Request, res: Response) =>
     res.json(bracketManager.showAllRooms())
 })
 
-router.post("/api/Bracket", (req: Request, res: Response) => 
+router.post("/api/Bracket", async (req: Request, res: Response) => 
 {
     const userManager = UserManager.getInstance;
 
@@ -21,14 +21,14 @@ router.post("/api/Bracket", (req: Request, res: Response) =>
 
     let sessionUser = req.session.user as User;
 
-    sessionUser = userManager.getUser(sessionUser.getUserID);
+    sessionUser = await userManager.getUser(sessionUser.getUserID);
 
     const roomCode = bracketManager.createRoom(sessionUser.getUserID);
 
     res.send(roomCode);
 });
 
-router.put("/api/Bracket", (req: Request, res: Response) =>
+router.put("/api/Bracket", async (req: Request, res: Response) =>
 {
     const userManager = UserManager.getInstance;
 
@@ -36,7 +36,7 @@ router.put("/api/Bracket", (req: Request, res: Response) =>
 
     let sessionUser = req.session.user as User;
 
-    sessionUser = userManager.getUser(sessionUser.getUserID);
+    sessionUser = await userManager.getUser(sessionUser.getUserID);
 
     try
     {
@@ -58,13 +58,13 @@ router.put("/api/Bracket", (req: Request, res: Response) =>
 
 });
 
-router.delete("/api/Bracket/:userID/:roomCode", (req: Request, res: Response) => 
+router.delete("/api/Bracket/:userID/:roomCode", async (req: Request, res: Response) => 
 {
     const userManager = UserManager.getInstance;
 
     const bracketManager = BracketManager.getInstance;
 
-    let sessionUser = userManager.getUser(req.params.userID);
+    let sessionUser = await userManager.getUser(req.params.userID);
 
     bracketManager.leaveRoom(Number(req.params.userID), req.params.roomCode);
 });

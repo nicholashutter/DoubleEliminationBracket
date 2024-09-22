@@ -95,7 +95,7 @@ app.post("/login", async (req: Request, res: Response) =>
   const userManager: UserManager = UserManager.getInstance;
 
 
-  const foundUser = userManager.getUser(req.body.userName);
+  const foundUser = await userManager.getUser(req.body.userName);
 
   if (foundUser.getUserName != "-1")
   {
