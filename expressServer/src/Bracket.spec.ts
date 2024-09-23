@@ -173,14 +173,38 @@ test("loadPlayers - always return a player who hasn't played", async () =>
 });
 
 
-test("end to end test 1", async () =>
+test("end to end 1", async () =>
     {
-        //create 1000 users
-        //create bracket
-        //add users to bracket
-        //startSinglesRound()?
-        //selectWinner()
-        //end
-        //
+        /* 
+            create users
+            join users to room 
+            start match 
+            start loop
+            start round 
+            select players
+            select winner
+            end round
+            update players
+            end loop
+            end match
+            update players
+        */
 
+        /*
+            create room, store room code
+            loop
+            create users 32
+            join to room 
+            end loop 
+            start match
+            start loop
+            start round
+            select winner
+            end round
+            update players
+            end match
+            end loop
+            update players
+        */
+        
     });

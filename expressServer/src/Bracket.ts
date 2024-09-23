@@ -132,7 +132,6 @@ export class Bracket
             console.log(e);
         }
     }
-    /*semi - tested */
 
     private generateSeed = (count: number) =>
     {
@@ -154,7 +153,8 @@ export class Bracket
     }
     /*untested */
     private calculateByes()
-    {
+    { //called by startSinglesRound and startDoublesRound
+        //modifys this.totalByes and this.numOfPlayers
         if (this.numOfPlayers < 3)
         {
             console.log("Failed to start match. Err 003");
@@ -182,54 +182,14 @@ export class Bracket
     }
     /*untested */
     private async applyByes()
-    {
+    {   //This function called by both startSinglesRound and startDoublesRound
+        //uses the result from calculateByes to apply bye rounds
         for (let i = 0; i < this.totalByes; i++)
         {
             const userSkipsRound = await this.loadPlayers() as User;
             userSkipsRound.setRound = userSkipsRound.getRound + 1;
         }
     }
-    /*untested */
-    async startSinglesRound()
-    {
-        this.isRunning = true;
-        this.matchType = "single";
-        this.currentRound = this.currentRound + 1;
-        this.numOfPlayers = this.users.size
-        this.calculateByes();
-        this.applyByes();
-
-        const player1 = await this.loadPlayers() as User;
-        const player2 = await this.loadPlayers() as User;
-
-        return { player1, player2 }
-    }
-    /*untested */
-    async startDoublesRound()
-    {
-        this.isRunning = true
-        this.matchType = "double";
-        this.currentRound = this.currentRound + 1;
-        this.numOfPlayers = this.users.size
-        this.calculateByes();
-        this.applyByes();
-
-        const player1 = await this.loadPlayers() as User;
-
-        const player2 = await this.loadPlayers() as User;
-
-
-
-        return { player1, player2 }
-    }
-    /*untested */
-
-    public setCurrentRound(value: number)
-    {
-        //debug
-        this.currentRound = value;
-    }
-
     public async loadPlayers()
     {
         let low = 0;
@@ -266,45 +226,47 @@ export class Bracket
         return player1;
     }
     /*untested */
-    async endRound(winner: string)
-    {
-        const winningUser = await this.userManager.getUser(winner);
-        winningUser.setAllTimeWins = winningUser.getAllTimeWins + 1;
-        try 
-        {
-            if (winningUser.getUserName == "-1")
-            {
-                this.endMatch();
-                throw new Error(`Unable to find user who is 
-                    either inGame or on currentRound. Is bracket over?`);
-            }
-        }
-        catch (e)
-        {
-            console.log(e);
-        }
+    async startSinglesRound()
+    {   
+        this.isRunning = true;
+        this.matchType = "single";
+        this.currentRound = this.currentRound + 1;
+        this.numOfPlayers = this.users.size
+        this.calculateByes();
+        this.applyByes();
 
+        const player1 = await this.loadPlayers() as User;
+        const player2 = await this.loadPlayers() as User;
 
+        return { player1, player2 }
     }
     /*untested */
-    async endMatch()
+    async startDoublesRound()
     {
-        this.users.forEach(async (value, key) =>
-        {
-            key.setInGame = false;
-            key.setRound = 0;
-        })
-        this.isRunning = false;
-        this.currentRound = 0;
-        this.matchType = "default";
+        this.isRunning = true
+        this.matchType = "double";
+        this.currentRound = this.currentRound + 1;
+        this.numOfPlayers = this.users.size
+        this.calculateByes();
+        this.applyByes();
 
-        this.users.forEach(async (value, key) =>
-        {
-            const player1 = await this.userManager.getUser(key.getUserID)
+        const player1 = await this.loadPlayers() as User;
 
-            this.userManager.updateUser(player1);
-        })
+        const player2 = await this.loadPlayers() as User;
+
+
+
+        return { player1, player2 }
     }
+
+    public setCurrentRound(value: number)
+    {
+        //debug
+        this.currentRound = value;
+    }
+
+    
+
     /*untested */
     selectWinner(winner: string)
     {
@@ -378,6 +340,47 @@ export class Bracket
             }
         }
     }
+    /*untested */
+    async endRound(winner: string)
+    {//called by selectWinner
+        const winningUser = await this.userManager.getUser(winner);
+        winningUser.setAllTimeWins = winningUser.getAllTimeWins + 1;
+        try 
+        {
+            if (winningUser.getUserName == "-1")
+            {
+                this.endMatch();
+                throw new Error(`Unable to find user who is 
+                    either inGame or on currentRound. Is bracket over?`);
+            }
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
+
+
+    }
+    /*untested */
+    async endMatch()
+    {
+        this.users.forEach(async (value, key) =>
+        {
+            key.setInGame = false;
+            key.setRound = 0;
+        })
+        this.isRunning = false;
+        this.currentRound = 0;
+        this.matchType = "default";
+
+        this.users.forEach(async (value, key) =>
+        {
+            const player1 = await this.userManager.getUser(key.getUserID)
+
+            this.userManager.updateUser(player1);
+        })
+    }
+    
 
     get getRoomCode()
     {
