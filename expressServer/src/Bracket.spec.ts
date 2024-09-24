@@ -206,5 +206,14 @@ test("end to end 1", async () =>
             end loop
             update players
         */
+        const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
+
+        for (let i = 0;i<33;i++)
+        {
+            const userID = userManager.createUser(`{i}`,`{i}`,`{i}`);
+
+            bracketManager.joinRoom(userID, roomCode);
+        }
+
         
     });

@@ -11,17 +11,18 @@ Run the bracket and update users
 */
 export class Bracket
 {
+    player1: User|null;
+    player2: User|null;
     userManager: UserManager;
     isRunning: boolean;
     //each bracket should have bracketData holding users and their seed values
-    protected users: Map<User, Seed>;
-    protected winner;
-    protected roomCode;
-    protected totalByes;
-    protected numOfPlayers;
-
-    protected currentRound;
-    protected matchType: matchType;
+    private winner;
+    private roomCode;
+    private totalByes;
+    private numOfPlayers;
+    private users: Map<User, Seed>;
+    private currentRound;
+    private matchType: matchType;
 
 
     constructor()
@@ -55,6 +56,8 @@ export class Bracket
 
         this.roomCode = generateRoomCode();
         this.userManager = UserManager.getInstance;
+        this.player1 = null; 
+        this.player2 = null;
         this.totalByes = 0;
         this.numOfPlayers = 0;
         this.currentRound = 0;
@@ -227,7 +230,7 @@ export class Bracket
     }
     /*untested */
     async startSinglesRound()
-    {   
+    {
         this.isRunning = true;
         this.matchType = "single";
         this.currentRound = this.currentRound + 1;
@@ -265,7 +268,7 @@ export class Bracket
         this.currentRound = value;
     }
 
-    
+
 
     /*untested */
     selectWinner(winner: string)
@@ -380,7 +383,7 @@ export class Bracket
             this.userManager.updateUser(player1);
         })
     }
-    
+
 
     get getRoomCode()
     {
@@ -509,4 +512,43 @@ export default class BracketManager
 
     }
 
+    startSinglesMatch(roomCode: string)
+    {
+        // find bracket from roomcode 
+        //call startSinglesRound
+    }
+
+    startSinglesRound(roomCode: string)
+    {
+        try
+        {
+            const localBracket = this.brackets.find((bracket) => bracket.getRoomCode == roomCode);
+
+            if (localBracket === undefined)
+            {
+                throw new Error("No bracket found with that roomCode. Err 033");
+            }
+
+            else
+            {
+                const players = Bracket.startSinglesRound();
+
+            }
+        }
+        catch (e)
+        {
+            console.log(e)
+        }
+
+    }
+
+    startDoublesMatch(roomCode: string)
+    {
+
+    }
+
+    startDoublesRound(roomCode: string)
+    {
+
+    }
 }
