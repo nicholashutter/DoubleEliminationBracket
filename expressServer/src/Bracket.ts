@@ -11,8 +11,8 @@ Run the bracket and update users
 */
 export class Bracket
 {
-    player1: User|null;
-    player2: User|null;
+    player1: User | null;
+    player2: User | null;
     userManager: UserManager;
     isRunning: boolean;
     //each bracket should have bracketData holding users and their seed values
@@ -22,6 +22,7 @@ export class Bracket
     private numOfPlayers;
     private users: Map<User, Seed>;
     private currentRound;
+    private finalRound;
     private matchType: matchType;
 
 
@@ -56,12 +57,13 @@ export class Bracket
 
         this.roomCode = generateRoomCode();
         this.userManager = UserManager.getInstance;
-        this.player1 = null; 
+        this.player1 = null;
         this.player2 = null;
         this.totalByes = 0;
         this.numOfPlayers = 0;
         this.currentRound = 0;
         this.matchType = "default";
+        this.finalRound = 0;
     }
 
     get getBracketSize()
@@ -81,7 +83,7 @@ export class Bracket
         if (currentUser === undefined)
         {
 
-            throw new Error("ERR 222 FATAL");
+            throw new Error("Unable to join bracket. Err 038");
         }
 
         try
@@ -155,42 +157,100 @@ export class Bracket
         return randomID;
     }
     /*untested */
-    private calculateByes()
-    { //called by startSinglesRound and startDoublesRound
+    private setSinglesByes()
+    { //called by startSinglesRound 
         //modifys this.totalByes and this.numOfPlayers
-        if (this.numOfPlayers < 3)
+        if (this.numOfPlayers < 2)
         {
-            console.log("Failed to start match. Err 003");
+            console.log("Unable to begin tournament with less than two players. Err 003");
+        }
+        else if (this.numOfPlayers < 3)
+        {
+            this.totalByes = 2 - this.numOfPlayers;
+            this.numOfPlayers = 2
+            /* 
+            log base 2 of N 
+            or what power of 2 gives N 
+            1 round as much as 1 bye
+            */
+            this.finalRound = 1;
         }
         else if (this.numOfPlayers < 5)
         {
             this.totalByes = 4 - this.numOfPlayers;
             this.numOfPlayers = 4;
+            this.finalRound = 2;
+
         }
         else if (this.numOfPlayers < 9)
         {
             this.totalByes = 8 - this.numOfPlayers;
-            this.numOfPlayers = 9;
+            this.numOfPlayers = 8;
+            this.finalRound = 3;
         }
         else if (this.numOfPlayers < 17)
         {
             this.totalByes = 16 - this.numOfPlayers;
             this.numOfPlayers = 16;
+            this.finalRound = 4;
         }
         else if (this.numOfPlayers < 33)
         {
             this.totalByes = 32 - this.numOfPlayers;
             this.numOfPlayers = 32;
+            this.finalRound = 5;
+        }
+    }
+
+    private setDoubleByes()
+    { //called by startSinglesRound 
+        //modifys this.totalByes and this.numOfPlayers
+        if (this.numOfPlayers < 2)
+        {
+            console.log("Unable to begin tournament with less than two players. Err 003");
+        }
+        else if (this.numOfPlayers < 3)
+        {
+            this.totalByes = 2 - this.numOfPlayers;
+            this.numOfPlayers = 2
+            /* 
+            finalRound should be 2N-2 
+            */
+            this.finalRound = 2;
+        }
+        else if (this.numOfPlayers < 5)
+        {
+            this.totalByes = 4 - this.numOfPlayers;
+            this.numOfPlayers = 4;
+            this.finalRound = 6;
+
+        }
+        else if (this.numOfPlayers < 9)
+        {
+            this.totalByes = 8 - this.numOfPlayers;
+            this.numOfPlayers = 8;
+            this.finalRound = 14;
+        }
+        else if (this.numOfPlayers < 17)
+        {
+            this.totalByes = 16 - this.numOfPlayers;
+            this.numOfPlayers = 16;
+            this.finalRound = 30;
+        }
+        else if (this.numOfPlayers < 33)
+        {
+            this.totalByes = 32 - this.numOfPlayers;
+            this.numOfPlayers = 32;
+            this.finalRound = 62;
         }
     }
     /*untested */
     private async applyByes()
     {   //This function called by both startSinglesRound and startDoublesRound
-        //uses the result from calculateByes to apply bye rounds
+        //uses the result from setSinglesByes to apply bye rounds
         for (let i = 0; i < this.totalByes; i++)
         {
-            const userSkipsRound = await this.loadPlayers() as User;
-            userSkipsRound.setRound = userSkipsRound.getRound + 1;
+            await this.loadPlayers() as User;
         }
     }
     public async loadPlayers()
@@ -228,38 +288,57 @@ export class Bracket
         this.userManager.updateUser(player1);
         return player1;
     }
+    async startMatch(matchType: matchType)
+    {
+        this.matchType = matchType;
+        this.isRunning = true;
+        this.applyByes();
+
+        switch (matchType)
+        {
+            case "single":
+                this.setSinglesByes();
+                break;
+
+            case "double":
+                this.setDoubleByes();
+                break;
+
+            case "default":
+                console.log("Invalid argument for startMatch. Err 037");
+                break;
+        }
+
+    }
     /*untested */
     async startSinglesRound()
     {
-        this.isRunning = true;
-        this.matchType = "single";
+
         this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size
-        this.calculateByes();
-        this.applyByes();
 
         const player1 = await this.loadPlayers() as User;
         const player2 = await this.loadPlayers() as User;
 
-        return { player1, player2 }
+        this.player1 = player1 as User;
+        this.player2 = player2 as User;
+
+        this.player1.setEliminations = 0;
+        this.player2.setEliminations = 0;
+
     }
     /*untested */
     async startDoublesRound()
     {
-        this.isRunning = true
-        this.matchType = "double";
         this.currentRound = this.currentRound + 1;
-        this.numOfPlayers = this.users.size
-        this.calculateByes();
-        this.applyByes();
+        this.numOfPlayers = this.users.size;
 
         const player1 = await this.loadPlayers() as User;
 
         const player2 = await this.loadPlayers() as User;
 
-
-
-        return { player1, player2 }
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     public setCurrentRound(value: number)
@@ -273,24 +352,26 @@ export class Bracket
     /*untested */
     selectWinner(winner: string)
     {
-        switch (winner)
-        {
-            case "player1":
-                this.winner.player1 = this.winner.player1 + 1;
-                this.winner.currentVotes = this.winner.currentVotes + 1;
-                break;
 
-            case "player2":
-                this.winner.player2 = this.winner.player2 + 1;
-                this.winner.currentVotes = this.winner.currentVotes + 1;
-                break;
-
-            default:
-                console.log("Invalid argument");
-                break;
-        }
         try
         {
+            switch (winner)
+            {
+                case "player1":
+                    this.winner.player1 = this.winner.player1 + 1;
+                    this.winner.currentVotes = this.winner.currentVotes + 1;
+                    break;
+
+                case "player2":
+                    this.winner.player2 = this.winner.player2 + 1;
+                    this.winner.currentVotes = this.winner.currentVotes + 1;
+                    break;
+
+                default:
+                    console.log("Invalid argument");
+                    break;
+            }
+
             if (this.winner.currentVotes == 2)
             {
                 if (this.winner.player1 == 2)
@@ -315,6 +396,8 @@ export class Bracket
             else if (this.winner.currentVotes > 2)
             {
                 this.winner.currentVotes = 0;
+                this.winner.player1 = 0;
+                this.winner.player2 = 0;
                 throw new Error(`currentVotes variable greater than 2. 
                         This should not be possible. Attempting to self heal. Cast votes again. Err 011`);
 
@@ -367,21 +450,20 @@ export class Bracket
     /*untested */
     async endMatch()
     {
-        this.users.forEach(async (value, key) =>
+        this.users.forEach(async (value, User) =>
         {
-            key.setInGame = false;
-            key.setRound = 0;
+            User.setInGame = false;
+            User.setRound = 0;
+            const localUser = await this.userManager.getUser(User.getUserID);
+            this.userManager.updateUser(localUser);
         })
         this.isRunning = false;
         this.currentRound = 0;
         this.matchType = "default";
+        this.player1 = null;
+        this.player2 = null;
+        this.totalByes = 0;
 
-        this.users.forEach(async (value, key) =>
-        {
-            const player1 = await this.userManager.getUser(key.getUserID)
-
-            this.userManager.updateUser(player1);
-        })
     }
 
 

@@ -1,4 +1,5 @@
-interface User {
+interface User
+{
     id?: number;
     userName?: string;
     email?: string;
@@ -7,19 +8,15 @@ interface User {
     lastUpdate?: Date;
     eliminations?: number;
     inGame?: boolean;
-    round?: number; 
+    round?: number;
     currentRank?: number;
     allTimeWins?: number;
     allTimeLosses?: number;
     totalGamesPlayed?: number;
     datesPlayed?: Array<Date>;
 }
-export interface SessionInfo
-{
-    roomCode?:string; 
-}
 
-export default User; 
+export default User;
 
 
 
