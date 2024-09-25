@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var HttpStatusCodes;
 (function (HttpStatusCodes) {
     HttpStatusCodes[HttpStatusCodes["CONTINUE"] = 100] = "CONTINUE";
@@ -64,4 +62,4 @@ var HttpStatusCodes;
     HttpStatusCodes[HttpStatusCodes["NOT_EXTENDED"] = 510] = "NOT_EXTENDED";
     HttpStatusCodes[HttpStatusCodes["NETWORK_AUTHENTICATION_REQUIRED"] = 511] = "NETWORK_AUTHENTICATION_REQUIRED";
 })(HttpStatusCodes || (HttpStatusCodes = {}));
-exports.default = HttpStatusCodes;
+export default HttpStatusCodes;

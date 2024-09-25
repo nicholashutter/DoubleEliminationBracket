@@ -350,7 +350,7 @@ export class Bracket
 
 
     /*untested */
-    selectWinner(winner: string)
+   async selectWinner(winner: string)
     {
 
         try
@@ -414,11 +414,11 @@ export class Bracket
             switch (this.matchType)
             {
                 case "single":
-                    this.startSinglesRound();
+                   await this.startSinglesRound();
                     break;
 
                 case "double":
-                    this.startDoublesRound();
+                   await this.startDoublesRound();
                     break;
                 case "default":
                     throw new Error(`Cannot determine what type of round to start next or bracket not propertly initialized. 
@@ -613,7 +613,7 @@ export default class BracketManager
 
             else
             {
-                const players = Bracket.startSinglesRound();
+               // const players = Bracket.startSinglesRound();
 
             }
         }
