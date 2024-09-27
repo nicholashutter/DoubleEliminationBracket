@@ -288,7 +288,10 @@ export class Bracket
         this.userManager.updateUser(player1);
         return player1;
     }
-    async startMatch(matchType: matchType)
+
+
+    
+    async startMatch(matchType: matchType, fn: ():void )
     {
         this.matchType = matchType;
         this.isRunning = true;
@@ -350,7 +353,7 @@ export class Bracket
 
 
     /*untested */
-   async selectWinner(winner: string)
+    async selectWinner(winner: string)
     {
 
         try
@@ -414,16 +417,20 @@ export class Bracket
             switch (this.matchType)
             {
                 case "single":
-                   await this.startSinglesRound();
+                    await this.startSinglesRound();
                     break;
 
                 case "double":
-                   await this.startDoublesRound();
+                    await this.startDoublesRound();
                     break;
                 case "default":
                     throw new Error(`Cannot determine what type of round to start next or bracket not propertly initialized. 
                         Fatal error. Err 017`);
             }
+        }
+        else
+        {
+            // callback??
         }
     }
     /*untested */
@@ -574,7 +581,7 @@ export default class BracketManager
         {
             const foundBracket = this.brackets.find((Bracket) => Bracket.getRoomCode == roomCode);
 
-            if (foundBracket)
+            if (foundBracket !== undefined)
             {
                 foundBracket.joinBracket(foundUser.getUserID);
                 return true;
@@ -596,8 +603,7 @@ export default class BracketManager
 
     startSinglesMatch(roomCode: string)
     {
-        // find bracket from roomcode 
-        //call startSinglesRound
+        this.startSinglesRound(roomCode);
     }
 
     startSinglesRound(roomCode: string)
@@ -613,7 +619,7 @@ export default class BracketManager
 
             else
             {
-               // const players = Bracket.startSinglesRound();
+                localBracket.startSinglesRound();
 
             }
         }
@@ -626,11 +632,30 @@ export default class BracketManager
 
     startDoublesMatch(roomCode: string)
     {
-
+        this.startDoublesRound(roomCode);
     }
 
     startDoublesRound(roomCode: string)
     {
+        try
+        {
+            const localBracket = this.brackets.find((bracket) => bracket.getRoomCode == roomCode);
+
+            if (localBracket === undefined)
+            {
+                throw new Error("No bracket found with that roomCode. Err 033");
+            }
+
+            else
+            {
+                localBracket.startSinglesRound();
+
+            }
+        }
+        catch (e)
+        {
+            console.log(e)
+        }
 
     }
 }

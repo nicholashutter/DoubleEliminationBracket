@@ -212,8 +212,20 @@ test("end to end 1", async () =>
         {
             const userID = userManager.createUser(`{i}`,`{i}`,`{i}`);
 
-            bracketManager.joinRoom(userID, roomCode);
+           await bracketManager.joinRoom(userID, roomCode);
         }
+
+        //problem: passing data from bracket up through 
+        // bracketManager to expressRoute/test
+        //solution: pass in callback that breaks loop for double elim matches 
+        // whenever the bracket underneath executes the callback passed in from from above
+        // create a boolean called Escape set false and create a function called
+        // escape that we pass into startMatch as a callback 
+        // when escape() is called Escape set true 
+        // create a while loop that runs while !Escape 
+        // while Escape === true loop breaks 
+        //
+
 
         
     });
