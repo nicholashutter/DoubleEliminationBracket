@@ -247,7 +247,7 @@ export default class UserManager
 
     const generateUniqueID = (count: number) =>
     {
-      let randomID = Math.floor(Math.random() * 1000) + Date.now();
+      const randomID = Math.floor(Math.random() * 1000) + Date.now();
 
       this.Users.forEach(user =>
       {
@@ -309,6 +309,11 @@ export default class UserManager
       console.log(e);
     }
 
+  }
+
+  public updateAllUsers()
+  {
+    
   }
 
 

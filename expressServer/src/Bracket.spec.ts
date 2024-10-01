@@ -78,14 +78,14 @@ describe("generateRoomCode", () =>
 });
 
 test("createRoom - it creates rooms", async () =>
+{
+    for (let i = 0; i < 1000; i++)
     {
-        for (let i = 0; i < 1000; i++)
-        {
-            await bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
+        await bracketManager.createRoom(userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`));
 
-        }
-        expect(bracketManager.showAllRooms().length).toBe(1000);
-    });
+    }
+    expect(bracketManager.showAllRooms().length).toBe(1000);
+});
 
 
 it("createRoom - creates unique roomcode", async () =>
@@ -155,77 +155,102 @@ test("loadPlayers - always return a player who hasn't played", async () =>
 
     const bracket = new Bracket();
     bracket.setCurrentRound(0);
-    const usersPlayed:Array<User>=[];
+    const usersPlayed: Array<User> = [];
 
-    for (let i = 0;i<1000; i++)
+    for (let i = 0; i < 1000; i++)
     {
-        userManager.createUser(`User: ${i}`,`PW: ${i}`,`email${i}@email.com`);
+        userManager.createUser(`User: ${i}`, `PW: ${i}`, `email${i}@email.com`);
     }
-   
-    for (let i = 0;i<1000;i++)
+
+    for (let i = 0; i < 1000; i++)
     {
         const player1 = await bracket.loadPlayers();
         const player2 = usersPlayed.find(user => player1.getUserID == user.getUserID); //search for this player and if not found add to array
         expect(player2).toBe(undefined);
 
     }
-    
+
 });
 
-
-test("end to end 1", async () =>
+test("isRunning flag", async () =>
     {
-        /* 
-            create users
-            join users to room 
-            start match 
-            start loop
-            start round 
-            select players
-            select winner
-            end round
-            update players
-            end loop
-            end match
-            update players
-        */
+        const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
 
-        /*
-            create room, store room code
-            loop
+    for (let i = 0; i < 33; i++)
+    {
+        const userID = userManager.createUser(`{i}`, `{i}`, `{i}`);
+
+        bracketManager.joinRoom(userID, roomCode);
+    }
+
+    bracketManager.startSinglesMatch(roomCode);
+
+    bracketManager.selectWinner(roomCode, "player1");
+
+    expect(bracketManager.isRunning(roomCode) === true); 
+    });
+
+test("end to end singles test", async () =>
+{
+    /* 
+        create users
+        join users to room 
+        start match 
+        start loop
+        start round 
+        select players
+        select winner
+        end round
+        update players
+        end loop
+        end match
+        update players
+    */
+
+    /*
+        create room, store room code
+        loop
             create users 32
             join to room 
-            end loop 
-            start match
-            start loop
+        end loop 
+        start match
+        start loop
             start round
             select winner
             end round
-            update players
-            end match
-            end loop
-            update players
-        */
-        const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
+        update players
+        end match
+        end loop
+        update players
+    */
+    const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
 
-        for (let i = 0;i<33;i++)
+    for (let i = 0; i < 33; i++)
+    {
+        const userID = userManager.createUser(`{i}`, `{i}`, `{i}`);
+
+        await bracketManager.joinRoom(userID, roomCode);
+    }
+
+    bracketManager.startSinglesMatch(roomCode);
+
+    bracketManager.selectWinner(roomCode, "player1");
+
+    if (bracketManager.isRunning(roomCode) === true)
+    {
+         
+        while(bracketManager.isRunning(roomCode) === true)
         {
-            const userID = userManager.createUser(`{i}`,`{i}`,`{i}`);
-
-           await bracketManager.joinRoom(userID, roomCode);
-        }
-
-        //problem: passing data from bracket up through 
-        // bracketManager to expressRoute/test
-        //solution: pass in callback that breaks loop for double elim matches 
-        // whenever the bracket underneath executes the callback passed in from from above
-        // create a boolean called Escape set false and create a function called
-        // escape that we pass into startMatch as a callback 
-        // when escape() is called Escape set true 
-        // create a while loop that runs while !Escape 
-        // while Escape === true loop breaks 
-        //
-
-
         
-    });
+            bracketManager.startSinglesMatch(roomCode);
+            
+            bracketManager.selectWinner(roomCode, "player1");
+        }
+    }
+     
+    else 
+    {
+        console.log("Test Failed"); 
+    }
+
+});

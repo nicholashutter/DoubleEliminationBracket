@@ -14,8 +14,7 @@ export class Bracket
     player1: User | null;
     player2: User | null;
     userManager: UserManager;
-    isRunning: boolean;
-    //each bracket should have bracketData holding users and their seed values
+    isRunning: boolean | null;
     private winner;
     private roomCode;
     private totalByes;
@@ -24,7 +23,7 @@ export class Bracket
     private currentRound;
     private finalRound;
     private matchType: matchType;
-
+    private fault: number; 
 
     constructor()
     {
@@ -47,7 +46,7 @@ export class Bracket
             return returnValue;
         }
 
-        this.isRunning = true;
+        this.isRunning = null;
         this.users = new Map();
         this.winner = {
             player1: 0,
@@ -64,6 +63,7 @@ export class Bracket
         this.currentRound = 0;
         this.matchType = "default";
         this.finalRound = 0;
+        this.fault = 0; 
     }
 
     get getBracketSize()
@@ -73,7 +73,16 @@ export class Bracket
         return localUsers.size;
     }
 
+    get getRoomCode()
+    {
+        return this.roomCode;
+    }
 
+    get getIsRunning()
+    {
+        const localIsRunning = this.isRunning;
+        return localIsRunning;
+    }
     async joinBracket(userID: number)
     {
 
@@ -253,7 +262,7 @@ export class Bracket
             await this.loadPlayers() as User;
         }
     }
-    public async loadPlayers()
+    async loadPlayers()
     {
         let low = 0;
         const localUserID = this.userManager.createUser(`User ${low}`, `PW ${low}`, `email${low}@email.com`);
@@ -291,7 +300,7 @@ export class Bracket
 
 
     
-    async startMatch(matchType: matchType, fn: ():void )
+    async startMatch(matchType: matchType)
     {
         this.matchType = matchType;
         this.isRunning = true;
@@ -316,7 +325,12 @@ export class Bracket
     /*untested */
     async startSinglesRound()
     {
+        if (this.isRunning === null)
+        {
+            throw new Error("Failed to initialize isRunning. Bracket either not running or failed to launch Err 041"); 
+        }
 
+        this.matchType = "single";
         this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size
 
@@ -333,6 +347,11 @@ export class Bracket
     /*untested */
     async startDoublesRound()
     {
+        if (this.isRunning === null)
+            {
+                throw new Error("Failed to initialize isRunning. Bracket either not running or failed to launch Err 041"); 
+            }
+        this.matchType = "double";
         this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size;
 
@@ -412,7 +431,7 @@ export class Bracket
         }
 
 
-        if (this.isRunning)
+        if (this.isRunning === true)
         {
             switch (this.matchType)
             {
@@ -430,21 +449,21 @@ export class Bracket
         }
         else
         {
-            // callback??
+            
+            throw new Error("Failure to read matchType variable. Err 040");
         }
     }
     /*untested */
     async endRound(winner: string)
     {//called by selectWinner
+         
         const winningUser = await this.userManager.getUser(winner);
         winningUser.setAllTimeWins = winningUser.getAllTimeWins + 1;
         try 
         {
-            if (winningUser.getUserName == "-1")
+            if (winningUser.getUserName == "-1" || winningUser === undefined)
             {
                 this.endMatch();
-                throw new Error(`Unable to find user who is 
-                    either inGame or on currentRound. Is bracket over?`);
             }
         }
         catch (e)
@@ -457,6 +476,12 @@ export class Bracket
     /*untested */
     async endMatch()
     {
+        
+        this.fault = this.fault + 1; 
+        if (this.fault > 0)
+        {
+            throw new Error("FATAL ERR. Scenario: endMatch called more than 1x.");
+        }
         this.users.forEach(async (value, User) =>
         {
             User.setInGame = false;
@@ -471,13 +496,16 @@ export class Bracket
         this.player2 = null;
         this.totalByes = 0;
 
+        //since bracketManger is global, and since bracket can modify it's state
+        //need to pass some signal that this bracketmatch is finished
+        // and propogate it up 
+
+        
+        throw new Error("Program Terminated by endMatch() call.")
+
     }
 
 
-    get getRoomCode()
-    {
-        return this.roomCode;
-    }
 
 }
 
@@ -494,7 +522,7 @@ export default class BracketManager
         this.userManager = UserManager.getInstance;
     }
 
-    public static get getInstance(): BracketManager
+    static get getInstance(): BracketManager
     {
         if (!BracketManager.#instance)
         {
@@ -520,7 +548,7 @@ export default class BracketManager
         this.brackets = [];
     }
 
-    public async createRoom(userID: number)
+    async createRoom(userID: number)
     {
         const foundUser = await this.userManager.getUser(userID);
 
@@ -547,7 +575,7 @@ export default class BracketManager
         return roomCode;
     }
 
-    public async leaveRoom(userID: number, roomCode: string)
+    async leaveRoom(userID: number, roomCode: string)
     {
         const foundUser = await this.userManager.getUser(userID);
 
@@ -573,7 +601,7 @@ export default class BracketManager
         }
     }
 
-    public async joinRoom(userID: number, roomCode: string)
+    async joinRoom(userID: number, roomCode: string)
     {
         const foundUser = await this.userManager.getUser(userID);
 
@@ -657,5 +685,50 @@ export default class BracketManager
             console.log(e)
         }
 
+    }
+
+    selectWinner(roomCode:string, winner:string)
+    {
+        try
+        {
+            const localBracket = this.brackets.find((bracket) => bracket.getRoomCode == roomCode);
+
+            if (localBracket === undefined)
+            {
+                throw new Error("No bracket found with that roomCode. Err 033");
+            }
+
+            else
+            {
+                localBracket.selectWinner(winner);
+                localBracket.endRound(winner);
+            }
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
+    }
+
+    isRunning(roomCode:string)
+    {
+        try
+        {
+            const localBracket = this.brackets.find((bracket) => bracket.getRoomCode == roomCode);
+
+            if (localBracket === undefined)
+            {
+                throw new Error("No bracket found with that roomCode. Err 039");
+            }
+
+            else
+            {
+                return localBracket.getIsRunning;
+            }
+        }
+        catch (e)
+        {
+            console.log(e);
+        }
     }
 }
