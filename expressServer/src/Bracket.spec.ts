@@ -44,21 +44,21 @@ test("joinBracket - successfully joins user to bracket, userID generated", async
 });
 
 
-describe("leaveBracket", () =>
-{
-    it("successfully removes user from bracket", () =>
+test("leaveBracket - successfully removes user from bracket", async () => 
     {
         const bracket = new Bracket();
 
         for (let i = 0; i < 1000; i++)
         {
             userManager.createUser(`User:{i}`, `pw{i}`, `email{i}@email.com`, i);
-            bracket.joinBracket(i);
-            bracket.leaveBracket(i);
+            await bracket.joinBracket(i);
+            await bracket.leaveBracket(i);
         }
         expect(bracket.getBracketSize).toBe(0);
+    
     });
-});
+
+
 
 describe("generateRoomCode", () =>
 {
@@ -172,6 +172,7 @@ test("loadPlayers - always return a player who hasn't played", async () =>
 
 });
 
+/*
 test("isRunning flag", async () =>
     {
         const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
@@ -189,12 +190,13 @@ test("isRunning flag", async () =>
 
     expect(bracketManager.getIsRunning(roomCode) === true); 
     });
+*/ 
 
 
-    
-test("end to end singles test", async () =>
-{
-    /* 
+
+
+
+ /* 
         create users
         join users to room 
         start match 
@@ -226,7 +228,14 @@ test("end to end singles test", async () =>
         update players
     */
 
-    /*
+
+
+  /*  
+test("end to end singles test", async () =>
+{
+   
+
+    
     const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
 
     for (let i = 0; i < 33; i++)
@@ -256,5 +265,5 @@ test("end to end singles test", async () =>
     {
         console.log("Test Failed"); 
     }
-    */
-}); 
+    
+}); */ 

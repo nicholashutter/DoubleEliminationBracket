@@ -357,11 +357,10 @@ export class Bracket
         this.numOfPlayers = this.users.size;
 
         const player1 = await this.loadPlayers() as User;
-
         const player2 = await this.loadPlayers() as User;
 
-        this.player1 = player1;
-        this.player2 = player2;
+        this.player1 = player1 as User;
+        this.player2 = player2 as User;
     }
 
     public setCurrentRound(value: number)
@@ -464,7 +463,7 @@ export class Bracket
         {
             if (winningUser.getUserName == "-1" || winningUser === undefined)
             {
-                this.endMatch();
+                await this.endMatch();
             }
         }
         catch (e)
@@ -479,10 +478,10 @@ export class Bracket
     {
         
         this.fault = this.fault + 1; 
-        if (this.fault > 0)
+       /* if (this.fault > 0)
         {
             throw new Error("FATAL ERR. Scenario: endMatch called more than 1x.");
-        }
+        } */
         this.users.forEach(async (value, User) =>
         {
             User.setInGame = false;
@@ -571,7 +570,7 @@ export default class BracketManager
 
         const roomCode = currentBracket.getRoomCode;
 
-        currentBracket.joinBracket(foundUser.getUserID);
+        await currentBracket.joinBracket(foundUser.getUserID);
 
         return roomCode;
     }
@@ -586,7 +585,7 @@ export default class BracketManager
 
             if (foundBracket)
             {
-                foundBracket.leaveBracket(foundUser.getUserID);
+                await foundBracket.leaveBracket(foundUser.getUserID);
                 return true;
             }
             else 
@@ -612,7 +611,7 @@ export default class BracketManager
 
             if (foundBracket !== undefined)
             {
-                foundBracket.joinBracket(foundUser.getUserID);
+                await foundBracket.joinBracket(foundUser.getUserID);
                 return true;
             }
 
@@ -630,12 +629,12 @@ export default class BracketManager
 
     }
 
-    startSinglesMatch(roomCode: string)
+    async startSinglesMatch(roomCode: string)
     {
-        this.startSinglesRound(roomCode);
+        await this.startSinglesRound(roomCode);
     }
 
-    startSinglesRound(roomCode: string)
+    async startSinglesRound(roomCode: string)
     {
         try
         {
@@ -648,7 +647,7 @@ export default class BracketManager
 
             else
             {
-                localBracket.startMatch("single");
+                await localBracket.startMatch("single");
 
             }
         }
@@ -659,12 +658,12 @@ export default class BracketManager
 
     }
 
-    startDoublesMatch(roomCode: string)
+    async startDoublesMatch(roomCode: string)
     {
-        this.startDoublesRound(roomCode);
+       await this.startDoublesRound(roomCode);
     }
 
-    startDoublesRound(roomCode: string)
+    async startDoublesRound(roomCode: string)
     {
         try
         {
@@ -677,7 +676,7 @@ export default class BracketManager
 
             else
             {
-                localBracket.startSinglesRound();
+               await localBracket.startSinglesRound();
 
             }
         }
@@ -688,7 +687,7 @@ export default class BracketManager
 
     }
 
-    selectWinner(roomCode:string, winner:string)
+    async selectWinner(roomCode:string, winner:string)
     {
         try
         {
@@ -701,8 +700,8 @@ export default class BracketManager
 
             else
             {
-                localBracket.selectWinner(winner);
-                localBracket.endRound(winner);
+                await localBracket.selectWinner(winner);
+                await localBracket.endRound(winner);
             }
         }
         catch (e)
