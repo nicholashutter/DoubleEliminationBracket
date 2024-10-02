@@ -155,7 +155,7 @@ class UserManager {
         }
         const localUser = new User();
         const generateUniqueID = (count) => {
-            let randomID = Math.floor(Math.random() * 1000) + Date.now();
+            const randomID = Math.floor(Math.random() * 1000) + Date.now();
             this.Users.forEach(user => {
                 if (user.getUserID == randomID) {
                     if (count > 1000) {
@@ -191,6 +191,8 @@ class UserManager {
         catch (e) {
             console.log(e);
         }
+    }
+    updateAllUsers() {
     }
     getUser(value) {
         return __awaiter(this, void 0, void 0, function* () {

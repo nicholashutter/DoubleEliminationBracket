@@ -11,10 +11,10 @@ Run the bracket and update users
 */
 export class Bracket
 {
-    player1: User | null;
-    player2: User | null;
-    userManager: UserManager;
-    isRunning: boolean | null;
+    private player1: User|null;
+    private player2: User|null;
+    private userManager: UserManager;
+    private isRunning: boolean;
     private winner;
     private roomCode;
     private totalByes;
@@ -46,7 +46,7 @@ export class Bracket
             return returnValue;
         }
 
-        this.isRunning = null;
+        this.isRunning = false;
         this.users = new Map();
         this.winner = {
             player1: 0,
@@ -325,7 +325,7 @@ export class Bracket
     /*untested */
     async startSinglesRound()
     {
-        if (this.isRunning === null)
+        if (this.isRunning === false)
         {
             throw new Error("Failed to initialize isRunning. Bracket either not running or failed to launch Err 041"); 
         }
@@ -347,10 +347,11 @@ export class Bracket
     /*untested */
     async startDoublesRound()
     {
-        if (this.isRunning === null)
+        if (this.isRunning === false)
             {
                 throw new Error("Failed to initialize isRunning. Bracket either not running or failed to launch Err 041"); 
             }
+
         this.matchType = "double";
         this.currentRound = this.currentRound + 1;
         this.numOfPlayers = this.users.size;
@@ -647,7 +648,7 @@ export default class BracketManager
 
             else
             {
-                localBracket.startSinglesRound();
+                localBracket.startMatch("single");
 
             }
         }
@@ -710,7 +711,7 @@ export default class BracketManager
         }
     }
 
-    isRunning(roomCode:string)
+    getIsRunning(roomCode:string)
     {
         try
         {
