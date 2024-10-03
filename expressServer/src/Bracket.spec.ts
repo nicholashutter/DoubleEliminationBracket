@@ -184,9 +184,9 @@ test("isRunning flag", async () =>
         bracketManager.joinRoom(userID, roomCode);
     }
 
-    bracketManager.startSinglesMatch(roomCode);
+    await bracketManager.startSinglesMatch(roomCode);
 
-    bracketManager.selectWinner(roomCode, "player1");
+    await bracketManager.selectWinner(roomCode, "player1");
 
     expect(bracketManager.getIsRunning(roomCode) === true); 
     });
@@ -245,7 +245,7 @@ test("end to end singles test", async () =>
         await bracketManager.joinRoom(userID, roomCode);
     }
 
-    bracketManager.startSinglesMatch(roomCode);
+    await bracketManager.startSinglesMatch(roomCode);
 
     bracketManager.selectWinner(roomCode, "player1");
 
@@ -255,7 +255,7 @@ test("end to end singles test", async () =>
         while(bracketManager.isRunning(roomCode) === true)
         {
         
-            bracketManager.startSinglesMatch(roomCode);
+            await bracketManager.startSinglesMatch(roomCode);
             
             bracketManager.selectWinner(roomCode, "player1");
         }
