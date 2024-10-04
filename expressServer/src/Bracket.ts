@@ -106,7 +106,7 @@ export class Bracket
             {
                 currentUser.setInGame = true;
 
-                this.userManager.updateUser(currentUser);
+                await this.userManager.updateUser(currentUser);
                 await db.updateUser(currentUser.getUserID);
 
                 /* DOCUMENT */
@@ -137,7 +137,7 @@ export class Bracket
             else 
             {
                 currentUser.setInGame = false;
-                this.userManager.updateUser(currentUser);
+                await this.userManager.updateUser(currentUser);
                 await db.updateUser(currentUser.getUserID);
                 /* DOCUMENT */
                 this.users.delete(currentUser);
@@ -296,7 +296,7 @@ export class Bracket
         }
 
         player1.setRound = player1.getRound + 1;
-        this.userManager.updateUser(player1);
+        await this.userManager.updateUser(player1);
         return player1;
     }
 
@@ -400,12 +400,12 @@ export class Bracket
             {
                 if (this.winner.player1 == 2)
                 {
-                    this.endRound("player1");
+                    this.endRound("player1", "player2");
                     this.winner.currentVotes = 0;
                 }
                 else if (this.winner.player2 == 2)
                 {
-                    this.endRound("player2");
+                    this.endRound("player2", "player1");
                     this.winner.currentVotes = 0;
                 }
                 else if (this.winner.player1 < 2 && this.winner.player2 < 2)
@@ -456,11 +456,21 @@ export class Bracket
         }
     }
     /*untested */
-    async endRound(winner: string)
+    async endRound(winner: string, loser:string)
     {//called by selectWinner
 
         const winningUser = await this.userManager.getUser(winner);
+        const loserUser = await this.userManager.getUser(loser)
+        
         winningUser.setAllTimeWins = winningUser.getAllTimeWins + 1;
+        loserUser.setAllTimeWins = loserUser.getAllTimeWins + 1;
+
+        await this.userManager.updateUser(winningUser);
+        await db.updateUser(winningUser.getUserID);
+
+        await this.userManager.updateUser(loserUser);
+        await db.updateUser(loserUser.getUserID); 
+
         try 
         {
             if (winningUser.getUserName == "-1" || winningUser === undefined)
@@ -472,8 +482,6 @@ export class Bracket
         {
             console.log(e);
         }
-
-
     }
     /*untested */
     async endMatch()
@@ -489,7 +497,7 @@ export class Bracket
             User.setInGame = false;
             User.setRound = 0;
             const currentUser = await this.userManager.getUser(User.getUserID);
-            this.userManager.updateUser(currentUser);
+            await this.userManager.updateUser(currentUser);
         })
         this.isRunning = false;
         this.currentRound = 0;

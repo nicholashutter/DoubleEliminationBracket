@@ -28,15 +28,16 @@ router.post("/api/createUser",  (req: Request, res: Response) =>
         .then(function (hash)
         {
             db.updateUser(userManager.createUser(req.body.userName, hash, req.body.email));
+            res.status(200).send("Create User Success");
         })
         .catch(function (error) 
         {
             console.log(error.message);
-            res.send("Create User Failure");
+            res.status(404).send("Create User Failure");
         });
 
 
-    res.send("Create User Success");
+    
 });
 
 router.put("/api/updateUser", async (req: Request, res: Response) =>
@@ -45,9 +46,20 @@ router.put("/api/updateUser", async (req: Request, res: Response) =>
    
    sessionUser = await userManager.getUser(sessionUser.getUserID);
 
-   userManager.updateUser(sessionUser);
+   const success = await userManager.updateUser(sessionUser);
 
    await db.updateUser(sessionUser.getUserID);
+
+   if (success === true)
+   {
+    res.status(200).send("User updated successfully");
+   }
+   else
+   {
+    res.status(404).send("User update failed"); 
+   }
+
+   
 
 });
 
@@ -56,9 +68,18 @@ router.delete("/api/removeUser/:userID", async (req: Request, res: Response) =>
 
    const sessionUser = req.body.session.user as User;
 
-   userManager.deleteUser(sessionUser.getUserID);
+   const success = userManager.deleteUser(sessionUser.getUserID);
 
    await db.deleteUser(sessionUser.getUserID);
+
+   if (success === true)
+    {
+     res.status(200).send("User Deleted Successfully");
+    }
+    else
+    {
+     res.status(404).send("Failed to Delete User"); 
+    }
 });
 
 module.exports = router;

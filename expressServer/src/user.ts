@@ -288,9 +288,19 @@ export default class UserManager
 
       const userLocation = this.Users.indexOf(currentUser);
 
-      if (foundUser!.getUserName == "-1" || foundUser === undefined)
+      if (foundUser === undefined)
       {
         throw new Error("Unable to find specified User. Err 009");
+      }
+
+      else if (foundUser.getUserName === '-1' || foundUser.getUserName === "" || foundUser.getUserName === undefined)
+      {
+        throw new Error("Unable to find specified User. Err 042");
+      }
+
+      else if (foundUser.getUserID === -1 || foundUser.getUserID === null || foundUser.getuserID === undefined)
+      {
+        throw new Error("Unable to find specified User. Err 043"); 
       }
 
       else 
@@ -299,7 +309,7 @@ export default class UserManager
 
         this.Users[userLocation] = currentUser;
 
-        // console.log("User Updated Successfully");
+        return true; 
       }
 
     }
@@ -399,6 +409,7 @@ export default class UserManager
       else
       {
         this.Users.splice(this.Users.findIndex(currentUser => currentUser.getUserID === userID), 1);
+        return true
       }
     }
     catch (error) { console.log(error); }

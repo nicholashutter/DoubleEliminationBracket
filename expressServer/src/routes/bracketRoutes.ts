@@ -36,7 +36,11 @@ router.put("/api/Bracket", async (req: Request, res: Response) =>
 
     try
     {
-        if (req.session.sessionInfo!.roomCode)
+        if (req.session.sessionInfo === undefined)
+        {
+            throw new Error("Unable to load sessionInfo from client. sessionInfo undefined.");
+        }
+        else if (req.session.sessionInfo.roomCode)
         {
             await bracketManager.joinRoom(sessionUser.getUserID, req.session.sessionInfo!.roomCode)
             res.status(200).send("Player removed from bracket successfully."); 
