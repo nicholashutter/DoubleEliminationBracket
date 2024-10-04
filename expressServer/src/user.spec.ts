@@ -41,10 +41,10 @@ test("updateUser - takes in User object and updates its properties accurately", 
 {
 
     const userID = userManager.createUser("ironman", "ironman", "ironman");
-    const localUser = await userManager.getUser(userID);
-    localUser.setEmail = "incrediblehulk@email.com";
+    const currentUser = await userManager.getUser(userID);
+    currentUser.setEmail = "incrediblehulk@email.com";
 
-    expect(localUser.getEmail).toBe("incrediblehulk@email.com");
+    expect(currentUser.getEmail).toBe("incrediblehulk@email.com");
 
 });
 
@@ -53,9 +53,9 @@ test("updateUser - takes in User object and updates its properties accurately", 
     test("updateUser - takes in User object, returns object with default properties if matching object not found", async () =>
     {
 
-        const localUser = await userManager.getUser(Math.random());
+        const currentUser = await userManager.getUser(Math.random());
 
-        expect(localUser.getUserName).toBe("-1");
+        expect(currentUser.getUserName).toBe("-1");
     });
 
 

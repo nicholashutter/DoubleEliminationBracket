@@ -172,7 +172,7 @@ test("loadPlayers - always return a player who hasn't played", async () =>
 
 });
 
-/*
+
 test("isRunning flag", async () =>
     {
         const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
@@ -190,7 +190,7 @@ test("isRunning flag", async () =>
 
     expect(bracketManager.getIsRunning(roomCode) === true); 
     });
-*/ 
+
 
 
 
@@ -230,14 +230,15 @@ test("isRunning flag", async () =>
 
 
 
-  /*  
+  
 test("end to end singles test", async () =>
 {
    
 
-    
+    //create room
     const roomCode = await bracketManager.createRoom(userManager.createUser('User: One', 'PW: One', 'emailOne@email.com'));
-
+    
+    //create users
     for (let i = 0; i < 33; i++)
     {
         const userID = userManager.createUser(`{i}`, `{i}`, `{i}`);
@@ -245,14 +246,17 @@ test("end to end singles test", async () =>
         await bracketManager.joinRoom(userID, roomCode);
     }
 
+    //start match and choose match type
     await bracketManager.startSinglesMatch(roomCode);
 
+    //after first round wait for response from client
     bracketManager.selectWinner(roomCode, "player1");
 
-    if (bracketManager.isRunning(roomCode) === true)
+    //run the rounds as a loop until the match is ended
+    if (bracketManager.getIsRunning(roomCode) === true)
     {
          
-        while(bracketManager.isRunning(roomCode) === true)
+        while(bracketManager.getIsRunning(roomCode) === true)
         {
         
             await bracketManager.startSinglesMatch(roomCode);
@@ -266,4 +270,4 @@ test("end to end singles test", async () =>
         console.log("Test Failed"); 
     }
     
-}); */ 
+});  

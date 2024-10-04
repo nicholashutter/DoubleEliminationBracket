@@ -67,12 +67,7 @@
     "useUnknownInCatchVariables": false,
    
   },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  }
-  ,
+  
   "include": [
     "src/**/*.ts",
     "build.ts"

@@ -243,7 +243,7 @@ export default class UserManager
     {
       throw new Error ("username value required. Cannot proceed. Fatal. Err 227");
     }
-    const localUser = new User();
+    const currentUser = new User();
 
     const generateUniqueID = (count: number) =>
     {
@@ -266,17 +266,17 @@ export default class UserManager
 
     if (id === undefined)
     {
-      localUser.init(username, passwordHash, email, generateUniqueID(0));
-      this.Users.push(localUser);
+      currentUser.init(username, passwordHash, email, generateUniqueID(0));
+      this.Users.push(currentUser);
     }
     else
     {
-      localUser.init(username, passwordHash, email, id);
-      this.Users.push(localUser);
+      currentUser.init(username, passwordHash, email, id);
+      this.Users.push(currentUser);
     }
 
 
-    return localUser.getUserID;
+    return currentUser.getUserID;
 
   }
 
@@ -320,13 +320,13 @@ export default class UserManager
 
   public async getUser<T>(value: T): Promise<User>
   {
-    let localUser = new User();
+    let currentUser = new User();
 
     if (typeof value === "string")
     {
       try
       {
-        const foundUser = this.Users.find(localUser => localUser.getUserName === value);
+        const foundUser = this.Users.find(currentUser => currentUser.getUserName === value);
 
         if (foundUser === undefined || foundUser.getUserID === undefined)
         {
@@ -342,7 +342,7 @@ export default class UserManager
         }
         else
         {
-          localUser = foundUser;
+          currentUser = foundUser;
         }
       }
       catch (e)
@@ -354,7 +354,7 @@ export default class UserManager
     {
       try
       {
-        const foundUser = this.Users.find(localUser => localUser.getUserID === value);
+        const foundUser = this.Users.find(currentUser => currentUser.getUserID === value);
 
         if (foundUser === undefined)
         {
@@ -375,21 +375,21 @@ export default class UserManager
 
         else
         {
-          localUser = foundUser;
+          currentUser = foundUser;
         }
       }
 
       catch (error) { console.log(error); }
     }
 
-    return localUser;
+    return currentUser;
   }
 
   public deleteUser(userID: number)
   {
     try
     {
-      const foundUser = this.Users.find(localUser => localUser.getUserID === userID);
+      const foundUser = this.Users.find(currentUser => currentUser.getUserID === userID);
 
       if (foundUser === undefined)
       {
@@ -398,7 +398,7 @@ export default class UserManager
 
       else
       {
-        this.Users.splice(this.Users.findIndex(localUser => localUser.getUserID === userID), 1);
+        this.Users.splice(this.Users.findIndex(currentUser => currentUser.getUserID === userID), 1);
       }
     }
     catch (error) { console.log(error); }
