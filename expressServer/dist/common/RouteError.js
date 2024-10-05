@@ -5,3 +5,4 @@ class RouteError extends Error {
     }
 }
 export default RouteError;
+//# sourceMappingURL=RouteError.js.map

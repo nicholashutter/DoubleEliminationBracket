@@ -2,24 +2,35 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Server",
+      "name": "tsx",
       "type": "node",
       "request": "launch",
-      "runtimeArgs": [
-        "-r",
-        "${workspaceFolder}/expressServer/node_modules/ts-node",
-        "-r",
-        "${workspaceFolder}/expressServer/node_modules/ts-node/register"
+  
+      // Debug current file in VSCode
+      "program": "${workspaceFolder}/dist/index.js",
+  
+      /*
+       * Path to tsx binary
+       * Assuming locally installed
+       */
+      "runtimeExecutable": "tsx",
+  
+      /*
+       * Open terminal when debugging starts (Optional)
+       * Useful to see console.logs
+       */
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+  
+      // Files to exclude from debugger (e.g. call stack)
+      "skipFiles": [
+          // Node.js internal core modules
+          "<node_internals>/**",
+  
+          // Ignore all dependencies (optional)
+          "${workspaceFolder}/node_modules/**",
       ],
-      "args": [
-        "--watch",
-        "${workspaceFolder}/expressServer/src/index.ts"
-      ],
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/expressServer/**",
-        "!**/node_modules/**"
-      ]
-    },
+  },
     {
       "type": "chrome",
       "request": "launch",

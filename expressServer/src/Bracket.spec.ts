@@ -1,4 +1,4 @@
-/* eslint-disable no-var */
+ /* eslint-disable no-var */
 import BracketManager from "./Bracket";
 import UserManager from "./user";
 import { User } from "./user";

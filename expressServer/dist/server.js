@@ -39,8 +39,8 @@ app.use(session({
 if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf()) {
     app.use(helmet());
 }
-app.use("react", express.static(path.join(__dirname, "../../reactclient/build")));
-app.use("express", express.static(path.join(__dirname, "./public")));
+const staticDir = path.join(__dirname, "../../reactclient/build");
+app.use(express.static(path.join(__dirname, "../../reactclient/build")));
 app.use(resourceRoutes);
 const validateLogin = function (req, res, next) {
     console.log(req.session);
@@ -51,11 +51,11 @@ const validateLogin = function (req, res, next) {
     }
     else {
         console.log("User has no matching session Err 020");
-        res.status(401).redirect("/login");
+        res.status(200).send();
     }
 };
 app.get("/login", (req, res) => {
-    res.status(200).sendFile(path.join(__dirname, "./public", "/loginPage.html"));
+    res.status(200).sendFile("index.html", { root: staticDir });
 });
 app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userManager = UserManager.getInstance;
@@ -66,7 +66,7 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (match) {
             req.session.user = foundUser;
             req.session.save();
-            res.status(200).sendFile(path.join(__dirname, "../../reactclient/build", "index.html"));
+            res.status(200).redirect("/");
         }
         else {
             res.status(401).send("Password not found. Application endpoints remain locked");
@@ -87,3 +87,4 @@ app.get("/", (req, res) => {
 app.use(bracketRoutes);
 app.use(userRoutes);
 export default app;
+//# sourceMappingURL=server.js.map

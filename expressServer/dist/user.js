@@ -153,7 +153,7 @@ class UserManager {
         if (username == '') {
             throw new Error("username value required. Cannot proceed. Fatal. Err 227");
         }
-        const localUser = new User();
+        const currentUser = new User();
         const generateUniqueID = (count) => {
             const randomID = Math.floor(Math.random() * 1000) + Date.now();
             this.Users.forEach(user => {
@@ -167,25 +167,32 @@ class UserManager {
             return randomID;
         };
         if (id === undefined) {
-            localUser.init(username, passwordHash, email, generateUniqueID(0));
-            this.Users.push(localUser);
+            currentUser.init(username, passwordHash, email, generateUniqueID(0));
+            this.Users.push(currentUser);
         }
         else {
-            localUser.init(username, passwordHash, email, id);
-            this.Users.push(localUser);
+            currentUser.init(username, passwordHash, email, id);
+            this.Users.push(currentUser);
         }
-        return localUser.getUserID;
+        return currentUser.getUserID;
     }
     updateUser(currentUser) {
         try {
             const foundUser = this.Users.find((user) => user.getUserID == currentUser.getUserID);
             const userLocation = this.Users.indexOf(currentUser);
-            if (foundUser.getUserName == "-1" || foundUser === undefined) {
+            if (foundUser === undefined) {
                 throw new Error("Unable to find specified User. Err 009");
+            }
+            else if (foundUser.getUserName === '-1' || foundUser.getUserName === "" || foundUser.getUserName === undefined) {
+                throw new Error("Unable to find specified User. Err 042");
+            }
+            else if (foundUser.getUserID === -1 || foundUser.getUserID === null || foundUser.getUserID === undefined) {
+                throw new Error("Unable to find specified User. Err 043");
             }
             else {
                 delete this.Users[userLocation];
                 this.Users[userLocation] = currentUser;
+                return true;
             }
         }
         catch (e) {
@@ -196,10 +203,10 @@ class UserManager {
     }
     getUser(value) {
         return __awaiter(this, void 0, void 0, function* () {
-            let localUser = new User();
+            let currentUser = new User();
             if (typeof value === "string") {
                 try {
-                    const foundUser = this.Users.find(localUser => localUser.getUserName === value);
+                    const foundUser = this.Users.find(currentUser => currentUser.getUserName === value);
                     if (foundUser === undefined || foundUser.getUserID === undefined) {
                         throw new Error("User not found in Users collection. Err 013");
                     }
@@ -210,7 +217,7 @@ class UserManager {
                         throw new Error("Default user returned which implies user not found. Err 022");
                     }
                     else {
-                        localUser = foundUser;
+                        currentUser = foundUser;
                     }
                 }
                 catch (e) {
@@ -219,7 +226,7 @@ class UserManager {
             }
             else if (typeof value === "number") {
                 try {
-                    const foundUser = this.Users.find(localUser => localUser.getUserID === value);
+                    const foundUser = this.Users.find(currentUser => currentUser.getUserID === value);
                     if (foundUser === undefined) {
                         throw new Error("User not found in Users collection. Err 014");
                     }
@@ -233,24 +240,25 @@ class UserManager {
                         throw new Error("Default user returned which implies user not found. Err 024");
                     }
                     else {
-                        localUser = foundUser;
+                        currentUser = foundUser;
                     }
                 }
                 catch (error) {
                     console.log(error);
                 }
             }
-            return localUser;
+            return currentUser;
         });
     }
     deleteUser(userID) {
         try {
-            const foundUser = this.Users.find(localUser => localUser.getUserID === userID);
+            const foundUser = this.Users.find(currentUser => currentUser.getUserID === userID);
             if (foundUser === undefined) {
                 throw new Error("User not found in Users collection. Err 015");
             }
             else {
-                this.Users.splice(this.Users.findIndex(localUser => localUser.getUserID === userID), 1);
+                this.Users.splice(this.Users.findIndex(currentUser => currentUser.getUserID === userID), 1);
+                return true;
             }
         }
         catch (error) {
@@ -268,3 +276,4 @@ class UserManager {
 _a = UserManager;
 _UserManager_instance = { value: void 0 };
 export default UserManager;
+//# sourceMappingURL=user.js.map

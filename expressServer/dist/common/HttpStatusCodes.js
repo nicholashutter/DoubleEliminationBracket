@@ -63,3 +63,4 @@ var HttpStatusCodes;
     HttpStatusCodes[HttpStatusCodes["NETWORK_AUTHENTICATION_REQUIRED"] = 511] = "NETWORK_AUTHENTICATION_REQUIRED";
 })(HttpStatusCodes || (HttpStatusCodes = {}));
 export default HttpStatusCodes;
+//# sourceMappingURL=HttpStatusCodes.js.map
