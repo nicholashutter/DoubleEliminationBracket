@@ -298,7 +298,7 @@ export default class UserManager
         throw new Error("Unable to find specified User. Err 042");
       }
 
-      else if (foundUser.getUserID === -1 || foundUser.getUserID === null || foundUser.getuserID === undefined)
+      else if (foundUser.getUserID === -1 || foundUser.getUserID === null || foundUser.getUserID === undefined)
       {
         throw new Error("Unable to find specified User. Err 043"); 
       }

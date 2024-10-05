@@ -57,8 +57,11 @@ if (EnvVars.NodeEnv === NodeEnvs.Production.valueOf())
   app.use(helmet());
 }
 
-app.use("react", express.static(path.join(__dirname, "../../reactclient/build")));
-app.use("express", express.static(path.join(__dirname, "./public")));
+
+const staticDir = path.join(__dirname, "../../reactclient/build");
+app.use(express.static(path.join(__dirname, "../../reactclient/build")));
+
+
 app.use(resourceRoutes);
 
 // Authentication
@@ -75,8 +78,11 @@ const validateLogin = function (req: Request, res: Response, next: NextFunction)
   else
   {
     console.log("User has no matching session Err 020");
-    res.status(401).redirect("/login");
 
+    res.status(200).send(); 
+
+    //res.status(401).redirect("/login");
+    
   }
 
 }
@@ -85,7 +91,7 @@ const validateLogin = function (req: Request, res: Response, next: NextFunction)
 
 app.get("/login", (req: Request, res: Response) =>
 {
-  res.status(200).sendFile(path.join(__dirname, "./public", "/loginPage.html"));
+  res.status(200).sendFile("index.html", {root:staticDir}); 
 
 });
 
@@ -108,7 +114,7 @@ app.post("/login", async (req: Request, res: Response) =>
 
       req.session.save();
 
-      res.status(200).sendFile(path.join(__dirname, "../../reactclient/build", "index.html"));
+      res.status(200).redirect("/"); 
 
     }
     else 
@@ -133,11 +139,11 @@ app.get("/logout", async (req: Request, res: Response) =>
 
 app.use(validateLogin);
 
-app.get("/", (req, res) =>
-{
-  res.redirect("/login");
-});
 
+app.get("/", (req, res) =>
+  {
+    res.redirect("/login");
+  });
 
 app.use(bracketRoutes);
 

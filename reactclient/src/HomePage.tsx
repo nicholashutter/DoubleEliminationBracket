@@ -14,7 +14,7 @@ export const HomePage = (props: {
   
   }, [serverUrl]);
 
-  // TODO find out if we can just send the entire user object or we need to do some sort of casting 
+  
   const credentials = {username: "nicholas",
     password: "nicholas"
   }

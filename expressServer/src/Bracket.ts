@@ -713,7 +713,17 @@ export default class BracketManager
             else
             {
                 await localBracket.selectWinner(winner);
-                await localBracket.endRound(winner);
+
+                switch (winner)
+                {
+                    case "player1":
+                        await localBracket.endRound("player1", "player2");
+                        break;
+                    case "player2":
+                        await localBracket.endRound("player2", "player1");
+                        break; 
+                }
+                
 
                 return true; 
             }
