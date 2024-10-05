@@ -22,13 +22,15 @@ router.get("/api/getUser/:userID", async (req: Request, res: Response) =>
     res.json (sessionUser);
 });
 
+
 router.post("/api/createUser",  (req: Request, res: Response) => 
 {
     bcrypt.hash(req.body.passwordHash, 10)
         .then(function (hash)
         {
             db.updateUser(userManager.createUser(req.body.userName, hash, req.body.email));
-            res.status(200).send("Create User Success");
+            res.redirect("/");
+
         })
         .catch(function (error) 
         {
@@ -39,7 +41,7 @@ router.post("/api/createUser",  (req: Request, res: Response) =>
 
     
 });
-
+ 
 router.put("/api/updateUser", async (req: Request, res: Response) =>
 {
    let sessionUser = req.session.user as User; 

@@ -11,7 +11,9 @@ router.get("/api/fetchBackground", (req: Request, res: Response) =>
     
     res.sendFile(path.join(__dirname, "../public", "/smash.png"));
 
-   // D:\Development\Javascript\tourneyApp\expressServer\src\public\smash.png
+   /*
+   --> This entire file will likely be deprecated
+   */
 })
 
 module.exports = router;

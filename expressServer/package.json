@@ -2,10 +2,10 @@
   "name": "expressServer",
   "version": "0.0.0",
   "scripts": {
-    "build": "npx ts-node build.ts",
+    "build": "npx ts-node --esm build.ts",
     "lint": "npx eslint --ext .ts src/",
     "lint:tests": "npx eslint --ext .ts spec/",
-    "start": "node -r module-alias/register ./dist --env=production",
+    "start": "node --loader ts-node/esm ",
     "dev": "nodemon",
     "compile": "tsc",
     "test": "jest"
