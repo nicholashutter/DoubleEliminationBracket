@@ -2,7 +2,9 @@
   "name": "expressServer",
   "type": "module",
   "version": "0.0.0",
-  "scripts": {},
+  "scripts": { "build": "npx tsx ./build.ts",
+                "start": "npx tsx dist/index.js"
+  },
   "_moduleAliases": {
     "@src": "dist"
   },

@@ -9,4 +9,6 @@ import server from "./server";
 const SERVER_START_MSG =
   "Express server started on port: " + EnvVars.Port.toString();
 
-server.listen(SERVER_START_MSG, () => {})
+  server.listen(EnvVars.Port, () => {
+    console.log(SERVER_START_MSG);
+  });
