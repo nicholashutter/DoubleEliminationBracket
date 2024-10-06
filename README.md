@@ -1,6 +1,7 @@
 
 Super Smash Bros Styled React Express application connected to a mariaDB database written in typescript. 
 
+
 ```
 tourneyApp
 ├─ .git
@@ -110,7 +111,8 @@ tourneyApp
 │  │  │  ├─ 81d783040b6e82eef8be74e8c1ed53d6a8a161
 │  │  │  ├─ a2af1f1b62828ce666eca87b95e8eb912f65f7
 │  │  │  ├─ c2023de240fa17b96eaa42f1f5785007369d34
-│  │  │  └─ d820e7207a1e48c0121b1a5fabb3762824c5f8
+│  │  │  ├─ d820e7207a1e48c0121b1a5fabb3762824c5f8
+│  │  │  └─ daa78986a3363b5f2927676d713ac1b143c6cc
 │  │  ├─ 0c
 │  │  │  ├─ 2974116210271f11fbf658c91b59c1df0c123f
 │  │  │  ├─ 3b3cf9a7a0ff0f47227648012f9793be401732
@@ -136,6 +138,7 @@ tourneyApp
 │  │  │  ├─ 683ede930f09567b4f43b205bae3b6d63248cf
 │  │  │  ├─ 9ee5946fe25f6328a194bdeb9ca9a0e7b8e372
 │  │  │  ├─ b0750a44c67fe565e1cde9bb76fcb85d6868e2
+│  │  │  ├─ c55b400d7859f4871e6209de9d45fd78fb891a
 │  │  │  └─ e7640bba57a5567df421af736e1daecb643dcb
 │  │  ├─ 11
 │  │  │  ├─ 158bdba018fe872fe7ce077a41cb47023f4ff1
@@ -242,6 +245,7 @@ tourneyApp
 │  │  │  ├─ c5284b45069e2e9ab4a38113c42ca96bfd2777
 │  │  │  └─ e62b0884cf29943838f2e93baf286000578e2a
 │  │  ├─ 1f
+│  │  │  ├─ 2a3588bfc6cd22fa30fb72f037961c7a52443f
 │  │  │  ├─ 33ed4a0ce40f2d80a633b4c07e293c9c669c0e
 │  │  │  ├─ 83cef3b11355d1becac5b3d29ec8d96237753c
 │  │  │  ├─ 85cdb9aafc4d519783880991a55942ee988f06
@@ -271,6 +275,7 @@ tourneyApp
 │  │  │  ├─ 05618e0ed447c94bba02c599d7692d0813d1ff
 │  │  │  ├─ 0fa1b5218b1d0f3a4fd53af24d84c07d6ebf5e
 │  │  │  ├─ 3d4bf07a2c38c719fff2e00f000be03ccda7a4
+│  │  │  ├─ 4d89cd7dde6458a21b9330894ed1c90a9032b9
 │  │  │  └─ fa73f3c4f731cb95400dbb367ef15f7c2e7d30
 │  │  ├─ 23
 │  │  │  ├─ 038e14f6e5fdb7c5627bcb3afb05a06e4f3667
@@ -573,6 +578,7 @@ tourneyApp
 │  │  ├─ 4e
 │  │  │  ├─ 1114457480de3070c628011c380cfa33adb4da
 │  │  │  ├─ 4ba209a59f46610317cc5a81ee758db927b688
+│  │  │  ├─ 812436548321b222dedc89e548474b7d54a79f
 │  │  │  ├─ a228898525bfea90b8d9c9b36be9177c18efe0
 │  │  │  └─ e112f52f7228eb91ed999038f8a15da9fbc56d
 │  │  ├─ 4f
@@ -621,6 +627,7 @@ tourneyApp
 │  │  ├─ 55
 │  │  │  ├─ 01cf3dd702473fef4988da3112b59d49d56c55
 │  │  │  ├─ 14703e446fa8d19f75fcc7f118392b28d78902
+│  │  │  ├─ 59ac2b9f5d9274bb6634db9dc4f743ce6cb79b
 │  │  │  ├─ 629f0affe604ab48bd48e710c5bbb847106128
 │  │  │  ├─ 8984243d233e1c4dca674a91dd61612415b806
 │  │  │  ├─ 8c4fad4552e1a716a2a4e182a75952875f9874
@@ -671,6 +678,7 @@ tourneyApp
 │  │  │  ├─ 57e8f11b4a328da94fcd8da92d04c2f97f527d
 │  │  │  ├─ 70a5a34f8f92b746f8c5657a56e2d18f84e3ea
 │  │  │  ├─ a93cb01bd6001fdec9b66af2cf21c106100a64
+│  │  │  ├─ b34ac59ef5661eeb0bba3837cc218a4af1ea27
 │  │  │  ├─ b7979f1dfb737eea46e8eaa0840400dd728227
 │  │  │  ├─ be3b956b4748e6b0a522a82ee401ca45de44fd
 │  │  │  ├─ e93ee7e0dc16a90fcc077cd2393291f0a8cc0a
@@ -685,6 +693,7 @@ tourneyApp
 │  │  │  └─ f3804abb835e506a42c093c2e30d829dc65c1b
 │  │  ├─ 5d
 │  │  │  ├─ 2f10e10e8e9ebd42e762b0fd678c4160df96ba
+│  │  │  ├─ 46d8561e70c95f0633f86e45761091ace67ecf
 │  │  │  ├─ 478b968843262e907d453507273c95a5974b40
 │  │  │  ├─ 4a04ea3f1888b63b2372af357a09fd93f5b7f6
 │  │  │  ├─ 6c97d6b5d47fd189f795498aefd6b8d7713b7d
@@ -776,6 +785,7 @@ tourneyApp
 │  │  │  ├─ 61c34d928f5089b1b9effe92131381a8c7099c
 │  │  │  ├─ 868efba3c10cc2cb90e6f6f38cacb6160a4b09
 │  │  │  ├─ a2680fe246b58efd981cd77b73ead8afe99c19
+│  │  │  ├─ a8e03f41cc1a44f1d8914e5fb49e06511a8815
 │  │  │  └─ f2015f088f4bcaca297892f3f562042dd15f5f
 │  │  ├─ 69
 │  │  │  ├─ 9390dd5a19d85bbe3678fde6c3890523b835d1
@@ -800,6 +810,7 @@ tourneyApp
 │  │  │  ├─ 24842fb2478b2c18e064372809f3d04b4916ba
 │  │  │  ├─ 4893b5f327baa84e1b50db4a057faf2d1b847d
 │  │  │  ├─ 5b825ecbba5aa3e1f5f44f9a31808f19d04823
+│  │  │  ├─ 63787f74e6cb688df0ca6471e23f81f0faa1c6
 │  │  │  ├─ 82b24f42356da4e5579451cb054dd8fd557896
 │  │  │  ├─ af865a3f7ff360e501f82ee62c12f8d6cfaedb
 │  │  │  ├─ c54dee853f9912175384474f536560b5127aa7
@@ -838,6 +849,7 @@ tourneyApp
 │  │  │  ├─ faa40a0916268ef48f7ea6511789498134555c
 │  │  │  └─ fdc251352310f36bc27833e3005022713d399a
 │  │  ├─ 73
+│  │  │  ├─ 22e64dc1c788eaf228e7d10386f00a379d3347
 │  │  │  ├─ 242d9f146e155f18d49c5ce85e5b21623548ce
 │  │  │  ├─ 38406bf7feff3628897744337a3a7ea3d4d86e
 │  │  │  ├─ 69d740852689253aedcf6bb47b8ddb794cbeba
@@ -855,11 +867,13 @@ tourneyApp
 │  │  │  ├─ 5bf870588b559c9acef83c17240e67c2c323e5
 │  │  │  ├─ 5d5354426757a84289c7df453f538782fea9a8
 │  │  │  ├─ 6490e1df3d97ef47cc42f120ecda8813ec9f73
+│  │  │  ├─ 8dc4d433e81a694475a31d04f1b4314d5593de
 │  │  │  └─ e770f4b28a4955923f4759f41b1c29a52842bf
 │  │  ├─ 76
 │  │  │  ├─ 306866e79c9e047386d8d0e264dad0b70708df
 │  │  │  ├─ 7e73762fee1e49f783c4edac82714cd2bfadec
 │  │  │  ├─ 9957bd59bb1ce67cdf28134be59ca86946c405
+│  │  │  ├─ c59d71e317a8b097decf0ca3ce5fb40151db9a
 │  │  │  ├─ ddd2dc0dee58dec49c39caabcf2fab98182c6f
 │  │  │  └─ ecae915270a7d5c58067d0ed2da1b9dcfdef17
 │  │  ├─ 77
@@ -919,6 +933,7 @@ tourneyApp
 │  │  │  ├─ 1f4e5f04cc99724698d99b9f937e705ccb0ab5
 │  │  │  ├─ 3384128b081247d27e60ef047f391ff4b59dbe
 │  │  │  ├─ 3c30a0b4e18da6156dcae2299a034e25723928
+│  │  │  ├─ 940fe4671613595a4001b5e6bf949f22927e8b
 │  │  │  ├─ 982061f234f693c622b87e2bda25c202617bfe
 │  │  │  ├─ ac8f2a46b6d2e1935b676089585d28a417cd5e
 │  │  │  ├─ de84b0012921fbc824143bd14e23056d6138b9
@@ -991,6 +1006,7 @@ tourneyApp
 │  │  │  └─ bc26e11f6b0e3b97f1601f8d3756833608cfc1
 │  │  ├─ 88
 │  │  │  ├─ 0683fae2c5081b803919fd4721b692e84148b6
+│  │  │  ├─ 0e51dffafa61ced7ca36780cf60bfa8d743293
 │  │  │  ├─ 269d81fa20d8a7990e6fa6d72354e2093ede3b
 │  │  │  ├─ 2dcbe9638a37cf93fc2af063c655e56a519550
 │  │  │  ├─ 8565d924ecd4313d9fced10e2f81ed509540b7
@@ -1123,6 +1139,7 @@ tourneyApp
 │  │  ├─ 9a
 │  │  │  ├─ 12f9ebe2b8b541c56b2a2316644935a2acb7a9
 │  │  │  ├─ 13ae27576b9e82e152b89bf4aac7c3c68a9274
+│  │  │  ├─ 2326c6a90650a931f81cd6d7321c8de80383e7
 │  │  │  ├─ 570f749e34bdbffdb9e171d8b3b5c7343624ad
 │  │  │  └─ b2936735ac5a1cdc8806ec8b604c95a116c7e0
 │  │  ├─ 9b
@@ -1237,6 +1254,7 @@ tourneyApp
 │  │  ├─ a7
 │  │  │  ├─ 39cb11e18475b1c625cdc024cbbd24d82abce8
 │  │  │  ├─ 46aaef533fe20afdf4f26462c51fe070b5885f
+│  │  │  ├─ 9ef3f845f169812c89315703cec74acf509636
 │  │  │  ├─ ba25e9e7cd4f3b2c9c3ddb931d573b50d83686
 │  │  │  └─ fee345362f953929d90be9171530e89c4c52d1
 │  │  ├─ a8
@@ -1541,6 +1559,7 @@ tourneyApp
 │  │  │  ├─ 9b9fd1ea16fc86860d2e78652195b66f236a93
 │  │  │  ├─ af7a3ee4323c46304b1b1c6a968477ada53a2b
 │  │  │  ├─ b3caee2220904ae72242a5b9bc1c7f33f85b50
+│  │  │  ├─ b7c9d70494cb2a54b3a2c6cdcf7ccbd477d5f0
 │  │  │  ├─ c045430e48911a66eb26d6355e2aebd59555ce
 │  │  │  └─ c7cc17260629a5f3a9a2a515237bdfccd13e68
 │  │  ├─ d1
@@ -1688,6 +1707,7 @@ tourneyApp
 │  │  ├─ e6
 │  │  │  ├─ 48b1d01939bc921393d446606768c86edfba71
 │  │  │  ├─ 8b2bb5010095489660ac91c3c6cc5d16dccbb0
+│  │  │  ├─ bf78b820e03f88dad9f61cdd82c2b87d5cdd67
 │  │  │  └─ c4c97ff306a43a1131dfa45ec3fd28ef755d87
 │  │  ├─ e7
 │  │  │  ├─ 38260c6110779785947041951176bf74b47746
@@ -1723,6 +1743,7 @@ tourneyApp
 │  │  │  ├─ 4ff432f7c0cc4b8e6c2b9e6da4092c073da93a
 │  │  │  ├─ 6b11bb947b61d52065c7d732865fda87e0c0a3
 │  │  │  ├─ 7964f47da4ea345bb83ceeae52f7d0f7e23c6a
+│  │  │  ├─ 85778beb4b30b07da9a6011bfa1e057523f4c4
 │  │  │  ├─ b354c347e78e82cca1e80fba353864040b5781
 │  │  │  ├─ b4bfbedff3550fa7de4c6ddc442f618edf0d46
 │  │  │  ├─ d501d815ede63f3df3357face8fcc3c14b6bb0
@@ -1787,6 +1808,7 @@ tourneyApp
 │  │  │  ├─ 707fce7d7da8591d3853f716c51a9b051c852e
 │  │  │  └─ 783b0d02ca7cfdfa0b6f79072811094f7ff82b
 │  │  ├─ f6
+│  │  │  ├─ 0b4faf701075253f4a46fb14c205257c8202fd
 │  │  │  ├─ 800117a837493ac215cf4cad5f53c486f32255
 │  │  │  ├─ 8cc933377afbba9b9515056e44f576e30a84ad
 │  │  │  ├─ 9aa43a75534f692ba29328fc1377f1ff42da2d
@@ -1799,6 +1821,7 @@ tourneyApp
 │  │  │  └─ da430e383fa220b1ebe38191d76b76b549cd79
 │  │  ├─ f8
 │  │  │  ├─ 40a0424a1cd883c2c6c61f4acc5531f04d176e
+│  │  │  ├─ 6be4806a9fe97d5ea14ba2716ec1399ec9c83c
 │  │  │  ├─ 846b08b18d6f9affc4908cb3bf7023177fbc1b
 │  │  │  └─ b883133c125f9e4138282041ccb154f40c97dc
 │  │  ├─ f9
@@ -2073,4 +2096,4 @@ tourneyApp
 │  └─ tsconfig.json
 └─ README.md
 
-```D:\Development\Javascript\tourneyApp\expressServer\dist\index.js
+```

@@ -7,7 +7,7 @@
       "request": "launch",
   
       // Debug current file in VSCode
-      "program": "${workspaceFolder}/dist/index.js",
+      "program": "${file}",
   
       /*
        * Path to tsx binary

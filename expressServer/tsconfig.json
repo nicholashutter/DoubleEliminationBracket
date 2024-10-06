@@ -67,8 +67,8 @@
     },
     "useUnknownInCatchVariables": false,
    
-  },
-  "esm":true, 
+  }, 
+  "ts-node": {"esm": true},
   "include": [
     "src/**/*.ts",
     "build.ts"

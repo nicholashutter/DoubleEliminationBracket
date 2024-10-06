@@ -141,5 +141,5 @@ router.put("/api/Bracket/selectWinner/:roomCode/:winner" , async (req: Request, 
         update players
     */
 
-module.exports = router;
+export default router;
 

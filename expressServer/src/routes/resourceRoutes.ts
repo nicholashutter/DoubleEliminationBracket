@@ -1,5 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require("node:path");
+
+import path from "node:path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 import express from 'express';
 import { Request, Response } from "express";
 const router = express.Router();
@@ -16,5 +23,5 @@ router.get("/api/fetchBackground", (req: Request, res: Response) =>
    */
 })
 
-module.exports = router;
+export default router;
 

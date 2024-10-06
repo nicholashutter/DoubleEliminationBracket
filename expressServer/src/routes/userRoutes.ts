@@ -84,4 +84,4 @@ router.delete("/api/removeUser/:userID", async (req: Request, res: Response) =>
     }
 });
 
-module.exports = router;
+export default router;

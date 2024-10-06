@@ -3,7 +3,7 @@ import BracketManager from "./Bracket";
 import UserManager from "./user";
 import { User } from "./user";
 import { Bracket } from "./Bracket";
-import logger from 'jet-logger';
+
 
 var bracketManager = BracketManager.getInstance;
 var userManager = UserManager.getInstance;

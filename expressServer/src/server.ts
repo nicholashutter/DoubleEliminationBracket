@@ -13,11 +13,19 @@ import UserManager from './user';
 import bcrypt from "bcrypt";
 import * as db from "./DbOperator";
 
-const path = require('node:path');
-const bracketRoutes = require("./routes/bracketRoutes");
-const userRoutes = require("./routes/userRoutes");
-const resourceRoutes = require("./routes/resourceRoutes");
-const testingRoutes = require("./routes/testingRoutes");
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+
+import path from 'node:path';
+import bracketRoutes from "./routes/bracketRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import resourceRoutes from "./routes/resourceRoutes.js";
+import testingRoutes from "./routes/testingRoutes.js"; 
+
 
 export interface SessionInfo
 {
